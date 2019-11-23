@@ -3,75 +3,49 @@ import {
     View,
     Text,
     StyleSheet,
-    Dimensions,
-    ImageBackground,
-} from 'react-native';
-import { Card, Button, Icon } from 'react-native-elements';
-import Tts from 'react-native-tts';
-import RNFS from 'react-native-fs';
-import Clock from './Clock';
+    Dimensions
+} from 'react-native'
+import { Card, Icon } from 'react-native-elements'
+import Tts from 'react-native-tts'
 
 class Activity extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            imageFile: null,
-            textFile: null,
-        };
-    }
-
-    // componentWillMount() {
-    //     this._textFile()
-    // }
-
-    // _textFile() {
-    //     const file = RNFS.read('C:/Users/oscar.lau/app/calendarApp/app/components/')
-    //     return file
-    // }
 
     render() {
+        console.log('these are my props', this.props);
         return (
-            <View style={styles.activity}>
-                <Text style={styles.timeText}>NOW </Text>
-                <Card
-                    containerStyle={styles.nowActivity}
-                    image={require('./../../images/taxi.png')}
-                    imageStyle={styles.nowImage}
-                >
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.activityText}>Take the Taxi</Text>
-                        <Icon
-                            size={40}
-                            name="sound"
-                            type="antdesign"
-                            onPress={() => {
-                                Tts.speak('Take the Taxi!');
-                            }}
-                        />
-                    </View>
-                </Card>
-                <Text style={styles.timeText}>NEXT</Text>
-                <Card
-                    containerStyle={styles.nextActivity}
-                    image={require('./../../images/bowling.jpg')}
-                    imageStyle={styles.nextImage}
-                >
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.activityText}>Bowling Activity</Text>
-                        <Icon
-                            size={40}
-                            name="sound"
-                            type="antdesign"
-                            onPress={() => {
-                                Tts.speak('Bowling activity!');
-                            }}
-                        />
-                    </View>
-                </Card>
-            </View>
-        );
-    }
+            <View
+                style={styles.activity}>
+                <Text
+                    style={styles.timeText}>
+                    {this.props.moments}</Text>
+                <View
+                    style={{ flex: 1, flexDirection: "row", alignItems: 'center' }} >
+                    <Text
+                        style={styles.timeText}>
+                        {this.props.time} </Text>
+                    <Card
+                        containerStyle={this.props.ActivityStyle}
+                        image={require('./../../images/taxi.png')}
+                        // image={require(this.props.imagePath)}
+                        imageStyle={this.props.ImageStyle}>
+                        <View
+                            style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
+                            <Text
+                                style={styles.activityText}>
+                                Take the taxi</Text>
+                            {/* <Text style={styles.activityText}>
+                                {this.props.textActivity}</Text> */}
+                            <Icon
+                                size={40}
+                                name="sound"
+                                type='antdesign'
+                                onPress={() => { Tts.speak(this.props.textActivity ? this.props.textActivity : "No input") }} />
+                        </View>
+                    </Card>
+                </View>
+            </View >
+        )
+    };
 }
 
 const styles = StyleSheet.create({
@@ -79,12 +53,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 30,
     },
     timeText: {
-        fontSize: 30,
-        color: 'black',
+        fontSize: 25,
+        color: '#393939',
+        fontFamily: 'Muli',
         fontWeight: 'bold',
-        textAlign: 'center',
     },
     activityText: {
         fontSize: 30,
@@ -92,24 +67,27 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         color: '#393939',
         textAlign: 'left',
+        fontFamily: 'Fredoka One',
         fontWeight: 'bold',
     },
-    nowActivity: {
-        backgroundColor: '#CDF07E',
-        width: Dimensions.get('window').width - 100,
-    },
+    // nowActivity: {
+    //     backgroundColor: '#CDF07E',
+    //     width: Dimensions.get("window").width - 100,
+    // },
     nextActivity: {
         backgroundColor: '#F07E7E',
-        width: Dimensions.get('window').width - 300,
+        width: Dimensions.get("window").width - 300,
     },
-    nowImage: {
-        height: Dimensions.get('window').height / 4,
+    nowImage:
+    {
+        height: Dimensions.get("window").height / 4,
     },
-    nextImage: {
-        height: Dimensions.get('window').height / 5,
-    },
+    nextImage:
+    {
+        height: Dimensions.get("window").height / 5,
+    }
 });
 
-export default Activity;
 
 
+export default Activity

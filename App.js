@@ -16,7 +16,7 @@ export default function App() {
       // When app first launches, load in the file data.
       loadScheduleData().then((data) => {
          transformScheduleData(data).then((transformedData) => {
-            console.log('---------------------', transformedData)
+            console.log('---------------------', transformedData['1/12/19'])
             setSchedule(transformedData);
          });
       });
