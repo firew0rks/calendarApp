@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
-  StyleSheet, Text, View, ScrollView,
+  StyleSheet, View, ScrollView, StatusBar, SafeAreaView,
 } from 'react-native';
-import PresentationalComponent from './app/components/PresentationalComponent';
 import Clock from './app/components/Clock';
 import Activity from './app/components/Activity';
 
@@ -24,8 +23,12 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  app: {
+  container: {
     backgroundColor: '#F4F4F4',
+    height: '100%',
+    width: '100%',
+  },
+  app: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
