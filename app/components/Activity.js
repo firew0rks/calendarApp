@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,9 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import {Card, Button, Icon} from 'react-native-elements' ;
+import { Card, Button, Icon } from 'react-native-elements';
 import Tts from 'react-native-tts';
-import RNFS from 'react-native-fs' ;
+import RNFS from 'react-native-fs';
 import Clock from './Clock';
 
 class Activity extends Component {
@@ -18,7 +18,7 @@ class Activity extends Component {
     this.state = {
       imageFile: null,
       textFile: null,
-    } ;
+    };
   }
 
   // componentWillMount() {
@@ -31,28 +31,15 @@ class Activity extends Component {
   // }
 
   render() {
-    // require the module
-    var RNFS = require('react-native-fs');
-
-    // create a path you want to write to
-    var path = '/test.txt';
-
-    // write the file
-    RNFS.writeFile(path, 'Lorem ipsum dolor sit amet', 'utf8')
-      .then(success => {
-        console.log('FILE WRITTEN!');
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
     return (
       <View style={styles.activity}>
         <Text style={styles.timeText}>NOW </Text>
         <Card
           containerStyle={styles.nowActivity}
           image={require('./../../images/taxi.png')}
-          imageStyle={styles.nowImage}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          imageStyle={styles.nowImage}
+        >
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.activityText}>Take the Taxi</Text>
             <Icon
               size={40}
@@ -68,8 +55,9 @@ class Activity extends Component {
         <Card
           containerStyle={styles.nextActivity}
           image={require('./../../images/bowling.jpg')}
-          imageStyle={styles.nextImage}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          imageStyle={styles.nextImage}
+        >
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.activityText}>Bowling Activity</Text>
             <Icon
               size={40}

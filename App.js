@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, View, ScrollView, StatusBar, SafeAreaView,
 } from 'react-native';
 import Clock from './app/components/Clock';
 import Activity from './app/components/Activity';
+import { loadScheduleData, transformScheduleData } from './app/helper/fileLoader';
 
 export default function App() {
+  // Disables the warning messages in the app
   console.disableYellowBox = true;
+
+  const [schedule, setSchedule] = useState({});
+
+  useEffect(() => {
+    // When app first launches, load in the file data.
+    loadScheduleData().then((data) => {
+      const transformedData = transformScheduleData(data);
+      setSchedule(transformedData);
+    });
+  }, []);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
