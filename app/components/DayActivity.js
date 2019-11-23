@@ -10,29 +10,28 @@ import Clock from './Clock';
 
 export default function DayScreen(props) {
 
-  console.log('---',props)
   const [time, setTime] = useState(moment().format('h:mm a'));
   const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
 
   return (
     <View style={styles.app}>
-       <ScrollView >
-         <SafeAreaView style={styles.container}>
-             <NavBar style={{ flex: 1 }} props={props} goToDayPage={false}/>
-               <Clock
-                 time={time}
-                 setTime={setTime}
-                 date={date}
-                 setDate={setDate}
-               />
+       <SafeAreaView>
+       <ScrollView>
+       <NavBar style={{ flex: 1 }} props={props} goToDayPage={false}/>
+       <Clock
+         time={time}
+         setTime={setTime}
+         date={date}
+         setDate={setDate}
+       />
                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:15') + "AM"} />
                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:30') + "AM"} />
                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:00') + "AM"} />
                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:30') + "AM"} />
                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('10:00') + "AM"} />
                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('11:15') + "AM"} />
-            </SafeAreaView>
          </ScrollView>
+      </SafeAreaView>
      </View>
   );
 }
