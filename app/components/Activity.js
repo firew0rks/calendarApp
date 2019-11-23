@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 30,
     color: 'black',
-    fontFamily: 'Muli',
     fontWeight: 'bold',
     textAlign: 'center',
   },
