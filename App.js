@@ -1,19 +1,42 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import PresentationalComponent from './app/components/PresentationalComponent'
+import {
+   StyleSheet,
+   View,
+   ScrollView
+} from 'react-native';
+
 import Clock from './app/components/Clock'
-import Activity from './app/components/Activity'
+import NowActivity from './app/components/NowActivity'
+import DayActivity from './app/components/DayActivity';
+import CountdownCircle from 'react-native-countdown-circle'
+import CircleTimer from 'react-native-circle-timer';
 
 export default class App extends Component {
 
    render() {
+
       return (
-         <View style={styles.app}>
-            <ScrollView >
-               <Clock />
-               <Activity />
-            </ScrollView>
-         </View>
+
+         <CircleTimer
+            radius={80}
+            borderWidth={10}
+            seconds={500}
+            borderColor={'#F5F5F5'}
+            borderBackgroundColor={"#FF0000"}
+            onTimeElapsed={() => {
+               console.log('Timer Finished!');
+            }}
+            showSecond={true}
+         />
+
+
+         // <View style={styles.app}>
+         //    <ScrollView >
+         //       <Clock />
+         //       {/* <NowActivity /> */}
+         //       <DayActivity />
+         //    </ScrollView>
+         // </View>
       )
    }
 }

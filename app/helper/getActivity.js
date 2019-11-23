@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-nativ
 import { Card, Button, Icon } from 'react-native-elements'
 import moment from 'moment'
 
-var RNFS = require('react-native-fs');
 
-function fileSystem(props) {
 
-    time = {
-        day: moment().format('dddd'),
-        hour: moment().format('HH'),
-        minute: moment().format('mm'),
-    }
+function getActivity(props) => {
+    return (
+        <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
+            <Text>{moment().format('8:15 ')} AM</Text>
+            <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} />
+        </View>
+    )
 }

@@ -3,5 +3,8 @@ react-native-vector-icons
 react-live-clock
 react-native-tts
 react-native-fs
-realm
+react-native-countdown-circle
+react-native-reanimated
+react-native-redash
+react-native-gesture-handler
 moment
