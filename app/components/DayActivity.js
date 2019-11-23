@@ -1,28 +1,31 @@
-import React, { Component } from 'react';
-import {
-    View,
-    StyleSheet,
-    Dimensions
-} from 'react-native'
-import Activity from './Activity'
-import moment from 'moment'
 import NavBar from './NavBar'
+import Activity from './Activity'
+import {
+  StyleSheet, View, ScrollView, StatusBar, SafeAreaView, Text
+} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Dimensions } from "react-native";
+import moment from 'moment'
+import Clock from './Clock';
 
-class DayActivity extends Component {
+class DayScreen extends React.Component {
 
-    render() {
-        return (
-            <View>
-                <NavBar style={{ flex: 1 }} props={this.props} goToDayPage={false}/>
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:15') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:30') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:00') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:30') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('10:00') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('11:15') + "AM"} />
-            </View >
-        )
-    };
+  render() {
+    return (
+      <View style={styles.app}>
+           <ScrollView >
+             <NavBar style={{ flex: 1 }} props={this.props} goToDayPage={false}/>
+             <Clock />
+             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:15') + "AM"} />
+             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:30') + "AM"} />
+             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:00') + "AM"} />
+             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:30') + "AM"} />
+             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('10:00') + "AM"} />
+             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('11:15') + "AM"} />
+           </ScrollView>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -45,6 +48,4 @@ const styles = StyleSheet.create({
     }
 });
 
-
-
-export default DayActivity
+export default DayScreen

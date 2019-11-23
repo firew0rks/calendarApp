@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'native-base';
 import { Dimensions } from "react-native";
 
@@ -8,11 +8,11 @@ var width = Dimensions.get('window').width; //full width
 export default class NavBar extends React.Component {
 
   navigateToDay(props) {
-    props.navigation.navigate('Day');
+    props.navigation.replace('Day');
   }
 
   navigateToNow(props) {
-    props.navigation.navigate('Now');
+    props.navigation.replace('Now');
   }
 
   render() {
@@ -29,18 +29,16 @@ export default class NavBar extends React.Component {
         shadowOffset: { width: 0, height: 2 }
         }}>
         <Button
-          title="Go to Day"
-          disabled={!this.props.goToDayPage}
-          onPress={() => this.navigateToDay(this.props.props)}
+          disabled={this.props.goToDayPage}
+          onPress={() => this.navigateToNow(this.props.props)}
         >
           <Text>
             Now
           </Text>
         </Button>
         <Button
-          title="Go to Now"
-          disabled={this.props.goToDayPage}
-          onPress={() => this.navigateToNow(this.props.props)}
+          disabled={!this.props.goToDayPage}
+          onPress={() => this.navigateToDay(this.props.props)}
         >
           <Text>
             Day

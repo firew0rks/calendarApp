@@ -14,36 +14,9 @@ import NavBar from './app/components/NavBar'
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
-class NowScreen extends React.Component {
-
-  render() {
-    return (
-      <View style={styles.app}>
-         <NavBar props={this.props} goToDayPage={true}/>
-         <ScrollView >
-            <Clock />
-            <Activity />
-         </ScrollView>
-      </View>
-    );
-  }
-}
-
-class DayScreen extends React.Component {
-
-  render() {
-    return (
-      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <NavBar style={{ flex: 1 }} props={this.props} goToDayPage={false}/>
-        <Text>Day Screen</Text>
-      </View>
-    );
-  }
-}
-
 const RootStack = createStackNavigator(
   {
-    Now: NowScreen,
+    Now: NowActivity,
     Day: DayActivity,
   },
   {
