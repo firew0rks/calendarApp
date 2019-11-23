@@ -43,7 +43,7 @@ class DayScreen extends React.Component {
 
 const RootStack = createStackNavigator(
   {
-    Now: NowActivity,
+    Now: NowScreen,
     Day: DayActivity,
   },
   {
