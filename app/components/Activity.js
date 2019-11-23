@@ -11,7 +11,6 @@ import Tts from 'react-native-tts'
 class Activity extends Component {
 
     render() {
-        console.log('these are my props', this.props);
         return (
             <View
                 style={styles.activity}>

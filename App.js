@@ -5,6 +5,8 @@ import {
 import Clock from './app/components/Clock';
 import Activity from './app/components/Activity';
 import { loadScheduleData, transformScheduleData, writeFile } from './app/helper/fileLoader';
+import NowActivity from './app/components/NowActivity';
+import DayActivity from './app/components/DayActivity'
 
 export default function App() {
    // Disables the warning messages in the app
@@ -16,7 +18,6 @@ export default function App() {
       // When app first launches, load in the file data.
       loadScheduleData().then((data) => {
          transformScheduleData(data).then((transformedData) => {
-            console.log('---------------------', transformedData['1/12/19'])
             setSchedule(transformedData);
          });
       });
@@ -29,7 +30,7 @@ export default function App() {
             <View style={styles.app}>
                <ScrollView>
                   <Clock />
-                  <Activity />
+                  <NowActivity />
                </ScrollView>
             </View>
          </SafeAreaView>
