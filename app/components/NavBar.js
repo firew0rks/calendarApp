@@ -35,7 +35,7 @@ export default class NavBar extends React.Component {
           disabled = {this.props.goToDayPage}
           onPress={() => this.navigateFunction(this.props.props, this.props.goToDayPage)}
         >
-          <Text>
+          <Text style={ styles.nowButtonText }>
             Now
           </Text>
         </Button>
@@ -44,7 +44,7 @@ export default class NavBar extends React.Component {
           disabled = {!this.props.goToDayPage}
           onPress={() => this.navigateFunction(this.props.props, this.props.goToDayPage)}
         >
-          <Text>
+          <Text style={ styles.dayButtonText }>
             Day
           </Text>
         </Button>
@@ -56,8 +56,22 @@ export default class NavBar extends React.Component {
 const styles = StyleSheet.create({
    nowButton: {
       backgroundColor: '#33CAFF',
+      padding: 20,
+      fontWeight: 'bold',
+      fontSize: 35,
    },
    dayButton: {
-      backgroundColor: '#F1F1F1',
+      backgroundColor: '#FFFFFF',
+      padding: 20,
+      fontWeight: 'bold',
+      fontSize: 35,
+   },
+   dayButtonText: {
+     color: '#A9A9A9',
+     fontWeight: 'bold',
+   },
+   nowButtonText: {
+     color: '#A9A9A9',
+     fontWeight: 'bold',
    }
 });

@@ -16,26 +16,18 @@ class Clock extends Component {
 
   tick() {
     this.props.setTime(moment().format('h:mm a'));
-    this.props.setDate(moment().format('ddd, MMMM Do YYYY '));
+    this.props.setDate(moment().format('DD MMMM YYYY '));
   }
 
   render() {
+    const day = moment(new Date()).format('dddd');
     return (
-      <View style={styles.clock}>
-        <View style={{flex: 1, flexDirection: 'row'}}>
-          <Icon
-            size={30}
-            name="clockcircleo"
-            color="red"
-            type="antdesign"
-            onPress={() => {
-              Tts.speak(`The time is ${this.props.time}`);
-            }}
-          />
-          <Text style={styles.time}>{this.props.time}</Text>
+      <View style={styles.tile}>
+        <Text style={styles.time}>{this.props.time}</Text>
+        <View>
+          <Text style={styles.day}>{day}</Text>
+          <Text style={styles.date}>{this.props.date}</Text>
         </View>
-
-        <Text style={styles.date}>{this.props.date}</Text>
         <StatusBar>backgroundColor="blue"</StatusBar>
       </View>
     );
@@ -45,17 +37,35 @@ class Clock extends Component {
 export default Clock;
 
 const styles = StyleSheet.create({
-  clock: {
+  tile: {
+    padding: 3,
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#33CAFF',
+    borderRadius: 8,
+    width: 600,
+    marginLeft: 120,
   },
   time: {
     flex: 1,
-    fontSize: 25,
-    color: '#F04A64',
+    fontSize: 35,
+    color: 'white',
     fontWeight: 'bold',
+    padding: 10,
+    marginLeft: 70,
   },
   date: {
-    fontSize: 15,
-    color: '#F04A64',
+    fontSize: 25,
+    color: 'white',
+    marginRight: 70,
+  },
+  day: {
+    fontSize: 35,
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginRight: 70,
   },
 });
