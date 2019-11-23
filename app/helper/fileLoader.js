@@ -8,8 +8,6 @@ export function loadScheduleData() {
   return new Promise((resolve, reject) => {
     RNFS.readDir(SCHEDULE_PATH)
       .then(result => {
-        console.log('GOT RESULT', result);
-
         // Find index of test.txt
         const fileIdx = result.findIndex(x => x.name === SCHEDULE_FILE);
 
@@ -23,8 +21,6 @@ export function loadScheduleData() {
         return reject(new Error('No file'));
       })
       .then(statResult => {
-        console.log('result', statResult);
-
         if (statResult[0].isFile()) {
           // if we have a file, read it
           return RNFS.readFile(statResult[1], 'utf8');
@@ -37,7 +33,6 @@ export function loadScheduleData() {
         resolve(contents);
       })
       .catch(err => {
-        console.log(err.message, err.code);
         reject(new Error(err.message));
       });
   });

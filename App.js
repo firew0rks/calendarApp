@@ -1,7 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
 import moment from 'moment';
-import {loadScheduleData, transformScheduleData} from './app/helper/fileLoader';
+import {
+  loadScheduleData,
+  transformScheduleData,
+  writeFile,
+} from './app/helper/fileLoader';
 import DayActivity from './app/components/DayActivity';
 import NowActivity from './app/components/NowActivity';
 
@@ -30,6 +34,7 @@ export default function App() {
   const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
 
   useEffect(() => {
+    //  writeFile();
     // When app first launches, load in the file data.
     loadScheduleData().then(data => {
       transformScheduleData(data).then(transformedData => {
@@ -40,7 +45,7 @@ export default function App() {
 
   return (
     <>
-      <AppContainer schedule={'hello wrold'} />
+      <AppContainer screenProps={{schedule}} />
     </>
   );
 }

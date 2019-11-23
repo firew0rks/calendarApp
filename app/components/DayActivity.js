@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -14,7 +14,10 @@ import moment from 'moment';
 import DayCard from './DayCard';
 
 export default function DayActivity(props) {
-  const {schedule, date, time, setTime, setDate} = props;
+  const {schedule} = props.screenProps;
+  const multi = useRef(null);
+  const [time, setTime] = useState(moment().format('h:mm a'));
+  const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
 
   const formattedDate = moment().format('D/M/YY');
 
@@ -30,21 +33,29 @@ export default function DayActivity(props) {
           {currentDay &&
             currentDay.map(e => {
               const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
-              console.log(e.startTime);
-              console.log(formattedTime);
+              const status = 'now';
               return (
-                <View style={styles.container}>
-                  <View style={styles.padding} />
+                <View style={styles.dayActivityContainer}>
+                  <View style={styles.padding1} />
                   <View style={styles.timeContainer}>
                     <Text style={styles.timeText}>{formattedTime}</Text>
                   </View>
+                  <View style={styles.padding2} />
+                  <View style={styles.padding1} />
                   <View style={styles.cardContainer}>
-                    <DayCard cardText={e.activity1} />
+                    <DayCard cardText={e.activity1} status={'inactive'} />
                   </View>
+                  <View style={styles.padding2} />
                   <View style={styles.cardContainer}>
-                    <DayCard cardText={e.activity2} />
+                    {e.activity2 !== '' && (
+                      <DayCard
+                        status={'next'}
+                        ref={multi}
+                        cardText={e.activity2}
+                      />
+                    )}
                   </View>
-                  <View style={styles.padding} />
+                  <View style={styles.padding1} />
                 </View>
               );
             })}
@@ -56,20 +67,28 @@ export default function DayActivity(props) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: '#F4F4F4',
+    height: '100%',
+    width: '100%',
   },
-  padding: {
+  dayActivityContainer: {
+    flexDirection: 'row',
+  },
+  padding1: {
     flex: 1,
   },
-  timeContainer: {
+  padding2: {
     flex: 2,
-    alignItems: 'center',
+  },
+  timeContainer: {
+    flex: 6,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   timeText: {
     fontSize: 24,
   },
   cardContainer: {
-    flex: 4,
+    flex: 12,
   },
 });

@@ -17,8 +17,6 @@ export default function NowScreen(props) {
   const [time, setTime] = useState(moment().format('h:mm a'));
   const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
 
-  console.log('propssss', props);
-
   return (
     <View style={styles.app}>
       <NavBar props={props} goToDayPage={true} />
