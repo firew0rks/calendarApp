@@ -5,10 +5,10 @@ import {
   ScrollView,
   StatusBar,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import moment from 'moment';
 import Clock from './app/components/Clock';
-import Activity from './app/components/Activity';
 import DayActivity from './app/components/DayActivity';
 import {loadScheduleData, transformScheduleData} from './app/helper/fileLoader';
 
@@ -34,14 +34,14 @@ export default function App() {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.container}>
         <View style={styles.app}>
-          <ScrollView>
+          <ScrollView contentContainerStyle={styles.scrollView}>
             <Clock
               time={time}
               setTime={setTime}
               date={date}
               setDate={setDate}
             />
-            <DayActivity schedule={schedule} />
+            <DayActivity schedule={schedule} date={date} time={time} />
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -59,5 +59,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+  },
+  scrollView: {
+    width: Dimensions.get('window').width,
   },
 });

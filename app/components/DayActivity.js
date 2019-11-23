@@ -1,49 +1,63 @@
-import React, { Component } from 'react';
-import {
-    View,
-    StyleSheet,
-    Dimensions
-} from 'react-native'
-import Activity from './Activity'
-import moment from 'moment'
+import React from 'react';
+import {View, StyleSheet, Dimensions, Text} from 'react-native';
+import Activity from './Activity';
+import moment from 'moment';
+import DayCard from './DayCard';
 
+export default function DayActivity(props) {
+  const {schedule, date, time} = props;
 
-class DayActivity extends Component {
+  const formattedDate = moment().format('D/M/YY');
+  console.log(formattedDate);
 
-    render() {
-        return (
-            <View>
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:15') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:30') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:00') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:30') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('10:00') + "AM"} />
-                <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('11:15') + "AM"} />
-            </View >
-        )
-    };
+  // Get the current day's object array.
+  const currentDay = schedule[formattedDate];
+
+  console.log('current', currentDay);
+
+  return (
+    <>
+      {currentDay &&
+        currentDay.map(e => {
+          const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
+          console.log(e.startTime);
+          console.log(formattedTime);
+          return (
+            <View style={styles.container}>
+              <View style={styles.padding} />
+              <View style={styles.timeContainer}>
+                <Text style={styles.timeText}>{formattedTime}</Text>
+              </View>
+              <View style={styles.cardContainer}>
+                <DayCard cardText={e.activity1} />
+              </View>
+              <View style={styles.cardContainer}>
+                <DayCard cardText={e.activity2} />
+              </View>
+              <View style={styles.padding} />
+            </View>
+          );
+        })}
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
-    },
-    ActivityStyle: {
-        backgroundColor: '#CDF07E',
-        width: Dimensions.get("window").width - 400,
-    },
-    ImageStyle: {
-        height: Dimensions.get("window").height / 3,
-    },
-    TimeStyle: {
-        color: '#393939',
-        fontSize: 30
-    }
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  padding: {
+    flex: 1,
+  },
+  timeContainer: {
+    flex: 2,
+    alignItems: 'center',
+  },
+  timeText: {
+    fontSize: 24,
+  },
+  cardContainer: {
+    flex: 4,
+  },
 });
-
-
-
-export default DayActivity

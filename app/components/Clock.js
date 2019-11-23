@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import {View, Text, StyleSheet, StatusBar, Dimensions} from 'react-native';
 import {Icon} from 'react-native-elements';
 import moment from 'moment';
 import Tts from 'react-native-tts';

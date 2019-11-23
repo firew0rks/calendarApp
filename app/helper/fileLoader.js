@@ -7,11 +7,11 @@ const SCHEDULE_FILE = 'schedule.csv';
 export function loadScheduleData() {
   return new Promise((resolve, reject) => {
     RNFS.readDir(SCHEDULE_PATH)
-      .then((result) => {
+      .then(result => {
         console.log('GOT RESULT', result);
 
         // Find index of test.txt
-        const fileIdx = result.findIndex((x) => x.name === SCHEDULE_FILE);
+        const fileIdx = result.findIndex(x => x.name === SCHEDULE_FILE);
 
         if (fileIdx !== -1) {
           return Promise.all([
@@ -22,7 +22,7 @@ export function loadScheduleData() {
 
         return reject(new Error('No file'));
       })
-      .then((statResult) => {
+      .then(statResult => {
         console.log('result', statResult);
 
         if (statResult[0].isFile()) {
@@ -32,11 +32,11 @@ export function loadScheduleData() {
 
         return reject(new Error('No file'));
       })
-      .then((contents) => {
+      .then(contents => {
         // log the file content
         resolve(contents);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err.message, err.code);
         reject(new Error(err.message));
       });
@@ -70,18 +70,20 @@ export async function transformScheduleData(data) {
   }
 
   const formattedData = {};
-  readData.data.forEach((e) => {
+  readData.data.forEach(e => {
     const date = e[0];
     const time = e[1];
     const activity1 = e[2];
     const activity2 = e[3];
 
     if (!Object.keys(formattedData).includes(date)) {
-      formattedData[date] = [{
-        startTime: time,
-        activity1,
-        activity2,
-      }];
+      formattedData[date] = [
+        {
+          startTime: time,
+          activity1,
+          activity2,
+        },
+      ];
     } else {
       formattedData[date].push({
         startTime: time,
@@ -93,7 +95,6 @@ export async function transformScheduleData(data) {
 
   // Adding endtimes.
   const k = Object.keys(formattedData);
-  console.log(k);
   for (let i = 0; i < k.length - 1; i++) {
     for (let j = 0; j < formattedData[k[i]].length - 1; j++) {
       formattedData[k[i]][j].endTime = formattedData[k[i]][j + 1].startTime;
@@ -101,17 +102,20 @@ export async function transformScheduleData(data) {
     formattedData[k[i]][formattedData[k[i]].length - 1].endTime = null;
   }
 
-  console.log('----------------------')
   return formattedData;
 }
 
 export function writeFile() {
   // write the file
-  RNFS.writeFile(`${SCHEDULE_PATH}/${SCHEDULE_FILE}`, 'Lorem ipsum dolor sit amet', 'utf8')
-    .then((success) => {
+  RNFS.writeFile(
+    `${SCHEDULE_PATH}/${SCHEDULE_FILE}`,
+    'Lorem ipsum dolor sit amet',
+    'utf8',
+  )
+    .then(success => {
       console.log('FILE WRITTEN!');
     })
-    .catch((err) => {
+    .catch(err => {
       console.log(err.message);
     });
 }
