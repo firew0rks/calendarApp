@@ -5,12 +5,14 @@ import Tts from 'react-native-tts'
 import RNFS from 'react-native-fs'
 import Clock from './Clock'
 import Activity from './Activity'
+import NavBar from './NavBar'
 
 class NowActivity extends Component {
 
     render() {
         return (
             <View>
+                <NavBar props={this.props} goToDayPage={true}/>
                 <Activity ActivityStyle={styles.nowActivity} ImageStyle={styles.nowImage} moments={'NOW'} />
                 <Activity ActivityStyle={styles.nextActivity} ImageStyle={styles.nextImage} moments={"NEXT"} />
             </View>

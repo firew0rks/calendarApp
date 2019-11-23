@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 25,
         color: '#393939',
-        fontFamily: 'Muli',
         fontWeight: 'bold',
     },
     activityText: {
@@ -67,7 +66,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         color: '#393939',
         textAlign: 'left',
-        fontFamily: 'Fredoka One',
         fontWeight: 'bold',
     },
     // nowActivity: {

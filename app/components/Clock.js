@@ -63,10 +63,8 @@ const styles = StyleSheet.create({
         fontSize: 25,
         color: '#F04A64',
         fontWeight: 'bold',
-        fontFamily: 'Fredoka One',
     },
     date: {
-        fontFamily: 'Comfortaa',
         fontSize: 15,
         color: '#F04A64',
     }

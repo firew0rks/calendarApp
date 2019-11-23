@@ -6,13 +6,14 @@ import {
 } from 'react-native'
 import Activity from './Activity'
 import moment from 'moment'
-
+import NavBar from './NavBar'
 
 class DayActivity extends Component {
 
     render() {
         return (
             <View>
+                <NavBar style={{ flex: 1 }} props={this.props} goToDayPage={false}/>
                 <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:15') + "AM"} />
                 <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:30') + "AM"} />
                 <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:00') + "AM"} />

@@ -1,10 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import {
-   StyleSheet, View, ScrollView, StatusBar, SafeAreaView,
+  StyleSheet, View, ScrollView, StatusBar, SafeAreaView, Text
 } from 'react-native';
 import Clock from './app/components/Clock';
 import Activity from './app/components/Activity';
-import { loadScheduleData, transformScheduleData, writeFile } from './app/helper/fileLoader';
+import { loadScheduleData, transformScheduleData } from './app/helper/fileLoader';
+import PresentationalComponent from './app/components/PresentationalComponent'
+import DayActivity from './app/components/DayActivity'
+import NowActivity from './app/components/NowActivity'
+import NavBar from './app/components/NavBar'
+
+// React Nav
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+
+class NowScreen extends React.Component {
+
+  render() {
+    return (
+      <View style={styles.app}>
+         <NavBar props={this.props} goToDayPage={true}/>
+         <ScrollView >
+            <Clock />
+            <Activity />
+         </ScrollView>
+      </View>
+    );
+  }
+}
+
+class DayScreen extends React.Component {
+
+  render() {
+    return (
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <NavBar style={{ flex: 1 }} props={this.props} goToDayPage={false}/>
+        <Text>Day Screen</Text>
+      </View>
+    );
+  }
+}
+
+const RootStack = createStackNavigator(
+  {
+    Now: NowActivity,
+    Day: DayActivity,
+  },
+  {
+    initialRouteName: 'Now',
+  }
+);
+
+const AppContainer = createAppContainer(RootStack);
 
 export default function App() {
    // Disables the warning messages in the app
@@ -22,19 +69,9 @@ export default function App() {
       });
    }, []);
 
-   return (
-      <>
-         <StatusBar barStyle="dark-content" />
-         <SafeAreaView style={styles.container}>
-            <View style={styles.app}>
-               <ScrollView>
-                  <Clock />
-                  <Activity />
-               </ScrollView>
-            </View>
-         </SafeAreaView>
-      </>
-   );
+  return (
+      <AppContainer />
+  );
 }
 
 const styles = StyleSheet.create({
