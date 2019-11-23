@@ -13,11 +13,12 @@ export default function App() {
    const [schedule, setSchedule] = useState({});
 
    useEffect(() => {
-      writeFile();
       // When app first launches, load in the file data.
       loadScheduleData().then((data) => {
-         const transformedData = transformScheduleData(data);
-         setSchedule(transformedData);
+         transformScheduleData(data).then((transformedData) => {
+            console.log('---------------------', transformedData)
+            setSchedule(transformedData);
+         });
       });
    }, []);
 

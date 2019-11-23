@@ -33,7 +33,7 @@ export function loadScheduleData() {
         return reject(new Error('No file'));
       })
       .then((contents) => {
-        // log the file contents
+        // log the file content
         resolve(contents);
       })
       .catch((err) => {
@@ -63,7 +63,7 @@ export function loadScheduleData() {
  */
 export async function transformScheduleData(data) {
   // TODO: Remove all the blank lines
-  const readData = Papa.parse(data);
+  const readData = await Papa.parse(data);
 
   if (readData.data.length === 0) {
     return {};
@@ -101,6 +101,7 @@ export async function transformScheduleData(data) {
     formattedData[k[i]][formattedData[k[i]].length - 1].endTime = null;
   }
 
+  console.log('----------------------')
   return formattedData;
 }
 
