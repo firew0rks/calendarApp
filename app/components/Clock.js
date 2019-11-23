@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, StatusBar} from 'react-native';
-import {Icon} from 'react-native-elements';
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { Icon } from 'react-native-elements';
 import moment from 'moment';
 import Tts from 'react-native-tts';
 
@@ -28,7 +28,7 @@ class Clock extends Component {
           <Text style={styles.day}>{day}</Text>
           <Text style={styles.date}>{this.props.date}</Text>
         </View>
-        <StatusBar>backgroundColor="blue"</StatusBar>
+        {/* <StatusBar>backgroundColor="blue"</StatusBar> */}
       </View>
     );
   }

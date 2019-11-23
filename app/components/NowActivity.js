@@ -74,8 +74,12 @@ export default function NowActivity(props) {
    return (
       <View style={styles.app}>
          <NavBar props={props} goToDayPage={true} />
-         <ScrollView>
+         <View style={{ height: 80 }}>
             <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
+         </View>
+
+         <ScrollView>
+
             <Activity
                ActivityStyle={styles.nowActivity}
                ImageStyle={styles.nowImage}
