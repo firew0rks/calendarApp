@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, View, ScrollView, StatusBar, SafeAreaView, Text
 } from 'react-native';
@@ -10,6 +10,7 @@ import PresentationalComponent from './app/components/PresentationalComponent'
 import DayActivity from './app/components/DayActivity'
 import NowActivity from './app/components/NowActivity'
 import NavBar from './app/components/NavBar'
+import isEmpty from 'lodash/isEmpty';
 
 // React Nav
 import { createAppContainer } from 'react-navigation';
@@ -46,20 +47,7 @@ export default function App() {
 
   return (
     <>
-      <AppContainer />
+      {!isEmpty(schedule) && <AppContainer screenProps={{ schedule }} />}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F4F4F4',
-    height: '100%',
-    width: '100%',
-  },
-  app: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-});

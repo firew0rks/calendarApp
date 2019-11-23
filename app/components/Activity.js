@@ -8,10 +8,10 @@ import {
 import { Card, Icon } from 'react-native-elements'
 import Tts from 'react-native-tts'
 
+
 class Activity extends Component {
 
     render() {
-        console.log('these are my props', this.props);
         return (
             <View
                 style={styles.activity}>
@@ -25,16 +25,16 @@ class Activity extends Component {
                         {this.props.time} </Text>
                     <Card
                         containerStyle={this.props.ActivityStyle}
-                        image={require('./../../images/taxi.png')}
-                        // image={require(this.props.imagePath)}
+                        // image={require('./../../images/taxi.png')}
+                        image={{ uri: `data:image/png;base64,${this.props.imagePath}` }}
                         imageStyle={this.props.ImageStyle}>
                         <View
                             style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
-                            <Text
+                            {/* <Text
                                 style={styles.activityText}>
-                                Take the taxi</Text>
-                            {/* <Text style={styles.activityText}>
-                                {this.props.textActivity}</Text> */}
+                                Take the taxi</Text> */}
+                            <Text style={styles.activityText}>
+                                {this.props.textActivity}</Text>
                             <Icon
                                 size={40}
                                 name="sound"
@@ -62,10 +62,11 @@ const styles = StyleSheet.create({
     },
     activityText: {
         fontSize: 30,
+        marginBottom: 10,
+        marginHorizontal: 10,
         color: '#393939',
         textAlign: 'left',
         fontWeight: 'bold',
-        paddingTop: 10,
     },
     // nowActivity: {
     //     backgroundColor: '#CDF07E',
