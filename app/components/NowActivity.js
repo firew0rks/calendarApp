@@ -6,21 +6,29 @@ import {
 import React, { useState, useEffect } from 'react';
 import Clock from './Clock';
 import { Dimensions } from "react-native";
+import moment from 'moment';
 
-class NowScreen extends React.Component {
+export default function NowScreen(props) {
 
-  render() {
-    return (
-      <View style={styles.app}>
-         <NavBar props={this.props} goToDayPage={true}/>
-         <ScrollView >
-            <Clock />
-            <Activity ActivityStyle={styles.nowActivity} ImageStyle={styles.nowImage} moments={'NOW'} />
-            <Activity ActivityStyle={styles.nextActivity} ImageStyle={styles.nextImage} moments={"NEXT"} />
-         </ScrollView>
-      </View>
-    );
-  }
+  const [time, setTime] = useState(moment().format('h:mm a'));
+  const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
+
+  return (
+    <View style={styles.app}>
+       <NavBar props={props} goToDayPage={true}/>
+       <ScrollView >
+          <Clock
+            time={time}
+            setTime={setTime}
+            date={date}
+            setDate={setDate}
+          />
+          <Activity ActivityStyle={styles.nowActivity} ImageStyle={styles.nowImage} moments={'NOW'} />
+          <Activity ActivityStyle={styles.nextActivity} ImageStyle={styles.nextImage} moments={"NEXT"} />
+       </ScrollView>
+    </View>
+  );
+
 }
 
 const styles = StyleSheet.create({
@@ -51,5 +59,3 @@ const styles = StyleSheet.create({
        height: Dimensions.get("window").height / 5,
    }
 });
-
-export default NowScreen

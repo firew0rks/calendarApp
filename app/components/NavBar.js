@@ -7,15 +7,17 @@ var width = Dimensions.get('window').width; //full width
 
 export default class NavBar extends React.Component {
 
-  navigateToDay(props) {
-    props.navigation.replace('Day');
-  }
-
-  navigateToNow(props) {
-    props.navigation.replace('Now');
+  navigateFunction(props, goToDayPage) {
+    if (goToDayPage === true){
+      props.navigation.replace('Day');
+    }
+    else if (goToDayPage === false) {
+      props.navigation.replace('Now');
+    }
   }
 
   render() {
+    console.log('++++', this.props.goToDayPage)
     return (
       <View style={{
         flexDirection: 'row',
@@ -29,16 +31,18 @@ export default class NavBar extends React.Component {
         shadowOffset: { width: 0, height: 2 }
         }}>
         <Button
-          disabled={this.props.goToDayPage}
-          onPress={() => this.navigateToNow(this.props.props)}
+          style={[this.props.goToDayPage ? styles.nowButton : styles.dayButton]}
+          disabled = {this.props.goToDayPage}
+          onPress={() => this.navigateFunction(this.props.props, this.props.goToDayPage)}
         >
           <Text>
             Now
           </Text>
         </Button>
         <Button
-          disabled={!this.props.goToDayPage}
-          onPress={() => this.navigateToDay(this.props.props)}
+          style={[this.props.goToDayPage ? styles.dayButton : styles.nowButton]}
+          disabled = {!this.props.goToDayPage}
+          onPress={() => this.navigateFunction(this.props.props, this.props.goToDayPage)}
         >
           <Text>
             Day
@@ -48,3 +52,12 @@ export default class NavBar extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+   nowButton: {
+      backgroundColor: '#33CAFF',
+   },
+   dayButton: {
+      backgroundColor: '#F1F1F1',
+   }
+});

@@ -5,27 +5,36 @@ import {
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Dimensions } from "react-native";
-import moment from 'moment'
+import moment from 'moment';
 import Clock from './Clock';
 
-class DayScreen extends React.Component {
+export default function DayScreen(props) {
 
-  render() {
-    return (
-      <View style={styles.app}>
-           <ScrollView >
-             <NavBar style={{ flex: 1 }} props={this.props} goToDayPage={false}/>
-             <Clock />
-             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:15') + "AM"} />
-             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:30') + "AM"} />
-             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:00') + "AM"} />
-             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:30') + "AM"} />
-             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('10:00') + "AM"} />
-             <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('11:15') + "AM"} />
-           </ScrollView>
-      </View>
-    );
-  }
+  console.log('---',props)
+  const [time, setTime] = useState(moment().format('h:mm a'));
+  const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
+
+  return (
+    <View style={styles.app}>
+       <ScrollView >
+         <SafeAreaView style={styles.container}>
+             <NavBar style={{ flex: 1 }} props={props} goToDayPage={false}/>
+               <Clock
+                 time={time}
+                 setTime={setTime}
+                 date={date}
+                 setDate={setDate}
+               />
+               <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:15') + "AM"} />
+               <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('8:30') + "AM"} />
+               <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:00') + "AM"} />
+               <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('9:30') + "AM"} />
+               <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('10:00') + "AM"} />
+               <Activity ActivityStyle={styles.ActivityStyle} ImageStyle={styles.ImageStyle} time={moment().format('11:15') + "AM"} />
+            </SafeAreaView>
+         </ScrollView>
+     </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -47,5 +56,3 @@ const styles = StyleSheet.create({
         fontSize: 30
     }
 });
-
-export default DayScreen
