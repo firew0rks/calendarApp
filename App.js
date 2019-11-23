@@ -1,16 +1,25 @@
 import React, {useState, useEffect} from 'react';
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  StatusBar,
-  SafeAreaView,
-  Dimensions,
-} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import moment from 'moment';
-import Clock from './app/components/Clock';
-import DayActivity from './app/components/DayActivity';
 import {loadScheduleData, transformScheduleData} from './app/helper/fileLoader';
+import DayActivity from './app/components/DayActivity';
+import NowActivity from './app/components/NowActivity';
+
+// React Nav
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+
+const RootStack = createStackNavigator(
+  {
+    Now: NowActivity,
+    Day: DayActivity,
+  },
+  {
+    initialRouteName: 'Now',
+  },
+);
+
+const AppContainer = createAppContainer(RootStack);
 
 export default function App() {
   // Disables the warning messages in the app
@@ -31,36 +40,7 @@ export default function App() {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={styles.container}>
-        <View style={styles.app}>
-          <ScrollView contentContainerStyle={styles.scrollView}>
-            <Clock
-              time={time}
-              setTime={setTime}
-              date={date}
-              setDate={setDate}
-            />
-            <DayActivity schedule={schedule} date={date} time={time} />
-          </ScrollView>
-        </View>
-      </SafeAreaView>
+      <AppContainer schedule={'hello wrold'} />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F4F4F4',
-    height: '100%',
-    width: '100%',
-  },
-  app: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  scrollView: {
-    width: Dimensions.get('window').width,
-  },
-});

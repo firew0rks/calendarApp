@@ -1,67 +1,67 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native'
-import { Card, Button, Icon } from 'react-native-elements'
-import Tts from 'react-native-tts'
-import RNFS from 'react-native-fs'
-import Clock from './Clock'
-import Activity from './Activity'
+import NavBar from './NavBar';
+import Activity from './Activity';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  StatusBar,
+  SafeAreaView,
+  Text,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import Clock from './Clock';
+import {Dimensions} from 'react-native';
+import moment from 'moment';
 
-class NowActivity extends Component {
+export default function NowScreen(props) {
+  const [time, setTime] = useState(moment().format('h:mm a'));
+  const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
 
-    render() {
-        return (
-            <View>
-                <Activity ActivityStyle={styles.nowActivity} ImageStyle={styles.nowImage} moments={'NOW'} />
-                <Activity ActivityStyle={styles.nextActivity} ImageStyle={styles.nextImage} moments={"NEXT"} />
-            </View>
+  console.log('propssss', props);
 
-            // <View style={styles.activity}>
-            //     <Text style={styles.timeText}>NOW </Text>
-            //     <Card
-            //         containerStyle={styles.nowActivity}
-            //         image={require('./../../images/taxi.png')}
-            //         imageStyle={styles.nowImage}>
-            //         <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
-            //             <Text style={styles.activityText}>
-            //                 Take the Taxi</Text>
-            //             <Icon size={40} name="sound" type='antdesign' onPress={() => { Tts.speak("Take the Taxi!") }} />
-            //         </View>
-            //     </Card>
-            //     <Text style={styles.timeText}>NEXT</Text>
-            //     <Card
-            //         containerStyle={styles.nextActivity}
-            //         image={require('./../../images/bowling.jpg')}
-            //         imageStyle={styles.nextImage}>
-            //         <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
-            //             <Text style={styles.activityText}>
-            //                 Bowling Activity</Text>
-            //             <Icon size={40} name="sound" type='antdesign' onPress={() => { Tts.speak("Bowling activity!") }} />
-            //         </View>
-            //     </Card>
-            // </View >
-        )
-    };
+  return (
+    <View style={styles.app}>
+      <NavBar props={props} goToDayPage={true} />
+      <ScrollView>
+        <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
+        <Activity
+          ActivityStyle={styles.nowActivity}
+          ImageStyle={styles.nowImage}
+          moments={'NOW'}
+        />
+        <Activity
+          ActivityStyle={styles.nextActivity}
+          ImageStyle={styles.nextImage}
+          moments={'NEXT'}
+        />
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    nowActivity: {
-        backgroundColor: '#CDF07E',
-        width: Dimensions.get("window").width - 100,
-    },
-    nextActivity: {
-        backgroundColor: '#F07E7E',
-        width: Dimensions.get("window").width - 300,
-    },
-    nowImage:
-    {
-        height: Dimensions.get("window").height / 4,
-    },
-    nextImage:
-    {
-        height: Dimensions.get("window").height / 5,
-    }
+  container: {
+    backgroundColor: '#F4F4F4',
+    height: '100%',
+    width: '100%',
+  },
+  app: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  nowActivity: {
+    backgroundColor: '#CDF07E',
+    width: Dimensions.get('window').width - 100,
+  },
+  nextActivity: {
+    backgroundColor: '#F07E7E',
+    width: Dimensions.get('window').width - 300,
+  },
+  nowImage: {
+    height: Dimensions.get('window').height / 4,
+  },
+  nextImage: {
+    height: Dimensions.get('window').height / 5,
+  },
 });
-
-
-
-export default NowActivity

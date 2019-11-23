@@ -5,6 +5,7 @@ import moment from 'moment';
 import Tts from 'react-native-tts';
 
 class Clock extends Component {
+
   componentDidMount() {
     this.intervalID = setInterval(() => this.tick(), 1000);
   }
