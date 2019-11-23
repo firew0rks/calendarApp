@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Button, Text} from 'native-base';
 import {Dimensions} from 'react-native';
@@ -34,7 +34,7 @@ export default class NavBar extends React.Component {
           onPress={() =>
             this.navigateFunction(this.props.props, this.props.goToDayPage)
           }>
-          <Text>Now</Text>
+          <Text style={styles.nowButtonText}>Now</Text>
         </Button>
         <Button
           style={[this.props.goToDayPage ? styles.dayButton : styles.nowButton]}
@@ -42,7 +42,7 @@ export default class NavBar extends React.Component {
           onPress={() =>
             this.navigateFunction(this.props.props, this.props.goToDayPage)
           }>
-          <Text>Day</Text>
+          <Text style={styles.dayButtonText}>Day</Text>
         </Button>
       </View>
     );
@@ -52,8 +52,22 @@ export default class NavBar extends React.Component {
 const styles = StyleSheet.create({
   nowButton: {
     backgroundColor: '#33CAFF',
+    padding: 20,
+    fontWeight: 'bold',
+    fontSize: 35,
   },
   dayButton: {
-    backgroundColor: '#F1F1F1',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    fontWeight: 'bold',
+    fontSize: 35,
+  },
+  dayButtonText: {
+    color: '#A9A9A9',
+    fontWeight: 'bold',
+  },
+  nowButtonText: {
+    color: '#A9A9A9',
+    fontWeight: 'bold',
   },
 });

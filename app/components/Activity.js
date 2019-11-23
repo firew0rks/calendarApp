@@ -8,17 +8,15 @@ class Activity extends Component {
     return (
       <View style={styles.activity}>
         <Text style={styles.timeText}>{this.props.moments}</Text>
-        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+        <View style={styles.textView}>
           <Text style={styles.timeText}>{this.props.time} </Text>
           <Card
             containerStyle={this.props.ActivityStyle}
-            image={require('./../../images/taxi.png')}
-            // image={require(this.props.imagePath)}
+            // image={require('./../../images/taxi.png')}
+            image={{uri: `data:image/png;base64,${this.props.imagePath}`}}
             imageStyle={this.props.ImageStyle}>
-            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-              <Text style={styles.activityText}>Take the taxi</Text>
-              {/* <Text style={styles.activityText}>
-                                {this.props.textActivity}</Text> */}
+            <View style={styles.textView}>
+              <Text style={styles.activityText}>{this.props.textActivity}</Text>
               <Icon
                 size={40}
                 name="sound"
@@ -59,10 +57,11 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontWeight: 'bold',
   },
-  // nowActivity: {
-  //     backgroundColor: '#CDF07E',
-  //     width: Dimensions.get("window").width - 100,
-  // },
+  textView: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   nextActivity: {
     backgroundColor: '#F07E7E',
     width: Dimensions.get('window').width - 300,

@@ -1,13 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Dimensions} from 'react-native';
 import moment from 'moment';
-import {
-  loadScheduleData,
-  transformScheduleData,
-  writeFile,
-} from './app/helper/fileLoader';
+import {loadScheduleData, transformScheduleData} from './app/helper/fileLoader';
 import DayActivity from './app/components/DayActivity';
 import NowActivity from './app/components/NowActivity';
+import isEmpty from 'lodash/isEmpty';
 
 // React Nav
 import {createAppContainer} from 'react-navigation';
@@ -30,8 +26,6 @@ export default function App() {
   console.disableYellowBox = true;
 
   const [schedule, setSchedule] = useState({});
-  const [time, setTime] = useState(moment().format('h:mm a'));
-  const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
 
   useEffect(() => {
     //  writeFile();
@@ -45,7 +39,8 @@ export default function App() {
 
   return (
     <>
-      <AppContainer screenProps={{schedule}} />
+      {!isEmpty(schedule) && <AppContainer screenProps={{schedule}} />}
+      {/* TODO: Error saying to input schedule file */}
     </>
   );
 }

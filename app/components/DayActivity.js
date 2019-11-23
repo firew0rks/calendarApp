@@ -1,35 +1,29 @@
 import React, {useState, useRef} from 'react';
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  Text,
-  ScrollView,
-  SafeAreaView,
-} from 'react-native';
+import {View, StyleSheet, Text, ScrollView, SafeAreaView} from 'react-native';
 import Clock from './Clock';
 import NavBar from './NavBar';
-import Activity from './Activity';
 import moment from 'moment';
 import DayCard from './DayCard';
 
 export default function DayActivity(props) {
   const {schedule} = props.screenProps;
   const multi = useRef(null);
-  const [time, setTime] = useState(moment().format('h:mm a'));
-  const [date, setDate] = useState(moment().format('ddd, MMMM Do YYYY '));
 
   const formattedDate = moment().format('D/M/YY');
 
+  const [time, setTime] = useState(moment().format('h:mm a'));
+  const [date, setDate] = useState(moment().format('MMMM Do YYYY '));
   // Get the current day's object array.
   const currentDay = schedule[formattedDate];
 
   return (
     <View style={styles.app}>
-      <ScrollView>
-        <SafeAreaView style={styles.container}>
-          <NavBar style={{flex: 1}} props={props} goToDayPage={false} />
+      <SafeAreaView style={styles.container}>
+        <NavBar style={{flex: 1}} props={props} goToDayPage={false} />
+        <View style={{height: 80}}>
           <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
+        </View>
+        <ScrollView>
           {currentDay &&
             currentDay.map(e => {
               const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
@@ -59,8 +53,8 @@ export default function DayActivity(props) {
                 </View>
               );
             })}
-        </SafeAreaView>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
