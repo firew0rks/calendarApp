@@ -62,11 +62,10 @@ const styles = StyleSheet.create({
     },
     activityText: {
         fontSize: 30,
-        marginBottom: 10,
-        marginHorizontal: 10,
         color: '#393939',
         textAlign: 'left',
         fontWeight: 'bold',
+        paddingTop: 10,
     },
     // nowActivity: {
     //     backgroundColor: '#CDF07E',

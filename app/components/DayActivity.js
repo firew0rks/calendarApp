@@ -47,6 +47,8 @@ const styles = StyleSheet.create({
     ActivityStyle: {
         backgroundColor: '#CDF07E',
         width: Dimensions.get("window").width - 400,
+        borderRadius: 30,
+        padding: 20,
     },
     ImageStyle: {
         height: Dimensions.get("window").height / 3,
