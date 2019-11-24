@@ -12,14 +12,15 @@ import * as RNFS from 'react-native-fs';
 import NavBar from './NavBar';
 import { ScrollView } from 'react-native-gesture-handler';
 import Clock from './Clock';
+import isEmpty from 'lodash/isEmpty';
 
 export default function NowActivity(props) {
    const [time, setTime] = useState(moment().format('h:mm a'));
    const [date, setDate] = useState(moment().format('MMMM Do YYYY'));
 
    const { schedule } = props.screenProps;
-   let today = moment().format('DD/MM/YY');
-   let currentTime = moment().format('hhmm');
+   let today = moment().format('DD/MM/YYYY');
+   let currentTime = moment().format('HHmm');
    const [nowImage, setNowImage] = useState('');
    const [nextImage, setNextImage] = useState('');
    const SCHEDULE_PATH = RNFS.DocumentDirectoryPath;
@@ -29,46 +30,56 @@ export default function NowActivity(props) {
    let nowActivity;
    let endOfSchedule = false;
 
-   const index = scheduleForToday.findIndex(x => {
-      const start = Number(x.startTime);
-      const end = Number(x.endTime);
+   console.log('The time is --------------:', currentTime)
+   if (!isEmpty(scheduleForToday)) {
 
-      return start <= currentTime && end >= currentTime;
-   });
+      try {
+         const index = scheduleForToday.findIndex(x => {
+            const start = Number(x.startTime);
+            const end = Number(x.endTime)
+            return start <= currentTime && end >= currentTime;
+         });
 
-   try {
-      nowActivity = scheduleForToday[index].activity1.toLowerCase();
-      if (index + 1 < scheduleForToday.length - 1) {
-         nextActivity = scheduleForToday[index + 1].activity1.toLowerCase();
-      } else {
-         const today = moment()
-            .add(1, 'days')
-            .format('DD/MM/YY');
-         nextActivity = schedule[today][0].activity1;
+         nowActivity = scheduleForToday[index].activity1.toLowerCase();
+         if (index + 1 < scheduleForToday.length - 1) {
+            nextActivity = scheduleForToday[index + 1].activity1.toLowerCase();
+         } else {
+            const tomorrow = moment()
+               .add(1, 'days')
+               .format('DD/MM/YY');
+            nowActivity = scheduleForToday[
+               scheduleForToday.length - 1
+            ].activity1.toLowerCase();
+
+            try {
+               nextActivity = schedule[tomorrow][0].activity1;
+            } catch (error) {
+               endOfSchedule = true;
+               console.log('End of schedule')
+            }
+         }
+         try {
+            RNFS.readFile(
+               SCHEDULE_PATH + '/photos/' + nowActivity + '.jpg',
+               'base64',
+            ).then(contents => {
+               setNowImage(contents);
+            });
+            RNFS.readFile(
+               SCHEDULE_PATH + '/photos/' + nextActivity + '.jpg',
+               'base64',
+            ).then(contents => {
+               setNextImage(contents);
+            });
+         } catch (error) {
+            console.log(error);
+         }
+      } catch (error) {
+         console.log(error);
       }
-   } catch {
-      nowActivity = scheduleForToday[
-         scheduleForToday.length - 1
-      ].activity1.toLowerCase();
-      endOfSchedule = true;
    }
 
-   try {
-      RNFS.readFile(
-         SCHEDULE_PATH + '/photos/' + nowActivity + '.jpg',
-         'base64',
-      ).then(contents => {
-         setNowImage(contents);
-      });
-      RNFS.readFile(
-         SCHEDULE_PATH + '/photos/' + nextActivity + '.jpg',
-         'base64',
-      ).then(contents => {
-         setNextImage(contents);
-      });
-   } catch (error) {
-      console.log(error);
-   }
+
 
    return (
       <View style={styles.app}>
@@ -78,22 +89,24 @@ export default function NowActivity(props) {
          </View>
 
          <ScrollView>
-            <Activity
+            {!isEmpty(scheduleForToday) && nowActivity != null ? <Activity
                ActivityStyle={styles.nowActivity}
                ImageStyle={styles.nowImage}
                moments={'NOW'}
                textActivity={nowActivity}
                imagePath={nowImage}
-            />
-            {!endOfSchedule && (
-               <Activity
+            /> :
+               <Text style={styles.noSheduleText}>At the end of schedule, please upload new schedule CSV with the new dates</Text>}
+
+            {!endOfSchedule && nextActivity != null &&
+               < Activity
                   ActivityStyle={styles.nextActivity}
                   ImageStyle={styles.nextImage}
                   moments={'NEXT'}
                   textActivity={nextActivity}
                   imagePath={nextImage}
                />
-            )}
+            }
          </ScrollView>
       </View>
    );
@@ -115,9 +128,16 @@ const styles = StyleSheet.create({
       width: Dimensions.get('window').width - 300,
    },
    nowImage: {
-      height: Dimensions.get('window').height / 4,
+      height: Dimensions.get('window').height / 2,
    },
    nextImage: {
-      height: Dimensions.get('window').height / 5,
+      height: Dimensions.get('window').height / 3,
    },
+   noSheduleText: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+   }
 });
