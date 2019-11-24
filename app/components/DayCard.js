@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     color: '#393939',
     textAlign: 'left',
     fontWeight: 'bold',
+    fontFamily: 'FredokaOne-Regular',
   },
   connector: {
     height: 50,

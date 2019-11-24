@@ -35,8 +35,8 @@ export default function DayActivity(props) {
   return (
     <View style={styles.app}>
       <View>
-        <NavBar style={{ flex: 1 }} props={props} goToDayPage={false} />
-        <View style={{ height: 80, alignItems: 'center' }}>
+        <NavBar style={{flex: 1}} props={props} goToDayPage={false} />
+        <View style={{height: 80, alignItems: 'center', marginBottom: 20}}>
           <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
         </View>
         <ScrollView>
@@ -54,7 +54,12 @@ export default function DayActivity(props) {
               const showTrailForA1 = i !== scheduleForToday.length - 1;
 
               return (
-                <View style={styles.dayActivityContainer}>
+                <View
+                  style={
+                    status === 'now'
+                      ? styles.dayActivityContainerNow
+                      : styles.dayActivityContainer
+                  }>
                   <View style={styles.padding1} />
                   <View style={styles.timeContainer}>
                     <Text style={styles.timeText}>{formattedTime}</Text>
@@ -87,6 +92,7 @@ export default function DayActivity(props) {
                 </View>
               );
             })}
+<<<<<<< HEAD
           {/* {scheduleForTommorrow &&
             scheduleForTommorrow.map((e, i) => {
               const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
@@ -132,6 +138,8 @@ export default function DayActivity(props) {
                 </View>
               );
             })} */}
+=======
+>>>>>>> WIP
         </ScrollView>
       </View>
     </View>
@@ -147,6 +155,10 @@ const styles = StyleSheet.create({
   dayActivityContainer: {
     flexDirection: 'row',
   },
+  dayActivityContainerNow: {
+    flexDirection: 'row',
+    backgroundColor: '#CDF07E',
+  },
   padding1: {
     flex: 1,
   },
@@ -160,6 +172,7 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 24,
+    fontFamily: 'Comfortaa-Regular',
   },
   orContainer: {
     alignItems: 'center',
@@ -172,6 +185,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFCE00',
   },
   cardContainer: {
-    flex: 12,
+    flex: 15,
   },
 });
