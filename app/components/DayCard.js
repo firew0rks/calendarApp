@@ -1,11 +1,15 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
 import {Card, Icon} from 'react-native-elements';
 import Tts from 'react-native-tts';
+import {getImage} from '../helper/fileLoader';
 
 export default function DayCard(props) {
-  const {cardText, status, ...rest} = props;
+  const {cardText, status, showTrail, ...rest} = props;
+  const [image, setImage] = useState('');
+
+  getImage(cardText.toLowerCase()).then(contents => setImage(contents));
 
   const calculateContainerColours = () => {
     switch (status) {
@@ -40,13 +44,13 @@ export default function DayCard(props) {
       <Card
         {...rest}
         containerStyle={calculateContainerColours()}
-        image={require('./../../images/taxi.png')}
+        image={{uri: `data:image/png;base64,${image}`}}
         imageStyle={styles.cardImage}>
         <View style={styles.cardFooter}>
           <Text style={styles.activityText}>{cardText}</Text>
         </View>
       </Card>
-      <View style={calculateConnectorColors()} />
+      {showTrail && <View style={calculateConnectorColors()} />}
     </View>
   );
 }
@@ -54,6 +58,7 @@ export default function DayCard(props) {
 DayCard.propTypes = {
   cardText: PropTypes.string.isRequired,
   status: PropTypes.oneOf(['now', 'next', 'inactive']).isRequired,
+  showTrail: PropTypes.bool.isRequired,
 };
 
 const styles = StyleSheet.create({

@@ -100,6 +100,17 @@ export async function transformScheduleData(data) {
   return formattedData;
 }
 
+export function getImage(photoName) {
+  try {
+    return RNFS.readFile(
+      SCHEDULE_PATH + '/photos/' + photoName + '.jpg',
+      'base64',
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export function writeFile() {
   // write the file
   RNFS.writeFile(

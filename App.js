@@ -1,6 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import moment from 'moment';
-import {loadScheduleData, transformScheduleData} from './app/helper/fileLoader';
+import {
+  loadScheduleData,
+  transformScheduleData,
+  writeFile,
+} from './app/helper/fileLoader';
 import DayActivity from './app/components/DayActivity';
 import NowActivity from './app/components/NowActivity';
 import isEmpty from 'lodash/isEmpty';
