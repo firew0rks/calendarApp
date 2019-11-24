@@ -108,11 +108,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
     fontSize: 20,
+    fontFamily: 'FredokaOne-Regular',
   },
   inactiveButtonText: {
     fontWeight: 'bold',
     color: '#C3C3C3',
     fontSize: 20,
+    fontFamily: 'FredokaOne-Regular',
   },
   activePauseButtonText: {
     fontWeight: 'bold',

@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* calendarAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* calendarAppTests.m */; };
 		120F242131AE462FB659C478 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76740DEA15974A50A6035F44 /* FontAwesome.ttf */; };
@@ -37,6 +36,9 @@
 		D47E9CCD25184B8399BDED11 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEE2229768074D9193D88508 /* FontAwesome5_Solid.ttf */; };
 		DAF8C1698D3D4BBFA6A024A1 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 66E0E42DC20E4FFE89DF390F /* Fontisto.ttf */; };
 		FFE4575BE8FF47D1BD470D53 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEEE17BFBA0543299909D199 /* Octicons.ttf */; };
+		E80102665D974249A409EFDB /* FredokaOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 86CE8E1496A74B00A759B047 /* FredokaOne-Regular.ttf */; };
+		7723BEB276B544D888DA5A98 /* Comfortaa-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 20FE9544B01F4BC693CA3F61 /* Comfortaa-Regular.ttf */; };
+		9CDF0989EC054D92922CC9B5 /* Comfortaa-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 14D62706B69946F48F6A0991 /* Comfortaa-Bold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,6 +121,9 @@
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F88213E4D370473EA68CB4BE /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		FF164B55FFE2434B9876B5C0 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
+		86CE8E1496A74B00A759B047 /* FredokaOne-Regular.ttf */ = {isa = PBXFileReference; name = "FredokaOne-Regular.ttf"; path = "../assets/fonts/FredokaOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		20FE9544B01F4BC693CA3F61 /* Comfortaa-Regular.ttf */ = {isa = PBXFileReference; name = "Comfortaa-Regular.ttf"; path = "../assets/fonts/Comfortaa-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		14D62706B69946F48F6A0991 /* Comfortaa-Bold.ttf */ = {isa = PBXFileReference; name = "Comfortaa-Bold.ttf"; path = "../assets/fonts/Comfortaa-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,6 +259,9 @@
 				E50D2B870E4F4D3B93971C1C /* rubicon-icon-font.ttf */,
 				A93D039A3C1A4B0CAA283D02 /* SimpleLineIcons.ttf */,
 				ECA091AFAE7A4069BD2DB7C5 /* Zocial.ttf */,
+				86CE8E1496A74B00A759B047 /* FredokaOne-Regular.ttf */,
+				20FE9544B01F4BC693CA3F61 /* Comfortaa-Regular.ttf */,
+				14D62706B69946F48F6A0991 /* Comfortaa-Bold.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -455,6 +463,9 @@
 				B09C3BB14F8244CEB29F8BB7 /* rubicon-icon-font.ttf in Resources */,
 				32CC9478627B4612B8F047A7 /* SimpleLineIcons.ttf in Resources */,
 				BB9FAF32813A45A781147D1C /* Zocial.ttf in Resources */,
+				E80102665D974249A409EFDB /* FredokaOne-Regular.ttf in Resources */,
+				7723BEB276B544D888DA5A98 /* Comfortaa-Regular.ttf in Resources */,
+				9CDF0989EC054D92922CC9B5 /* Comfortaa-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
