@@ -88,7 +88,19 @@ export default function NowActivity(props) {
             </View>
 
             {!isEmpty(scheduleForToday) && nowActivity != null ? (
-              <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  borderWidth: 5,
+                  margin: 20,
+                  borderColor: '#CDF07E',
+                  borderStyle: 'dashed',
+                  marginTop: -30,
+                  zIndex: -1,
+                }}>
                 <TouchableOpacity onPress={() => setTaskSelected(1)}>
                   <Activity
                     ActivityStyle={[
@@ -106,11 +118,17 @@ export default function NowActivity(props) {
                     imagePath={nowImage}
                   />
                 </TouchableOpacity>
+                <View>
+                  <Text
+                    style={{fontSize: 40, fontFamily: 'FredokaOne-Regular'}}>
+                    OR
+                  </Text>
+                </View>
                 <TouchableOpacity onPress={() => setTaskSelected(2)}>
                   <Activity
                     ActivityStyle={styles.nowActivity_multi}
                     ImageStyle={styles.nowImage_multi}
-                    moments={'Now'}
+                    moments={'NOW'}
                     textActivity={nowActivity_2}
                     imagePath={nowImage_2}
                   />
@@ -161,7 +179,7 @@ export default function NowActivity(props) {
                       : styles.nowActivity_multi,
                   ]}
                   ImageStyle={styles.nowImage}
-                  moments={'Now'}
+                  moments={'NOW'}
                   textActivity={nowActivity_2}
                   imagePath={nowImage_2}
                 />
