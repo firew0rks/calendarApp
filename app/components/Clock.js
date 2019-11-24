@@ -18,7 +18,7 @@ class Clock extends Component {
   }
 
   speak = () => {
-    Tts.speak(this.props.time);
+    Tts.speak(`The time is ${this.props.time}`);
   };
 
   render() {
