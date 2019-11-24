@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  ImageBackground,
-} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, SafeAreaView} from 'react-native';
 import Activity from './Activity';
 import moment from 'moment';
 import * as RNFS from 'react-native-fs';
@@ -17,7 +11,7 @@ import {getImage} from '../helper/fileLoader';
 
 export default function NowActivity(props) {
   const [time, setTime] = useState(moment().format('h:mm a'));
-  const [date, setDate] = useState(moment().format('MMMM Do YYYY'));
+  const [date, setDate] = useState(moment().format('DD MMMM YYYY'));
 
   const {schedule} = props.screenProps;
   let today = moment().format('DD/MM/YY');
@@ -55,29 +49,31 @@ export default function NowActivity(props) {
 
   return (
     <View style={styles.app}>
-      <NavBar props={props} goToDayPage={true} />
-      <View style={{height: 80}}>
-        <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
-      </View>
+      <View>
+        <NavBar props={props} goToDayPage={true} />
+        <View style={{height: 80, alignItems: 'center'}}>
+          <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
+        </View>
 
-      <ScrollView>
-        <Activity
-          ActivityStyle={styles.nowActivity}
-          ImageStyle={styles.nowImage}
-          moments={'NOW'}
-          textActivity={nowActivity}
-          imagePath={nowImage}
-        />
-        {!endOfSchedule && (
+        <ScrollView>
           <Activity
-            ActivityStyle={styles.nextActivity}
-            ImageStyle={styles.nextImage}
-            moments={'NEXT'}
-            textActivity={nextActivity}
-            imagePath={nextImage}
+            ActivityStyle={styles.nowActivity}
+            ImageStyle={styles.nowImage}
+            moments={'NOW'}
+            textActivity={nowActivity}
+            imagePath={nowImage}
           />
-        )}
-      </ScrollView>
+          {!endOfSchedule && (
+            <Activity
+              ActivityStyle={styles.nextActivity}
+              ImageStyle={styles.nextImage}
+              moments={'NEXT'}
+              textActivity={nextActivity}
+              imagePath={nextImage}
+            />
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 }

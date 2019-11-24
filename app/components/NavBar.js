@@ -2,6 +2,7 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Button, Text} from 'native-base';
 import {Dimensions} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 var width = Dimensions.get('window').width; //full width
 
@@ -34,7 +35,24 @@ export default class NavBar extends React.Component {
           onPress={() =>
             this.navigateFunction(this.props.props, this.props.goToDayPage)
           }>
-          <Text style={styles.nowButtonText}>Now</Text>
+          <View style={styles.buttonIconText}>
+            <Icon
+              name="pause"
+              style={
+                this.props.goToDayPage
+                  ? styles.activePauseButtonText
+                  : styles.inactivePauseButtonText
+              }
+            />
+            <Text
+              style={
+                this.props.goToDayPage
+                  ? styles.activeButtonText
+                  : styles.inactiveButtonText
+              }>
+              NOW
+            </Text>
+          </View>
         </Button>
         <Button
           style={[this.props.goToDayPage ? styles.dayButton : styles.nowButton]}
@@ -42,7 +60,24 @@ export default class NavBar extends React.Component {
           onPress={() =>
             this.navigateFunction(this.props.props, this.props.goToDayPage)
           }>
-          <Text style={styles.dayButtonText}>Day</Text>
+          <View style={styles.buttonIconText}>
+            <Icon
+              name="align-justify"
+              style={
+                this.props.goToDayPage
+                  ? styles.inactiveButtonText
+                  : styles.activeButtonText
+              }
+            />
+            <Text
+              style={
+                this.props.goToDayPage
+                  ? styles.inactiveButtonText
+                  : styles.activeButtonText
+              }>
+              DAY
+            </Text>
+          </View>
         </Button>
       </View>
     );
@@ -54,20 +89,45 @@ const styles = StyleSheet.create({
     backgroundColor: '#33CAFF',
     padding: 20,
     fontWeight: 'bold',
-    fontSize: 35,
+    shadowColor: '#00000029',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 6,
+    shadowRadius: 6,
   },
   dayButton: {
     backgroundColor: '#FFFFFF',
     padding: 20,
     fontWeight: 'bold',
     fontSize: 35,
+    shadowColor: '#00000029',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 6,
+    shadowRadius: 6,
   },
-  dayButtonText: {
-    color: '#A9A9A9',
+  activeButtonText: {
     fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 20,
   },
-  nowButtonText: {
-    color: '#A9A9A9',
+  inactiveButtonText: {
     fontWeight: 'bold',
+    color: '#C3C3C3',
+    fontSize: 20,
+  },
+  activePauseButtonText: {
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 20,
+    transform: [{rotate: '90deg'}],
+  },
+  inactivePauseButtonText: {
+    fontWeight: 'bold',
+    color: '#C3C3C3',
+    fontSize: 20,
+    transform: [{rotate: '90deg'}],
+  },
+  buttonIconText: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

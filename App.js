@@ -20,6 +20,7 @@ const RootStack = createStackNavigator(
   },
   {
     initialRouteName: 'Now',
+    headerMode: 'none',
   },
 );
 

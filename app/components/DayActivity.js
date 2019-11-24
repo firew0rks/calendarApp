@@ -23,7 +23,7 @@ export default function DayActivity(props) {
   console.log(scheduleForTommorrow);
 
   const [time, setTime] = useState(moment().format('h:mm a'));
-  const [date, setDate] = useState(moment().format('MMMM Do YYYY '));
+  const [date, setDate] = useState(moment().format('DD MMMM YYYY'));
   const [scheduleIndex, setScheduleIndex] = useState(
     findCurrentTaskIndex(scheduleForToday),
   );
@@ -38,9 +38,9 @@ export default function DayActivity(props) {
 
   return (
     <View style={styles.app}>
-      <SafeAreaView style={styles.container}>
+      <View>
         <NavBar style={{flex: 1}} props={props} goToDayPage={false} />
-        <View style={{height: 80}}>
+        <View style={{height: 80, alignItems: 'center'}}>
           <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
         </View>
         <ScrollView>
@@ -139,16 +139,16 @@ export default function DayActivity(props) {
               );
             })} */}
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F4F4F4',
-    height: '100%',
-    width: '100%',
+  app: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
   dayActivityContainer: {
     flexDirection: 'row',

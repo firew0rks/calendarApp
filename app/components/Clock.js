@@ -13,7 +13,7 @@ class Clock extends Component {
 
   tick() {
     this.props.setTime(moment().format('h:mm a'));
-    this.props.setDate(moment().format('DD MMMM YYYY '));
+    this.props.setDate(moment().format('DD MMMM YYYY'));
   }
 
   render() {
@@ -40,9 +40,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#33CAFF',
-    borderRadius: 8,
+    // borderRadius: 8,
     width: 600,
-    marginLeft: 120,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    // marginLeft: 120,
   },
   time: {
     flex: 1,
