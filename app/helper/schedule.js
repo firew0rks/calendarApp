@@ -7,8 +7,6 @@ export function findCurrentTaskIndex(scheduleForToday) {
     const start = Number(x.startTime);
     const end = Number(x.endTime);
 
-    console.log(start, end, currentTime);
-
     return start <= currentTime && end > currentTime;
   });
 

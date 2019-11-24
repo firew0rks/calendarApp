@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import {Card, Icon} from 'react-native-elements';
 import Tts from 'react-native-tts';
 import {getImage} from '../helper/fileLoader';
@@ -39,19 +39,26 @@ export default function DayCard(props) {
     }
   };
 
+  const speak = () => {
+    console.log(cardText);
+    Tts.speak(cardText);
+  };
+
   return (
-    <View style={{alignItems: 'center'}}>
-      <Card
-        {...rest}
-        containerStyle={calculateContainerColours()}
-        image={{uri: `data:image/png;base64,${image}`}}
-        imageStyle={styles.cardImage}>
-        <View style={styles.cardFooter}>
-          <Text style={styles.activityText}>{cardText}</Text>
-        </View>
-      </Card>
-      {showTrail && <View style={calculateConnectorColors()} />}
-    </View>
+    <TouchableWithoutFeedback onPress={speak}>
+      <View style={{alignItems: 'center'}}>
+        <Card
+          {...rest}
+          containerStyle={calculateContainerColours()}
+          image={{uri: `data:image/png;base64,${image}`}}
+          imageStyle={styles.cardImage}>
+          <View style={styles.cardFooter}>
+            <Text style={styles.activityText}>{cardText}</Text>
+          </View>
+        </Card>
+        {showTrail && <View style={calculateConnectorColors()} />}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -69,11 +76,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     margin: 0,
-    // marginBottom: 30,
-    // paddingRight: 10,
-    // marginLeft: 10,
+    borderWidth: 0,
+    shadowColor: '#00000029',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 6,
+    shadowRadius: 6,
   },
-  cardImage: {},
+  cardImage: {
+    height: 200,
+  },
   cardFooter: {
     flex: 1,
     flexDirection: 'row',
