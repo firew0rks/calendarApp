@@ -1,38 +1,40 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import {Card, Icon} from 'react-native-elements';
 import Tts from 'react-native-tts';
 
 class Activity extends Component {
+  speak = () => {
+    Tts.speak(this.props.textActivity ? this.props.textActivity : 'No input');
+  };
+
   render() {
     return (
-      <View style={styles.activity}>
-        <Text style={styles.timeText}>{this.props.moments}</Text>
-        <View style={styles.textView}>
-          <Text style={styles.timeText}>{this.props.time} </Text>
-          <Card
-            containerStyle={this.props.ActivityStyle}
-            // image={require('./../../images/taxi.png')}
-            image={{uri: `data:image/png;base64,${this.props.imagePath}`}}
-            imageStyle={this.props.ImageStyle}>
-            <View style={styles.textView}>
-              <Text style={styles.activityText}>{this.props.textActivity}</Text>
-              <Icon
-                size={40}
-                name="sound"
-                type="antdesign"
-                onPress={() => {
-                  Tts.speak(
-                    this.props.textActivity
-                      ? this.props.textActivity
-                      : 'No input',
-                  );
-                }}
-              />
-            </View>
-          </Card>
+      <TouchableWithoutFeedback onPress={this.speak}>
+        <View style={styles.activity}>
+          <Text style={styles.timeText}>{this.props.moments}</Text>
+          <View style={styles.textView}>
+            <Text style={styles.timeText}>{this.props.time} </Text>
+            <Card
+              containerStyle={this.props.ActivityStyle}
+              // image={require('./../../images/taxi.png')}
+              image={{uri: `data:image/png;base64,${this.props.imagePath}`}}
+              imageStyle={this.props.ImageStyle}>
+              <View style={styles.textView}>
+                <Text style={styles.activityText}>
+                  {this.props.textActivity}
+                </Text>
+              </View>
+            </Card>
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -45,9 +47,9 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   timeText: {
-    fontSize: 25,
+    fontSize: 40,
     color: '#393939',
-    fontWeight: 'bold',
+    fontFamily: 'FredokaOne-Regular',
   },
   activityText: {
     fontSize: 30,
@@ -56,6 +58,7 @@ const styles = StyleSheet.create({
     color: '#393939',
     textAlign: 'left',
     fontWeight: 'bold',
+    fontFamily: 'FredokaOne-Regular',
   },
   textView: {
     flex: 1,
@@ -65,12 +68,6 @@ const styles = StyleSheet.create({
   nextActivity: {
     backgroundColor: '#F07E7E',
     width: Dimensions.get('window').width - 300,
-  },
-  nowImage: {
-    height: Dimensions.get('window').height / 4,
-  },
-  nextImage: {
-    height: Dimensions.get('window').height / 5,
   },
 });
 

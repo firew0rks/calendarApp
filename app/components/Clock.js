@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import moment from 'moment';
+import Tts from 'react-native-tts';
 
 class Clock extends Component {
   componentDidMount() {
@@ -16,16 +17,22 @@ class Clock extends Component {
     this.props.setDate(moment().format('DD MMMM YYYY'));
   }
 
+  speak = () => {
+    Tts.speak(this.props.time);
+  };
+
   render() {
     const day = moment(new Date()).format('dddd');
     return (
-      <View style={styles.tile}>
-        <Text style={styles.time}>{this.props.time}</Text>
-        <View>
-          <Text style={styles.day}>{day}</Text>
-          <Text style={styles.date}>{this.props.date}</Text>
+      <TouchableWithoutFeedback onPress={this.speak}>
+        <View style={styles.tile}>
+          <Text style={styles.time}>{this.props.time}</Text>
+          <View>
+            <Text style={styles.day}>{day}</Text>
+            <Text style={styles.date}>{this.props.date}</Text>
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     );
   }
 }

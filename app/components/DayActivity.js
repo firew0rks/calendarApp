@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   timeText: {
-    fontSize: 24,
+    fontSize: 30,
     fontFamily: 'Comfortaa-Regular',
   },
   orContainer: {
