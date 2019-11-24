@@ -5,19 +5,36 @@ import NavBar from './NavBar';
 import moment from 'moment';
 import DayCard from './DayCard';
 import {findCurrentTaskIndex} from '../helper/schedule';
+import useInterval from '../helper/useInterval';
 
 export default function DayActivity(props) {
   const {schedule} = props.screenProps;
   const multi = useRef(null);
 
   const formattedDate = moment().format('D/M/YY');
+  const tomorrowsDate = moment()
+    .add(1, 'days')
+    .format('DD/MM/YY');
+
+  // Get the current day's object array.
+  const scheduleForToday = schedule[formattedDate];
+  const scheduleForTommorrow = schedule[tomorrowsDate];
+
+  console.log(scheduleForTommorrow);
 
   const [time, setTime] = useState(moment().format('h:mm a'));
   const [date, setDate] = useState(moment().format('MMMM Do YYYY '));
-  // Get the current day's object array.
-  const scheduleForToday = schedule[formattedDate];
+  const [scheduleIndex, setScheduleIndex] = useState(
+    findCurrentTaskIndex(scheduleForToday),
+  );
 
-  const index = findCurrentTaskIndex(scheduleForToday);
+  useInterval(() => {
+    const index = findCurrentTaskIndex(scheduleForToday);
+
+    if (index !== scheduleIndex) {
+      setScheduleIndex(index);
+    }
+  }, 1000);
 
   return (
     <View style={styles.app}>
@@ -31,7 +48,11 @@ export default function DayActivity(props) {
             scheduleForToday.map((e, i) => {
               const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
               const status =
-                index === i ? 'now' : index + 1 === i ? 'next' : 'inactive';
+                scheduleIndex === i
+                  ? 'now'
+                  : scheduleIndex + 1 === i
+                  ? 'next'
+                  : 'inactive';
 
               // Don't show if there's no next item.
               const showTrailForA1 = i !== scheduleForToday.length - 1;
@@ -51,7 +72,11 @@ export default function DayActivity(props) {
                       showTrail={showTrailForA1}
                     />
                   </View>
-                  <View style={styles.padding2} />
+                  <View style={styles.orContainer}>
+                    {e.activity2 !== '' && (
+                      <Text style={styles.orText}>OR</Text>
+                    )}
+                  </View>
                   <View style={styles.cardContainer}>
                     {e.activity2 !== '' && (
                       <DayCard
@@ -66,6 +91,53 @@ export default function DayActivity(props) {
                 </View>
               );
             })}
+          {/* {scheduleForTommorrow &&
+            scheduleForTommorrow.map((e, i) => {
+              const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
+              const status =
+                scheduleIndex === i
+                  ? 'now'
+                  : scheduleIndex + 1 === i
+                  ? 'next'
+                  : 'inactive';
+
+              // Don't show if there's no next item.
+              const showTrailForA1 = i !== scheduleForToday.length - 1;
+
+              return (
+                <View style={styles.dayActivityContainer}>
+                  <View style={styles.padding1} />
+                  <View style={styles.timeContainer}>
+                    <Text style={styles.timeText}>{formattedTime}</Text>
+                  </View>
+                  <View style={styles.padding2} />
+                  <View style={styles.padding1} />
+                  <View style={styles.cardContainer}>
+                    <DayCard
+                      cardText={e.activity1}
+                      status={status}
+                      showTrail={showTrailForA1}
+                    />
+                  </View>
+                  <View style={styles.orContainer}>
+                    {e.activity2 !== '' && (
+                      <Text style={styles.orText}>OR</Text>
+                    )}
+                  </View>
+                  <View style={styles.cardContainer}>
+                    {e.activity2 !== '' && (
+                      <DayCard
+                        status={status}
+                        ref={multi}
+                        cardText={e.activity2}
+                        showTrail={false}
+                      />
+                    )}
+                  </View>
+                  <View style={styles.padding1} />
+                </View>
+              );
+            })} */}
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -94,6 +166,16 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 24,
+  },
+  orContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 2,
+  },
+  orText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    backgroundColor: '#FFCE00',
   },
   cardContainer: {
     flex: 12,
