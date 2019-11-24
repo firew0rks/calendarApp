@@ -1,14 +1,14 @@
-import React, {useState, useRef} from 'react';
-import {View, StyleSheet, Text, ScrollView, SafeAreaView} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, StyleSheet, Text, ScrollView, SafeAreaView } from 'react-native';
 import Clock from './Clock';
 import NavBar from './NavBar';
 import moment from 'moment';
 import DayCard from './DayCard';
-import {findCurrentTaskIndex} from '../helper/schedule';
+import { findCurrentTaskIndex } from '../helper/schedule';
 import useInterval from '../helper/useInterval';
 
 export default function DayActivity(props) {
-  const {schedule} = props.screenProps;
+  const { schedule } = props.screenProps;
   const multi = useRef(null);
 
   const formattedDate = moment().format('D/M/YY');
@@ -18,10 +18,6 @@ export default function DayActivity(props) {
 
   // Get the current day's object array.
   const scheduleForToday = schedule[formattedDate];
-  const scheduleForTommorrow = schedule[tomorrowsDate];
-
-  console.log(scheduleForTommorrow);
-
   const [time, setTime] = useState(moment().format('h:mm a'));
   const [date, setDate] = useState(moment().format('DD MMMM YYYY'));
   const [scheduleIndex, setScheduleIndex] = useState(
@@ -39,8 +35,8 @@ export default function DayActivity(props) {
   return (
     <View style={styles.app}>
       <View>
-        <NavBar style={{flex: 1}} props={props} goToDayPage={false} />
-        <View style={{height: 80, alignItems: 'center'}}>
+        <NavBar style={{ flex: 1 }} props={props} goToDayPage={false} />
+        <View style={{ height: 80, alignItems: 'center' }}>
           <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
         </View>
         <ScrollView>
@@ -51,8 +47,8 @@ export default function DayActivity(props) {
                 scheduleIndex === i
                   ? 'now'
                   : scheduleIndex + 1 === i
-                  ? 'next'
-                  : 'inactive';
+                    ? 'next'
+                    : 'inactive';
 
               // Don't show if there's no next item.
               const showTrailForA1 = i !== scheduleForToday.length - 1;
@@ -100,10 +96,8 @@ export default function DayActivity(props) {
                   : scheduleIndex + 1 === i
                   ? 'next'
                   : 'inactive';
-
               // Don't show if there's no next item.
               const showTrailForA1 = i !== scheduleForToday.length - 1;
-
               return (
                 <View style={styles.dayActivityContainer}>
                   <View style={styles.padding1} />
