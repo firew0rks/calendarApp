@@ -26,13 +26,10 @@ export default function NowActivity(props) {
    let nowActivity;
    let endOfSchedule = false;
 
-   console.log(scheduleForToday)
-
    if (!isEmpty(scheduleForToday)) {
       try {
          const index = findCurrentTaskIndex(scheduleForToday);
          nowActivity = scheduleForToday[index].activity1;
-         console.log(index + 1 < scheduleForToday.length)
          if (index + 1 < scheduleForToday.length) {
             nextActivity = scheduleForToday[index + 1].activity1;
          } else {
