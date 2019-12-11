@@ -5,7 +5,11 @@ export function findCurrentTaskIndex(scheduleForToday) {
 
   const index = scheduleForToday.findIndex(x => {
     const start = Number(x.startTime);
-    const end = Number(x.endTime);
+    let end = Number(x.endTime);
+
+    if (end == 0) {
+      end = Infinity
+    }
 
     return start <= currentTime && end > currentTime;
   });
