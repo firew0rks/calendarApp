@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import {Card, Icon} from 'react-native-elements';
+import {Card} from 'react-native-elements';
 import Tts from 'react-native-tts';
 import {getImage} from '../helper/fileLoader';
 

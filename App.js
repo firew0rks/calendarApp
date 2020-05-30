@@ -3,7 +3,7 @@ import moment from 'moment';
 import {
   loadScheduleData,
   transformScheduleData,
-  writeFile,
+  getPath,
 } from './app/helper/fileLoader';
 import DayActivity from './app/components/DayActivity';
 import NowActivity from './app/components/NowActivity';
@@ -33,7 +33,7 @@ export default function App() {
   const [schedule, setSchedule] = useState({});
 
   useEffect(() => {
-    //  writeFile();
+     getPath();
     // When app first launches, load in the file data.
     loadScheduleData().then(data => {
       transformScheduleData(data).then(transformedData => {

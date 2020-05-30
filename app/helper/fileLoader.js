@@ -111,6 +111,10 @@ export function getImage(photoName) {
   }
 }
 
+export function getPath() {
+  console.log('path', `${SCHEDULE_PATH}/${SCHEDULE_FILE}`);
+}
+
 export function writeFile() {
   // write the file
   RNFS.writeFile(
