@@ -1,63 +1,56 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, StyleSheet, Dimensions} from 'react-native';
-import Activity from './Activity';
-import moment from 'moment';
+import isUndefined from 'lodash/isUndefined';
+import Activity from './ActivityCard';
 import {ScrollView} from 'react-native-gesture-handler';
-import {findCurrentTaskIndex} from '../helper/schedule';
 import {getImage} from '../helper/fileLoader';
 import isEmpty from 'lodash/isEmpty';
 import MainLayout from '../wrappers/MainLayout';
+import withSchedule from '../wrappers/withSchedule';
 
-export default function NowActivity(props) {
-  const {schedule} = props.screenProps;
+const styles = StyleSheet.create({
+  app: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  noSheduleText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'FredokaOne-Regular',
+  },
+});
+
+function NowActivity(props) {
+  const {navigation, schedule} = props;
+  const {scheduleToday, nowActivity, nextActivity, endOfSchedule} = schedule;
 
   const [nowImage, setNowImage] = useState('');
   const [nextImage, setNextImage] = useState('');
 
-  const today = moment().format('D/M/YY');
-  const tomorrow = moment()
-    .add(1, 'days')
-    .format('DD/MM/YY');
-  const scheduleForToday = schedule[today];
-
-  let nextActivity;
-  let nowActivity;
-  let endOfSchedule = false;
-
-  if (!isEmpty(scheduleForToday)) {
-    try {
-      const index = findCurrentTaskIndex(scheduleForToday);
-      nowActivity = scheduleForToday[index].activity1;
-      if (index + 1 < scheduleForToday.length) {
-        nextActivity = scheduleForToday[index + 1].activity1;
-      } else {
-        //Getting first activity of tomorrow if the schedule has finished today
-        try {
-          nextActivity = schedule[tomorrow][0].activity1;
-        } catch (error) {
-          endOfSchedule = true;
-          console.log('End of schedule');
-        }
-      }
-      // Load photos
+  useEffect(() => {
+    // Load photos
+    if (!isUndefined(nowActivity)) {
       getImage(nowActivity.toLowerCase()).then(contents =>
         setNowImage(contents),
       );
+    }
+
+    if (!isUndefined(nextActivity)) {
       getImage(nextActivity.toLowerCase()).then(contents =>
         setNextImage(contents),
       );
-    } catch (error) {
-      console.log(error);
     }
-  }
+  }, [nowActivity, nextActivity]);
 
   return (
-    <MainLayout>
+    <MainLayout {...navigation}>
       <ScrollView>
-        {!isEmpty(scheduleForToday) && nowActivity != null ? (
+        {!isEmpty(scheduleToday) && nowActivity !== undefined ? (
           <Activity
-            ActivityStyle={styles.nowActivity}
-            ImageStyle={styles.nowImage}
             moments={'NOW'}
             textActivity={nowActivity}
             imagePath={nowImage}
@@ -69,10 +62,8 @@ export default function NowActivity(props) {
           </Text>
         )}
 
-        {!endOfSchedule && nextActivity != null && (
+        {!endOfSchedule && nextActivity !== undefined && (
           <Activity
-            ActivityStyle={styles.nextActivity}
-            ImageStyle={styles.nextImage}
             moments={'NEXT'}
             textActivity={nextActivity}
             imagePath={nextImage}
@@ -83,47 +74,4 @@ export default function NowActivity(props) {
   );
 }
 
-const styles = StyleSheet.create({
-  app: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  nowActivity: {
-    backgroundColor: '#CDF07E',
-    width: Dimensions.get('window').width - 100,
-    resizeMode: 'contain',
-    borderWidth: 0,
-    shadowColor: '#00000029',
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 6,
-    shadowRadius: 6,
-    borderRadius: 10,
-    padding: 10,
-  },
-  nextActivity: {
-    backgroundColor: '#F07E7E',
-    width: Dimensions.get('window').width - 300,
-    borderWidth: 0,
-    shadowColor: '#00000029',
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 6,
-    shadowRadius: 6,
-    borderRadius: 10,
-    padding: 10,
-  },
-  nowImage: {
-    height: Dimensions.get('window').height / 2,
-  },
-  nextImage: {
-    height: Dimensions.get('window').height / 3,
-  },
-  noSheduleText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: 'FredokaOne-Regular',
-  },
-});
+export default withSchedule(NowActivity);

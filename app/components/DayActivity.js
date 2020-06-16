@@ -1,103 +1,13 @@
-import React, {useState, useRef} from 'react';
-import {View, StyleSheet, Text, ScrollView, SafeAreaView} from 'react-native';
-import Clock from './Clock';
-import NavBar from './NavBar';
+import React, {useRef} from 'react';
+import {View, StyleSheet, Text, ScrollView, Dimensions} from 'react-native';
 import moment from 'moment';
 import DayCard from './DayCard';
-import {findCurrentTaskIndex} from '../helper/schedule';
-import useInterval from '../helper/useInterval';
-
-export default function DayActivity(props) {
-  const {schedule} = props.screenProps;
-  const multi = useRef(null);
-
-  const formattedDate = moment().format('D/M/YY');
-
-  // Get the current day's object array.
-  const scheduleForToday = schedule[formattedDate];
-  const [time, setTime] = useState(moment().format('h:mm a'));
-  const [date, setDate] = useState(moment().format('DD MMMM YYYY'));
-  const [scheduleIndex, setScheduleIndex] = useState(
-    findCurrentTaskIndex(scheduleForToday),
-  );
-
-  useInterval(() => {
-    const index = findCurrentTaskIndex(scheduleForToday);
-
-    if (index !== scheduleIndex) {
-      setScheduleIndex(index);
-    }
-  }, 1000);
-
-  return (
-    <View style={styles.app}>
-      <View>
-        <NavBar style={{flex: 1}} props={props} goToDayPage={false} />
-        <View style={{height: 80, alignItems: 'center', marginBottom: 20}}>
-          <Clock time={time} setTime={setTime} date={date} setDate={setDate} />
-        </View>
-        <ScrollView>
-          {scheduleForToday &&
-            scheduleForToday.map((e, i) => {
-              const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
-              const status =
-                scheduleIndex === i
-                  ? 'now'
-                  : scheduleIndex + 1 === i
-                  ? 'next'
-                  : 'inactive';
-
-              // Don't show if there's no next item.
-              const showTrailForA1 = i !== scheduleForToday.length - 1;
-
-              return (
-                <View
-                  style={status === 'now' && styles.dayActivityContainerNow}>
-                  <View style={styles.dayActivityContainer}>
-                    <View style={styles.padding1} />
-                    <View style={styles.timeContainer}>
-                      <Text style={styles.timeText}>{formattedTime}</Text>
-                    </View>
-                    <View style={styles.padding2} />
-                    <View style={styles.padding1} />
-                    <View style={styles.cardContainer}>
-                      <DayCard
-                        cardText={e.activity1}
-                        status={status}
-                        showTrail={showTrailForA1}
-                      />
-                    </View>
-                    <View style={styles.orContainer}>
-                      {e.activity2 !== '' && (
-                        <Text style={styles.orText}>OR</Text>
-                      )}
-                    </View>
-                    <View style={styles.cardContainer}>
-                      {e.activity2 !== '' && (
-                        <DayCard
-                          status={status}
-                          ref={multi}
-                          cardText={e.activity2}
-                          showTrail={false}
-                        />
-                      )}
-                    </View>
-                    <View style={styles.padding1} />
-                  </View>
-                </View>
-              );
-            })}
-        </ScrollView>
-      </View>
-    </View>
-  );
-}
+import MainLayout from '../wrappers/MainLayout';
+import withSchedule from '../wrappers/withSchedule';
 
 const styles = StyleSheet.create({
-  app: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
+  container: {
+    width: Dimensions.get('window').width,
   },
   dayActivityContainer: {
     flexDirection: 'row',
@@ -134,3 +44,68 @@ const styles = StyleSheet.create({
     flex: 15,
   },
 });
+
+function DayActivity(props) {
+  const {navigation, schedule} = props;
+  const {scheduleToday, currentTaskIndex} = schedule;
+
+  const multi = useRef(null);
+
+  return (
+    <MainLayout {...navigation}>
+      <ScrollView style={styles.container}>
+        {scheduleToday &&
+          scheduleToday.map((e, i) => {
+            const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
+            const status =
+              currentTaskIndex === i
+                ? 'now'
+                : currentTaskIndex + 1 === i
+                ? 'next'
+                : 'inactive';
+
+            // Don't show if there's no next item.
+            const showTrailForA1 = i !== scheduleToday.length - 1;
+
+            return (
+              <View style={status === 'now' && styles.dayActivityContainerNow}>
+                <View style={styles.dayActivityContainer}>
+                  <View style={styles.padding1} />
+                  <View style={styles.timeContainer}>
+                    <Text style={styles.timeText}>{formattedTime}</Text>
+                  </View>
+                  <View style={styles.padding2} />
+                  <View style={styles.padding1} />
+                  <View style={styles.cardContainer}>
+                    <DayCard
+                      cardText={e.activity1}
+                      status={status}
+                      showTrail={showTrailForA1}
+                    />
+                  </View>
+                  <View style={styles.orContainer}>
+                    {e.activity2 !== '' && (
+                      <Text style={styles.orText}>OR</Text>
+                    )}
+                  </View>
+                  <View style={styles.cardContainer}>
+                    {e.activity2 !== '' && (
+                      <DayCard
+                        status={status}
+                        ref={multi}
+                        cardText={e.activity2}
+                        showTrail={false}
+                      />
+                    )}
+                  </View>
+                  <View style={styles.padding1} />
+                </View>
+              </View>
+            );
+          })}
+      </ScrollView>
+    </MainLayout>
+  );
+}
+
+export default withSchedule(DayActivity);

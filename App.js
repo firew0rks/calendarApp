@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import moment from 'moment';
 import {
   loadScheduleData,
   transformScheduleData,
@@ -19,7 +18,7 @@ const RootStack = createStackNavigator(
     Day: DayActivity,
   },
   {
-    initialRouteName: 'Now',
+    initialRouteName: 'Day',
     headerMode: 'none',
   },
 );
@@ -33,7 +32,7 @@ export default function App() {
   const [schedule, setSchedule] = useState({});
 
   useEffect(() => {
-     getPath();
+    getPath();
     // When app first launches, load in the file data.
     loadScheduleData().then(data => {
       transformScheduleData(data).then(transformedData => {
