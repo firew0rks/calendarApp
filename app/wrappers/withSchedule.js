@@ -15,6 +15,8 @@ export default function withSchedule(WrappedComponent) {
       .add(1, 'days')
       .format(DATE_FORMAT);
 
+    console.log(today);
+
     const scheduleToday = schedule[today];
     const scheduleTomorrow = schedule[tomorrow];
 

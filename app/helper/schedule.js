@@ -8,7 +8,7 @@ export function findCurrentTaskIndex(scheduleForToday) {
     let end = Number(x.endTime);
 
     if (end == 0) {
-      end = Infinity
+      end = Infinity;
     }
 
     return start <= currentTime && end > currentTime;

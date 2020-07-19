@@ -6,6 +6,7 @@ import {
 } from './app/helper/fileLoader';
 import DayActivity from './app/components/DayActivity';
 import NowActivity from './app/components/NowActivity';
+import AdminPanel from './app/components/AdminPanel';
 import isEmpty from 'lodash/isEmpty';
 
 // React Nav
@@ -16,9 +17,10 @@ const RootStack = createStackNavigator(
   {
     Now: NowActivity,
     Day: DayActivity,
+    Admin: AdminPanel,
   },
   {
-    initialRouteName: 'Day',
+    initialRouteName: 'Admin',
     headerMode: 'none',
   },
 );

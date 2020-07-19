@@ -61,3 +61,13 @@ The CSV formatted data will be converted to the following array for a particular
 ## Photo Library
 
 The photos are loaded in by name, matching the activity description (including spaces, all lower case). For example, an activity could be `Go to Scope on the bus with my friends`, so the image name needs to be `go to Scope on the bus with my friends.jpg`.
+
+## Icon Library
+
+Uses React-native-vector-icon library with native-base icon component to load.
+
+[ref](https://oblador.github.io/react-native-vector-icons/)
+
+## Bugs
+
+- App crashes when there are no dates left on the calendar
