@@ -1,18 +1,27 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Dimensions} from 'react-native';
 
 const ACTIVITIES = [
   {
     title: 'Get ready',
     startTime: '8:00 am',
-    duration: '30',
+    duration: 30,
     label: 0,
   },
   {
     title: 'Get Breakfast',
     startTime: '8:30 am',
-    duration: '30',
+    duration: 30,
     label: 1,
+  },
+];
+
+const ACTIVITIES2 = [
+  {
+    title: 'Get ready',
+    startTime: '10:00 am',
+    duration: 180,
+    label: 0,
   },
 ];
 
@@ -20,6 +29,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
+    display: 'flex',
   },
   daysWrapper: {
     display: 'flex',
@@ -29,7 +39,6 @@ const styles = StyleSheet.create({
   timeWrapper: {
     display: 'flex',
     backgroundColor: 'rgb(241, 241, 241)',
-    height: '100%',
     borderRadius: 16,
     padding: 16,
   },
@@ -81,13 +90,17 @@ const timeBlockStyles = StyleSheet.create({
   timeText: {
     marginTop: 8,
     color: 'rgb(128, 128, 128)',
-    marginRight: 24,
+    flex: 17,
+  },
+  activitiesWrapper: {
+    display: 'flex',
+    flex: 94,
   },
   activityWrapper: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    // alignItems: 'center',
     backgroundColor: 'rgba(146, 73, 234, 0.25)',
     borderRadius: 8,
     padding: 8,
@@ -97,13 +110,11 @@ const timeBlockStyles = StyleSheet.create({
   titleText: {
     fontWeight: 'bold',
     fontSize: 15,
+    lineHeight: 15,
   },
   startTimeText: {
     fontSize: 15,
-  },
-  activitiesWrapper: {
-    display: 'flex',
-    flex: 1,
+    lineHeight: 15,
   },
 });
 
@@ -129,13 +140,29 @@ function DayButton(props) {
 }
 
 function TimeBlock(props) {
+  // Height is calculated by subtracting the margins and dividing by segments in a block.
+  const heightPerSegment = (props.height - 2 - 2) / 2;
+
   return (
-    <View style={timeBlockStyles.container}>
+    <View style={{...timeBlockStyles.container, height: props.height}}>
       <Text style={timeBlockStyles.timeText}>{props.time}</Text>
       <View style={timeBlockStyles.activitiesWrapper}>
-        {props.activities.map(activity => {
+        {props.activities.map((activity, i) => {
+          // Calculate height for wrapper
+
+          const segments = activity.duration / 30;
+          const segmentHeight =
+            heightPerSegment * segments + 2 * (segments - 1);
+
+          console.log('### segments', segments);
+
           return (
-            <View style={timeBlockStyles.activityWrapper}>
+            <View
+              key={i}
+              style={{
+                ...timeBlockStyles.activityWrapper,
+                height: segmentHeight,
+              }}>
               <Text style={timeBlockStyles.titleText}>{activity.title}</Text>
               <Text style={timeBlockStyles.startTimeText}>
                 {activity.startTime}
@@ -149,6 +176,21 @@ function TimeBlock(props) {
 }
 
 function AdminCalendar() {
+  const {height} = Dimensions.get('window');
+
+  const timeDisplayHeight = height - 76 - 74 - 24 - 24;
+  const divisions = 13;
+  const timePadding = 8;
+  const heightPerDivision = (timeDisplayHeight - timePadding * 2) / divisions;
+
+  const timeWrapper = {
+    display: 'flex',
+    backgroundColor: 'rgb(241, 241, 241)',
+    borderRadius: 16,
+    padding: 16,
+    height: timeDisplayHeight,
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.daysWrapper}>
@@ -160,8 +202,22 @@ function AdminCalendar() {
         <DayButton dayOfTheWeek="Fri" day="26" />
         <DayButton dayOfTheWeek="Sat" day="27" />
       </View>
-      <View style={styles.timeWrapper}>
-        <TimeBlock time="8 am" activities={ACTIVITIES} />
+      <View style={timeWrapper}>
+        <TimeBlock
+          time="8 am"
+          activities={ACTIVITIES}
+          height={heightPerDivision}
+        />
+        <TimeBlock
+          time="9 am"
+          activities={ACTIVITIES}
+          height={heightPerDivision}
+        />
+        <TimeBlock
+          time="10 am"
+          activities={ACTIVITIES2}
+          height={heightPerDivision}
+        />
       </View>
     </View>
   );
