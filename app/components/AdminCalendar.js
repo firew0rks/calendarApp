@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Text, Dimensions} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 
 const ACTIVITIES = [
   {
@@ -140,21 +140,46 @@ function DayButton(props) {
 }
 
 function TimeBlock(props) {
+  const {height, time, activities, highlighted, reportLayout} = props;
+
   // Height is calculated by subtracting the margins and dividing by segments in a block.
   const heightPerSegment = (props.height - 2 - 2) / 2;
 
+  const segments = 30 / 30;
+  const segmentHeight = heightPerSegment * segments + 2 * (segments - 1);
+
+  let highlightedStyle = {
+    height: segmentHeight,
+    borderColor: 'hotpink',
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    borderRadius: 6,
+  };
+
+  if (highlighted === 1) {
+    highlightedStyle.top = heightPerSegment + 2;
+  }
+
   return (
     <View style={{...timeBlockStyles.container, height: props.height}}>
-      <Text style={timeBlockStyles.timeText}>{props.time}</Text>
+      <Text
+        style={timeBlockStyles.timeText}
+        onLayout={e => reportLayout('timeText', e.nativeEvent.layout)}>
+        {props.time}
+      </Text>
       <View style={timeBlockStyles.activitiesWrapper}>
+        {highlighted !== -1 && <View style={highlightedStyle} />}
+
         {props.activities.map((activity, i) => {
           // Calculate height for wrapper
 
           const segments = activity.duration / 30;
           const segmentHeight =
             heightPerSegment * segments + 2 * (segments - 1);
-
-          console.log('### segments', segments);
 
           return (
             <View
@@ -175,25 +200,30 @@ function TimeBlock(props) {
   );
 }
 
-function AdminCalendar() {
-  const {height} = Dimensions.get('window');
-
-  const timeDisplayHeight = height - 76 - 74 - 24 - 24;
-  const divisions = 13;
-  const timePadding = 8;
-  const heightPerDivision = (timeDisplayHeight - timePadding * 2) / divisions;
+function AdminCalendar(props) {
+  const {
+    calendarHeight,
+    heightPerDivision,
+    setCalendarLayout,
+    timeBlockIdx,
+    reportLayout,
+  } = props;
 
   const timeWrapper = {
     display: 'flex',
     backgroundColor: 'rgb(241, 241, 241)',
     borderRadius: 16,
     padding: 16,
-    height: timeDisplayHeight,
+    height: calendarHeight,
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.daysWrapper}>
+    <View
+      style={styles.container}
+      onLayout={e => reportLayout('calendar', e.nativeEvent.layout)}>
+      <View
+        style={styles.daysWrapper}
+        onLayout={e => reportLayout('dayButtons', e.nativeEvent.layout)}>
         <DayButton dayOfTheWeek="Sun" day="21" />
         <DayButton dayOfTheWeek="Mon" day="22" />
         <DayButton dayOfTheWeek="Tue" day="23" />
@@ -204,19 +234,31 @@ function AdminCalendar() {
       </View>
       <View style={timeWrapper}>
         <TimeBlock
+          highlighted={
+            timeBlockIdx === 0 || timeBlockIdx === 1 ? timeBlockIdx % 2 : -1
+          }
           time="8 am"
-          activities={ACTIVITIES}
+          activities={[]}
           height={heightPerDivision}
+          reportLayout={reportLayout}
         />
         <TimeBlock
+          highlighted={
+            timeBlockIdx === 2 || timeBlockIdx === 3 ? timeBlockIdx % 2 : -1
+          }
           time="9 am"
-          activities={ACTIVITIES}
+          activities={[]}
           height={heightPerDivision}
+          reportLayout={reportLayout}
         />
         <TimeBlock
+          highlighted={
+            timeBlockIdx === 4 || timeBlockIdx === 5 ? timeBlockIdx % 2 : -1
+          }
           time="10 am"
           activities={ACTIVITIES2}
           height={heightPerDivision}
+          reportLayout={reportLayout}
         />
       </View>
     </View>
