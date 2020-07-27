@@ -11,6 +11,7 @@ import AdminActivityCard from './AdminActivityCard';
 import AdminCalendar from './AdminCalendar';
 import Animated, {debug} from 'react-native-reanimated';
 import {PanGestureHandler, State} from 'react-native-gesture-handler';
+import _ from 'lodash';
 
 const {set, add, block, cond, eq, call} = Animated;
 
@@ -126,6 +127,7 @@ class AdminPanel extends React.Component {
 
     this.calculateTimeBlock = this.calculateTimeBlock.bind(this);
     this.reportLayout = this.reportLayout.bind(this);
+    this.placeActivity = this.placeActivity.bind(this);
 
     this.gestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
@@ -150,6 +152,7 @@ class AdminPanel extends React.Component {
       layout: {},
       timeBlockIdx: -1,
       timeBlockSpan: 0,
+      activities: [],
     };
   }
 
@@ -189,7 +192,6 @@ class AdminPanel extends React.Component {
       const yOffset = y - yBegin;
 
       const segment = Math.floor(yOffset / segmentHeight);
-      // console.log(segment);
 
       this.setState({
         ...this.state,
@@ -203,15 +205,26 @@ class AdminPanel extends React.Component {
     }
   }
 
-  setCalendarLayout = e => {
-    this.setState({...this.state, calendarLayout: e.nativeEvent.layout});
-  };
+  placeActivity([x, y]) {
+    console.log('Drag activity finished', x, y, this.state.timeBlockIdx);
+    // Set activity
 
-  reportLayout = (key, layout) => {
+    const newState = _.cloneDeep(this.state);
+
+    newState.activities.push({
+      title: 'Morning Routine',
+      duration: 30,
+      startTimeIdx: this.state.timeBlockIdx,
+    });
+
+    this.setState(newState);
+  }
+
+  reportLayout(key, layout) {
     const newState = JSON.parse(JSON.stringify(this.state));
     newState.layout[key] = layout;
     this.setState(newState);
-  };
+  }
 
   render() {
     const {height} = Dimensions.get('window');
@@ -226,6 +239,19 @@ class AdminPanel extends React.Component {
 
     return (
       <SafeAreaView style={styles.container}>
+        <Animated.Code>
+          {() => [
+            cond(eq(this.gestureState, State.BEGAN), set(this.isDragging, 1)),
+            cond(
+              eq(this.gestureState, State.ACTIVE),
+              call([this.x, this.y], this.calculateTimeBlock),
+            ),
+            cond(eq(this.gestureState, State.END), [
+              set(this.isDragging, 0),
+              call([this.x, this.y], this.placeActivity),
+            ]),
+          ]}
+        </Animated.Code>
         <View style={styles.wrapper}>
           {/* Calendar */}
           <View style={styles.calendarPanel}>
@@ -261,9 +287,9 @@ class AdminPanel extends React.Component {
                 <AdminCalendar
                   calendarHeight={calendarDisplayHeight}
                   heightPerDivision={heightPerDivision}
-                  // setCalendarLayout={this.setCalendarLayout.bind(this)}
                   timeBlockIdx={this.state.timeBlockIdx}
                   reportLayout={this.reportLayout}
+                  activities={this.state.activities}
                 />
               </View>
             </View>
@@ -281,37 +307,22 @@ class AdminPanel extends React.Component {
             <View style={styles.body}>
               <View style={styles.activitiesBody}>
                 <ScrollView style={styles.scrollView}>
-                  <AdminActivityCard />
+                  <PanGestureHandler
+                    onGestureEvent={this.onGestureEvent}
+                    onHandlerStateChange={this.onGestureEvent}>
+                    <Animated.View
+                      style={{
+                        transform: [
+                          {translateX: this.translationX},
+                          {translateY: this.translationY},
+                        ],
+                      }}>
+                      <AdminActivityCard />
+                    </Animated.View>
+                  </PanGestureHandler>
                 </ScrollView>
               </View>
             </View>
-          </View>
-          <View style={styles.panStyles}>
-            <Animated.Code>
-              {() => [
-                cond(
-                  eq(this.gestureState, State.BEGAN),
-                  set(this.isDragging, 1),
-                ),
-                cond(
-                  eq(this.gestureState, State.ACTIVE),
-                  call([this.x, this.y], this.calculateTimeBlock),
-                ),
-              ]}
-            </Animated.Code>
-            <PanGestureHandler
-              onGestureEvent={this.onGestureEvent}
-              onHandlerStateChange={this.onGestureEvent}>
-              <Animated.View
-                style={{
-                  transform: [
-                    {translateX: this.translationX},
-                    {translateY: this.translationY},
-                  ],
-                }}>
-                <AdminActivityCard />
-              </Animated.View>
-            </PanGestureHandler>
           </View>
         </View>
       </SafeAreaView>
