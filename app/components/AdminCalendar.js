@@ -27,19 +27,19 @@ const ACTIVITIES2 = [
 
 // Key increments by 2 because each Timeblock has 2 segments in them.
 const TIME_BLOCKS = [
-  {key: 0, label: '8 am'},
-  {key: 2, label: '9 am'},
-  {key: 4, label: '10 am'},
-  {key: 6, label: '11 am'},
-  {key: 8, label: '12 pm'},
-  {key: 10, label: '1 pm'},
-  {key: 12, label: '2 pm'},
-  {key: 14, label: '3 pm'},
-  {key: 16, label: '4 pm'},
-  {key: 18, label: '5 pm'},
-  {key: 20, label: '6 pm'},
-  {key: 22, label: '7 pm'},
-  {key: 24, label: '8 pm'},
+  {key: 0, time: '8', a: 'am'},
+  {key: 1, time: '9', a: 'am'},
+  {key: 2, time: '10', a: 'am'},
+  {key: 3, time: '11', a: 'am'},
+  {key: 4, time: '12', a: 'pm'},
+  {key: 5, time: '1', a: 'pm'},
+  {key: 6, time: '2', a: 'pm'},
+  {key: 7, time: '3', a: 'pm'},
+  {key: 8, time: '4', a: 'pm'},
+  {key: 9, time: '5', a: 'pm'},
+  {key: 10, time: '6', a: 'pm'},
+  {key: 11, time: '7', a: 'pm'},
+  {key: 12, time: '8', a: 'pm'},
 ];
 
 const styles = StyleSheet.create({
@@ -112,6 +112,7 @@ const timeBlockStyles = StyleSheet.create({
   activitiesWrapper: {
     display: 'flex',
     flex: 94,
+    position: 'relative',
   },
   activityWrapper: {
     display: 'flex',
@@ -157,11 +158,13 @@ function DayButton(props) {
 }
 
 function TimeBlock(props) {
-  const {height, time, activities, highlighted, reportLayout} = props;
+  const {height, time, activities, highlighted, reportLayout, a} = props;
+  // console.log('highlighted', highlighted);
 
   // Height is calculated by subtracting the margins and dividing by segments in a block.
   const heightPerSegment = (props.height - 2 - 2) / 2;
 
+  // Segment height is the height of the activity block, calculated from duration.
   const segments = 30 / 30; // TODO: Change to duration of the dragged card.
   const segmentHeight = heightPerSegment * segments + 2 * (segments - 1);
 
@@ -181,35 +184,45 @@ function TimeBlock(props) {
     highlightedStyle.top = heightPerSegment + 2;
   }
 
+  console.log(time, activities);
+
   return (
     <View style={{...timeBlockStyles.container, height: height}}>
       <Text
         style={timeBlockStyles.timeText}
         onLayout={e => reportLayout('timeText', e.nativeEvent.layout)}>
-        {time}
+        {`${time} ${a}`}
       </Text>
       <View style={timeBlockStyles.activitiesWrapper}>
-        {highlighted !== -1 && <View style={highlightedStyle} />}
-
+        {highlighted !== null && <View style={highlightedStyle} />}
         {activities.map((activity, i) => {
           // Calculate height for wrapper
-
           const segments = activity.duration / 30;
           const segmentHeight =
             heightPerSegment * segments + 2 * (segments - 1);
 
+          let activityWrapperStyle = {
+            ...timeBlockStyles.activityWrapper,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: segmentHeight,
+          };
+
+          let startTime;
+          if (activity.segmentIdx === 1) {
+            activityWrapperStyle.top = heightPerSegment + 2;
+            startTime = `${time}:30${a}`;
+          } else {
+            startTime = `${time}${a}`;
+          }
+
           // FIXME: This needs to be absolute to be able to place items in 30 mins segments.
           return (
-            <View
-              key={i}
-              style={{
-                ...timeBlockStyles.activityWrapper,
-                height: segmentHeight,
-              }}>
+            <View key={i} style={activityWrapperStyle}>
               <Text style={timeBlockStyles.titleText}>{activity.title}</Text>
-              <Text style={timeBlockStyles.startTimeText}>
-                {activity.startTime}
-              </Text>
+              <Text style={timeBlockStyles.startTimeText}>{startTime}</Text>
             </View>
           );
         })}
@@ -223,6 +236,7 @@ function AdminCalendar(props) {
     calendarHeight,
     heightPerDivision,
     timeBlockIdx,
+    segmentIdx,
     reportLayout,
     activities,
   } = props;
@@ -255,15 +269,10 @@ function AdminCalendar(props) {
           return (
             <TimeBlock
               key={x.key}
-              highlighted={
-                timeBlockIdx === x.key || timeBlockIdx === x.key + 1
-                  ? timeBlockIdx % 2
-                  : -1
-              }
-              time={x.label}
-              activities={activities.filter(
-                y => y.startTimeIdx === x.key || y.startTimeIdx === x.key + 1,
-              )}
+              highlighted={timeBlockIdx === x.key ? segmentIdx : null}
+              time={x.time}
+              a={x.a}
+              activities={activities.filter(y => y.timeBlockIdx === x.key)}
               height={heightPerDivision}
               reportLayout={reportLayout}
             />

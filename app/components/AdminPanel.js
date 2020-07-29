@@ -152,6 +152,7 @@ class AdminPanel extends React.Component {
       layout: {},
       timeBlockIdx: -1,
       timeBlockSpan: 0,
+      segmentIdx: 0,
       activities: [],
     };
   }
@@ -184,6 +185,7 @@ class AdminPanel extends React.Component {
 
     const divisions = 13;
 
+    // TODO: Recalculate calculations
     const segmentHeight =
       (timeAreaHeight - TIME_ACTIVITY_INNER_PADDING * 2) / (divisions * 2);
 
@@ -192,21 +194,33 @@ class AdminPanel extends React.Component {
       const yOffset = y - yBegin;
 
       const segment = Math.floor(yOffset / segmentHeight);
+      const timeBlockIdx = Math.floor(segment / 2);
+      const segmentIdx = Math.floor(segment % 2);
+
+      console.debug(segment, timeBlockIdx, segmentIdx);
 
       this.setState({
         ...this.state,
-        timeBlockIdx: segment,
+        timeBlockIdx,
+        segmentIdx,
       });
     } else {
       this.setState({
         ...this.state,
         timeBlockIdx: -1,
+        segmentIdx: -1,
       });
     }
   }
 
   placeActivity([x, y]) {
-    console.log('Drag activity finished', x, y, this.state.timeBlockIdx);
+    console.log(
+      'Drag activity finished',
+      x,
+      y,
+      this.state.timeBlockIdx,
+      this.state.segmentIdx,
+    );
     // Set activity
 
     const newState = _.cloneDeep(this.state);
@@ -214,8 +228,13 @@ class AdminPanel extends React.Component {
     newState.activities.push({
       title: 'Morning Routine',
       duration: 30,
-      startTimeIdx: this.state.timeBlockIdx,
+      timeBlockIdx: this.state.timeBlockIdx,
+      segmentIdx: this.state.segmentIdx,
     });
+
+    newState.timeBlockIdx = -1;
+    newState.segmentIdx = -1;
+    newState.timeBlockSpan = 0;
 
     this.setState(newState);
   }
@@ -288,6 +307,7 @@ class AdminPanel extends React.Component {
                   calendarHeight={calendarDisplayHeight}
                   heightPerDivision={heightPerDivision}
                   timeBlockIdx={this.state.timeBlockIdx}
+                  segmentIdx={this.state.segmentIdx}
                   reportLayout={this.reportLayout}
                   activities={this.state.activities}
                 />
