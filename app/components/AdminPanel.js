@@ -12,6 +12,8 @@ import AdminCalendar from './AdminCalendar';
 import Animated, {debug} from 'react-native-reanimated';
 import {PanGestureHandler, State} from 'react-native-gesture-handler';
 import _ from 'lodash';
+import ActivityList from './admin/ActivityList';
+import ActivityHeader from './admin/ActivityHeader';
 
 const {set, add, block, cond, eq, call} = Animated;
 
@@ -115,10 +117,6 @@ const styles = StyleSheet.create({
     flex: 9,
     height: '100%',
   },
-  scrollView: {
-    height: '100%',
-  },
-  panStyles: {position: 'absolute', top: 0, left: 0},
 });
 
 class AdminPanel extends React.Component {
@@ -318,29 +316,12 @@ class AdminPanel extends React.Component {
           <View style={styles.activitesPanel}>
             <View style={styles.header}>
               <View style={styles.activitiesHeader}>
-                <Text style={styles.activitiesTitle}>Activities</Text>
-                <Button style={styles.newActivityButton}>
-                  <Icon type="Entypo" name="plus" />
-                </Button>
+                <ActivityHeader />
               </View>
             </View>
             <View style={styles.body}>
               <View style={styles.activitiesBody}>
-                <ScrollView style={styles.scrollView}>
-                  <PanGestureHandler
-                    onGestureEvent={this.onGestureEvent}
-                    onHandlerStateChange={this.onGestureEvent}>
-                    <Animated.View
-                      style={{
-                        transform: [
-                          {translateX: this.translationX},
-                          {translateY: this.translationY},
-                        ],
-                      }}>
-                      <AdminActivityCard />
-                    </Animated.View>
-                  </PanGestureHandler>
-                </ScrollView>
+                <ActivityList />
               </View>
             </View>
           </View>
