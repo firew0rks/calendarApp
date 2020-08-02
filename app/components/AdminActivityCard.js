@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {View, Text, StyleSheet} from 'react-native';
 import {Icon} from 'native-base';
 
@@ -44,19 +45,35 @@ const styles = StyleSheet.create({
   },
 });
 
-function AdminActivityCard() {
-  return (
-    <View style={styles.cardContainer}>
-      <View style={styles.wrapper}>
-        <View style={styles.imagePlaceholder} />
-        <View style={styles.cardTextWrapper}>
-          <Text style={styles.cardTitle}>Morning Routine</Text>
-          <Text style={styles.cardDuration}>30 mins</Text>
+class AdminActivityCard extends React.Component {
+  render() {
+    return (
+      <View style={styles.cardContainer}>
+        <View style={styles.wrapper}>
+          <View style={styles.imagePlaceholder} />
+          <View style={styles.cardTextWrapper}>
+            <Text style={styles.cardTitle}>{this.props.title}</Text>
+            <Text style={styles.cardDuration}>{this.props.duration} mins</Text>
+          </View>
         </View>
+        <Icon
+          type="FontAwesome5"
+          name="ellipsis-v"
+          style={styles.ellipsisIcon}
+        />
       </View>
-      <Icon type="FontAwesome5" name="ellipsis-v" style={styles.ellipsisIcon} />
-    </View>
-  );
+    );
+  }
 }
 
 export default AdminActivityCard;
+
+AdminActivityCard.propTypes = {
+  title: PropTypes.string,
+  duration: PropTypes.number,
+};
+
+AdminActivityCard.defaultProps = {
+  title: 'Morning Routine',
+  duration: 30,
+};

@@ -22,13 +22,24 @@ export default class ActivityList extends React.Component {
   };
 
   componentDidMount() {
-    Realm.open({schema: [ActivitySchema]})
+    Realm.open({schema: [ActivitySchema], deleteRealmIfMigrationNeeded: true})
       .then(realm => {
         this.setState({realm: realm});
 
         let activities = realm.objects(ActivitySchemaKey);
 
-        console.log(activities);
+        console.log(activities.objectId);
+        // activities.addListener((obj, changes) => {
+        //   console.log(
+        //     `${changes.changedProperties.length} properties has changed`,
+        //     obj,
+        //     changes,
+        //   );
+        // });
+
+        activities.map(x => {
+          console.log(x, x.title);
+        });
 
         this.setState({activities});
       })
@@ -42,22 +53,20 @@ export default class ActivityList extends React.Component {
   render() {
     return (
       <ScrollView style={styles.scrollView}>
-        {this.state.activities.map(x => {
-          <PanGestureHandler
-            onGestureEvent={this.onGestureEvent}
-            onHandlerStateChange={this.onGestureEvent}>
-            <Animated.View
-              style={{
-                transform: [
-                  {translateX: this.translationX},
-                  {translateY: this.translationY},
-                ],
-              }}>
-              <AdminActivityCard />
-            </Animated.View>
-          </PanGestureHandler>;
+        {this.state.activities.map((x, i) => {
+          console.log(x.objectId);
+          return (
+            <PanGestureHandler
+              key={i}
+              onGestureEvent={this.onGestureEvent}
+              onHandlerStateChange={this.onGestureEvent}>
+              <Animated.View>
+                <AdminActivityCard title={x.title} duration={x.duration} />
+              </Animated.View>
+            </PanGestureHandler>
+          );
         })}
-        <AdminActivityCard />
+        {/* <AdminActivityCard /> */}
       </ScrollView>
     );
   }
@@ -65,6 +74,6 @@ export default class ActivityList extends React.Component {
 
 ActivityList.propTypes = {
   onGestureEvent: PropTypes.func.isRequired,
-  translationX: PropTypes.any.isRequired,
-  translationY: PropTypes.any.isRequired,
+  // translationX: PropTypes.any.isRequired,
+  // translationY: PropTypes.any.isRequired,
 };

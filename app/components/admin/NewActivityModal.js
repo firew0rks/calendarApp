@@ -8,9 +8,12 @@ import {
   TouchableHighlight,
   View,
   Dimensions,
+  TextInput,
 } from 'react-native';
 import Animated, {Easing} from 'react-native-reanimated';
-import {Button} from 'native-base';
+import {Button, Icon} from 'native-base';
+import Realm from 'realm';
+import ActivitySchema, {ActivitySchemaKey} from '../../schemas/ActivitySchema';
 
 const {
   Clock,
@@ -28,21 +31,54 @@ const {
 
 const styles = StyleSheet.create({
   overlay: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
     flex: 1,
-    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    top: 0,
   },
   container: {
-    backgroundColor: 'white',
-    paddingTop: 12,
-    borderTopRightRadius: 12,
-    borderTopLeftRadius: 12,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
+    padding: 24,
+    top: 60,
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderRadius: 16,
   },
+  modalHeader: {alignItems: 'flex-end'},
+  cancelText: {
+    color: 'rgb(0, 99, 255)',
+    fontSize: 17,
+    fontWeight: 'bold',
+  },
+  newActivityTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+  },
+  photoSelectionButton: {
+    backgroundColor: 'rgb(231, 241, 255)',
+  },
+  photoSelectIcon: {
+    color: 'rgb(0, 99, 255)',
+  },
+  divider: {
+    flexDirection: 'row',
+    borderTopColor: 'rgb(241, 241, 241)',
+    height: 1,
+    borderTopWidth: 1,
+  },
+  durationSelectionContainer: {
+    flexDirection: 'row',
+  },
+  labelText: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: 'rgb(37, 38, 41)',
+  },
+  formSpacing: {paddingVertical: 16},
 });
+
+function Divider() {
+  return <View style={styles.divider} />;
+}
 
 function runTiming(clock, value, config) {
   const state = {
@@ -74,34 +110,53 @@ function runTiming(clock, value, config) {
 export default class NewActivityModal extends React.Component {
   constructor(props) {
     super(props);
+
+    this.handleSave = this.handleSave.bind(this);
+
     this.panY = new Value(Dimensions.get('screen').height);
-  }
 
-  componentDidMount() {
-    const clock = new Clock();
-    const config = {
-      duration: 200,
-      toValue: 50,
-      easing: Easing.inOut(Easing.ease),
+    this.state = {
+      title: '',
+      label: 0,
+      duration: 30,
+      majorEvent: false,
     };
-
-    this.panY = runTiming(clock, this.panY, config);
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.modalVisible !== prevProps.modalVisible) {
-      // if (this.props.modalVisible) {
-      console.log('Running');
-      const clock = new Clock();
-      const config = {
-        duration: 300,
-        toValue: 30,
-        easing: Easing.inOut(Easing.ease),
-      };
+  // componentDidMount() {
+  //   const clock = new Clock();
+  //   const config = {
+  //     duration: 200,
+  //     toValue: 50,
+  //     easing: Easing.inOut(Easing.ease),
+  //   };
 
-      this.panY = runTiming(clock, this.panY, config);
-      // }
-    }
+  //   this.panY = runTiming(clock, this.panY, config);
+  // }
+
+  handleSave() {
+    Realm.open({
+      schema: [ActivitySchema],
+      deleteRealmIfMigrationNeeded: true,
+    }).then(realm => {
+      try {
+        realm.write(() => {
+          realm.create(ActivitySchemaKey, {
+            label: this.state.label,
+            duration: this.state.duration,
+            title: this.state.title,
+            majorEvent: this.state.majorEvent,
+          });
+
+          console.log('Saved');
+
+          this.props.setModalVisible(false);
+          // realm.close();
+        });
+      } catch (err) {
+        console.log('error on creation', err);
+      }
+    });
   }
 
   render() {
@@ -114,16 +169,166 @@ export default class NewActivityModal extends React.Component {
           Alert.alert('Modal has been closed.');
         }}>
         <View style={styles.overlay}>
-          <Animated.View style={[styles.container, {top: this.panY}]}>
-            <Text>Hello World!</Text>
-            <Text>Hello World!</Text>
-            <Text>Hello World!</Text>
-            <Text>Hello World!</Text>
-            <Text>Hello World!</Text>
-            <Button onPress={() => this.props.setModalVisible(false)}>
-              <Text>Dismiss Modal</Text>
-            </Button>
-          </Animated.View>
+          <View style={styles.container}>
+            <View style={styles.modalHeader}>
+              <TouchableHighlight
+                activeOpacity={0.6}
+                onPress={() => this.props.setModalVisible(false)}>
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={styles.newActivityTitleContainer}>
+              <TextInput
+                onChangeText={text => this.setState({title: text})}
+                value={this.state.title}
+                autoFocus
+                placeholder="Activity Name"
+                placeholderTextColor="rgb(128, 128, 128)"
+                style={{fontSize: 36}}
+              />
+              <Button style={styles.photoSelectionButton}>
+                <Icon
+                  type="Ionicons"
+                  name="camera"
+                  style={styles.photoSelectIcon}
+                />
+              </Button>
+            </View>
+            <Divider />
+            <View style={styles.formSpacing}>
+              <Text style={styles.labelText}>Duration</Text>
+            </View>
+            <View style={styles.durationSelectionContainer}>
+              <Button
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgb(231, 241, 255)',
+                  marginRight: 4,
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    color: 'rgb(0, 99, 255)',
+                    fontWeight: 'bold',
+                  }}>
+                  30 mins
+                </Text>
+              </Button>
+              <Button
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgb(231, 241, 255)',
+                  marginRight: 4,
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    color: 'rgb(0, 99, 255)',
+                    fontWeight: 'bold',
+                  }}>
+                  1 hr
+                </Text>
+              </Button>
+              <Button
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgb(231, 241, 255)',
+                  marginRight: 4,
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    color: 'rgb(0, 99, 255)',
+                    fontWeight: 'bold',
+                  }}>
+                  2 hrs
+                </Text>
+              </Button>
+              <Button
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgb(231, 241, 255)',
+                  marginRight: 4,
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    color: 'rgb(0, 99, 255)',
+                    fontWeight: 'bold',
+                  }}>
+                  3 hrs
+                </Text>
+              </Button>
+              <Button
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgb(231, 241, 255)',
+                  marginRight: 4,
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 2,
+                    color: 'rgb(0, 99, 255)',
+                    fontWeight: 'bold',
+                  }}>
+                  Custom
+                </Text>
+              </Button>
+              <Button
+                style={{
+                  flex: 1,
+                  backgroundColor: 'rgb(231, 241, 255)',
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 2,
+                    color: 'rgb(0, 99, 255)',
+                    fontWeight: 'bold',
+                  }}>
+                  All Day
+                </Text>
+              </Button>
+            </View>
+            <Divider />
+            <View style={styles.formSpacing}>
+              <Text style={styles.labelText}>Label</Text>
+            </View>
+            <Divider />
+            <View style={styles.formSpacing}>
+              <Text style={styles.labelText}>Major Event</Text>
+            </View>
+            <Divider />
+            <View style={styles.formSpacing}>
+              <Text style={styles.labelText}>Reminders</Text>
+            </View>
+            <Divider />
+            <View style={styles.formSpacing}>
+              <Text style={styles.labelText}>Sub activities</Text>
+            </View>
+            <Divider />
+            <View style={[styles.formSpacing, {alignItems: 'flex-end'}]}>
+              <Button
+                style={{width: 120, backgroundColor: 'rgb(0, 99, 255)'}}
+                onPress={this.handleSave}>
+                <Text
+                  style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    color: 'rgb(255, 255, 255)',
+                    fontWeight: 'bold',
+                    fontSize: 17,
+                  }}>
+                  Save
+                </Text>
+              </Button>
+            </View>
+          </View>
         </View>
       </Modal>
     );

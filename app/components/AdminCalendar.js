@@ -184,8 +184,6 @@ function TimeBlock(props) {
     highlightedStyle.top = heightPerSegment + 2;
   }
 
-  console.log(time, activities);
-
   return (
     <View style={{...timeBlockStyles.container, height: height}}>
       <Text
