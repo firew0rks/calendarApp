@@ -1,79 +1,89 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Realm from 'realm';
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, Button} from 'react-native';
 import AdminActivityCard from '../AdminActivityCard';
 import Animated from 'react-native-reanimated';
-import {PanGestureHandler} from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  LongPressGestureHandler,
+} from 'react-native-gesture-handler';
 import _ from 'lodash';
-import ActivitySchema, {ActivitySchemaKey} from '../../schemas/ActivitySchema';
+import ActivitySchema, {ActivitySchemaKey} from '../../database/ActivitySchema';
+import realm from '../../database/realm';
 
 const styles = StyleSheet.create({
   scrollView: {
     height: '100%',
-    overflow: 'visible',
   },
 });
 
 export default class ActivityList extends React.Component {
-  state = {
-    realm: null,
-    activities: [],
-  };
+  constructor(props) {
+    super(props);
 
-  componentDidMount() {
-    Realm.open({schema: [ActivitySchema], deleteRealmIfMigrationNeeded: true})
-      .then(realm => {
-        this.setState({realm: realm});
+    this.longPressNodes = new Map();
+    this.panNodes = new Map();
 
-        let activities = realm.objects(ActivitySchemaKey);
+    let activities = realm.objects(ActivitySchemaKey);
 
-        console.log(activities.objectId);
-        // activities.addListener((obj, changes) => {
-        //   console.log(
-        //     `${changes.changedProperties.length} properties has changed`,
-        //     obj,
-        //     changes,
-        //   );
-        // });
+    activities.forEach(x => {
+      this.longPressNodes.set(x.id, React.createRef());
+      this.panNodes.set(x.id, React.createRef());
+    });
 
-        activities.map(x => {
-          console.log(x, x.title);
-        });
-
-        this.setState({activities});
-      })
-      .catch(err => console.log('Unable to open database', err));
+    this.state = {
+      activities: activities,
+    };
   }
 
-  componentWillUnmount() {
-    this.state.realm.close();
+  _debug() {
+    for (const a of this.longPressNodes) {
+      console.log(a);
+    }
   }
 
   render() {
+    console.log('rendering');
     return (
-      <ScrollView style={styles.scrollView}>
-        {this.state.activities.map((x, i) => {
-          console.log(x.objectId);
-          return (
-            <PanGestureHandler
-              key={i}
-              onGestureEvent={this.onGestureEvent}
-              onHandlerStateChange={this.onGestureEvent}>
-              <Animated.View>
-                <AdminActivityCard title={x.title} duration={x.duration} />
-              </Animated.View>
-            </PanGestureHandler>
-          );
-        })}
-        {/* <AdminActivityCard /> */}
-      </ScrollView>
+      <>
+        <Button onPress={() => this._debug()} title={'hello'}>
+          Debug
+        </Button>
+        <ScrollView style={styles.scrollView}>
+          {this.state.activities.map(x => {
+            return (
+              <LongPressGestureHandler
+                key={x.id}
+                ref={this.longPressNodes.get(x.id)}
+                simultaneousHandlers={this.panNodes.get(x.id)}
+                onGestureEvent={this.props.onLongPressGestureEvent}
+                onHandlerStateChange={this.props.onLongPressGestureEvent}>
+                <Animated.View>
+                  <PanGestureHandler
+                    ref={this.panNodes.get(x.id)}
+                    simultaneousHandlers={this.longPressNodes.get(x.id)}
+                    onGestureEvent={this.props.onPanGestureEvent}
+                    onHandlerStateChange={this.props.onPanGestureEvent}
+                    activeOffsetY={[-100, 100]}
+                    activeOffsetX={[-10, 10]}>
+                    <Animated.View>
+                      <AdminActivityCard
+                        title={x.title}
+                        duration={x.duration}
+                      />
+                    </Animated.View>
+                  </PanGestureHandler>
+                </Animated.View>
+              </LongPressGestureHandler>
+            );
+          })}
+        </ScrollView>
+      </>
     );
   }
 }
 
 ActivityList.propTypes = {
-  onGestureEvent: PropTypes.func.isRequired,
-  // translationX: PropTypes.any.isRequired,
-  // translationY: PropTypes.any.isRequired,
+  onPanGestureEvent: PropTypes.object.isRequired,
+  onLongPressGestureEvent: PropTypes.object.isRequired,
 };

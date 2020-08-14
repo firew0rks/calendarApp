@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 import Animated, {Easing} from 'react-native-reanimated';
 import {Button, Icon} from 'native-base';
-import Realm from 'realm';
-import ActivitySchema, {ActivitySchemaKey} from '../../schemas/ActivitySchema';
+// import Realm from 'realm';
+import ActivitySchema, {ActivitySchemaKey} from '../../database/ActivitySchema';
+import realm from '../../database/realm';
+import {v4 as uuidv4} from 'uuid';
 
 const {
   Clock,
@@ -135,28 +137,21 @@ export default class NewActivityModal extends React.Component {
   // }
 
   handleSave() {
-    Realm.open({
-      schema: [ActivitySchema],
-      deleteRealmIfMigrationNeeded: true,
-    }).then(realm => {
-      try {
-        realm.write(() => {
-          realm.create(ActivitySchemaKey, {
-            label: this.state.label,
-            duration: this.state.duration,
-            title: this.state.title,
-            majorEvent: this.state.majorEvent,
-          });
-
-          console.log('Saved');
-
-          this.props.setModalVisible(false);
-          // realm.close();
+    try {
+      realm.write(() => {
+        realm.create(ActivitySchemaKey, {
+          id: uuidv4(),
+          label: this.state.label,
+          duration: this.state.duration,
+          title: this.state.title,
+          majorEvent: this.state.majorEvent,
         });
-      } catch (err) {
-        console.log('error on creation', err);
-      }
-    });
+        console.log('Saved');
+        this.props.setModalVisible(false);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   render() {

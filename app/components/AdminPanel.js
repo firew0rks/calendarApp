@@ -126,6 +126,7 @@ class AdminPanel extends React.Component {
     this.calculateTimeBlock = this.calculateTimeBlock.bind(this);
     this.reportLayout = this.reportLayout.bind(this);
     this.placeActivity = this.placeActivity.bind(this);
+    this.togglePanCard = this.togglePanCard.bind(this);
 
     this.gestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
@@ -134,7 +135,8 @@ class AdminPanel extends React.Component {
     this.x = new Animated.Value(0);
     this.y = new Animated.Value(0);
 
-    this.onGestureEvent = Animated.event([
+    // TODO: Edit paramater names
+    this.onPanGestureEvent = Animated.event([
       {
         nativeEvent: {
           translationX: this.translationX,
@@ -146,12 +148,23 @@ class AdminPanel extends React.Component {
       },
     ]);
 
+    this.longPressGestureState = new Animated.Value(-1);
+
+    this.onLongPressGestureEvent = Animated.event([
+      {
+        nativeEvent: {
+          state: this.longPressGestureState,
+        },
+      },
+    ]);
+
     this.state = {
       layout: {},
       timeBlockIdx: -1,
       timeBlockSpan: 0,
       segmentIdx: 0,
       activities: [],
+      showPanCard: false,
     };
   }
 
@@ -243,6 +256,14 @@ class AdminPanel extends React.Component {
     this.setState(newState);
   }
 
+  togglePanCard() {
+    if (!this.state.showPanCard) {
+      this.setState({
+        showPanCard: true,
+      });
+    }
+  }
+
   render() {
     const {height} = Dimensions.get('window');
 
@@ -258,16 +279,29 @@ class AdminPanel extends React.Component {
       <SafeAreaView style={styles.container}>
         <Animated.Code>
           {() => [
-            cond(eq(this.gestureState, State.BEGAN), set(this.isDragging, 1)),
             cond(
-              eq(this.gestureState, State.ACTIVE),
+              eq(this.panGestureState, State.BEGAN),
+              set(this.isDragging, 1),
+            ),
+            cond(
+              eq(this.panGestureState, State.ACTIVE),
               call([this.x, this.y], this.calculateTimeBlock),
             ),
-            cond(eq(this.gestureState, State.END), [
+            cond(eq(this.panGestureState, State.END), [
               set(this.isDragging, 0),
               call([this.x, this.y], this.placeActivity),
             ]),
           ]}
+        </Animated.Code>
+        <Animated.Code>
+          {() =>
+            block([
+              cond(eq(this.longPressGestureState, State.ACTIVE), [
+                call([], this.togglePanCard),
+                debug('state', this.longPressGestureState),
+              ]),
+            ])
+          }
         </Animated.Code>
         <View style={styles.wrapper}>
           {/* Calendar */}
@@ -321,11 +355,26 @@ class AdminPanel extends React.Component {
             </View>
             <View style={styles.body}>
               <View style={styles.activitiesBody}>
-                <ActivityList />
+                <ActivityList
+                  onPanGestureEvent={this.onPanGestureEvent}
+                  onLongPressGestureEvent={this.onLongPressGestureEvent}
+                />
               </View>
             </View>
           </View>
         </View>
+        {this.state.showPanCard && (
+          <Animated.View
+            style={{
+              position: 'absolute',
+              transform: [
+                {translateX: this.translationX},
+                {translateY: this.translationY},
+              ],
+            }}>
+            <AdminActivityCard title={'Morning Routine'} duration={30} />
+          </Animated.View>
+        )}
       </SafeAreaView>
     );
   }
