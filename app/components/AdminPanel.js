@@ -9,18 +9,25 @@ import {
 import {Button, Text, Icon} from 'native-base';
 import AdminActivityCard from './AdminActivityCard';
 import AdminCalendar from './AdminCalendar';
-import Animated, {debug} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import {PanGestureHandler, State} from 'react-native-gesture-handler';
 import _ from 'lodash';
 import ActivityList from './admin/ActivityList';
 import ActivityHeader from './admin/ActivityHeader';
+import ActivitySchema, {ActivitySchemaKey} from '../database/ActivitySchema';
+import realm from '../database/realm';
 
-const {set, add, block, cond, eq, call} = Animated;
+const {set, add, block, cond, eq, call, debug} = Animated;
 
+const UNSAFE_AREA_HEIGHT = 24;
 const HEADER_HEIGHT = 76;
 const DAY_BUTTON_HEIGHT = 74;
 const SCREEN_PADDING = 24;
 const TIME_ACTIVITY_INNER_PADDING = 16;
+
+const ACTIVITY_CARD_CONTENT = 60;
+const ACTIVITY_CARD_PADDING = 8;
+const ACTIVITY_CARD_MARGIN_BOTTOM = 4;
 
 const styles = StyleSheet.create({
   container: {
@@ -126,12 +133,15 @@ class AdminPanel extends React.Component {
     this.calculateTimeBlock = this.calculateTimeBlock.bind(this);
     this.reportLayout = this.reportLayout.bind(this);
     this.placeActivity = this.placeActivity.bind(this);
-    this.togglePanCard = this.togglePanCard.bind(this);
+    this.activatePanActivityCard = this.activatePanActivityCard.bind(this);
+    this.handleActivityListScroll = this.handleActivityListScroll.bind(this);
+    this.resetPanActivityCard = this.resetPanActivityCard.bind(this);
 
     this.gestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
     this.translationY = new Animated.Value(0);
-    this.isDragging = new Animated.Value(0);
+    this.absoluteX = new Animated.Value(0);
+    this.absoluteY = new Animated.Value(0);
     this.x = new Animated.Value(0);
     this.y = new Animated.Value(0);
 
@@ -141,8 +151,10 @@ class AdminPanel extends React.Component {
         nativeEvent: {
           translationX: this.translationX,
           translationY: this.translationY,
-          absoluteX: this.x,
-          absoluteY: this.y,
+          // absoluteX: this.absoluteX,
+          // absoluteY: this.absoluteY,
+          // x: this.x,
+          // y: this.y,
           state: this.gestureState,
         },
       },
@@ -154,9 +166,16 @@ class AdminPanel extends React.Component {
       {
         nativeEvent: {
           state: this.longPressGestureState,
+          absoluteY: this.absoluteY,
+          absoluteX: this.absoluteX,
+          x: this.x,
+          y: this.y,
         },
       },
     ]);
+
+    // FIXME: Load activities twice (again in ActivityAdminCard.js). Should be passed down.
+    let activityListItems = realm.objects(ActivitySchemaKey);
 
     this.state = {
       layout: {},
@@ -165,21 +184,32 @@ class AdminPanel extends React.Component {
       segmentIdx: 0,
       activities: [],
       showPanCard: false,
+      activityListOffsetY: 0,
+      activityListItems: activityListItems,
+      draggedCard: {
+        title: '',
+        duration: '',
+        top: 0,
+        left: 0,
+      },
     };
   }
 
-  debugXY([x, y]) {
-    console.log('x', x, 'y', y);
-  }
-
   calculateTimeBlock([x, y]) {
+    if (this.state.showPanCard === false) {
+      return;
+    }
+
     const {height} = Dimensions.get('window');
 
     const timeAreaHeight =
       height - HEADER_HEIGHT - DAY_BUTTON_HEIGHT - 2 * SCREEN_PADDING;
 
+    // console.log('height', timeAreaHeight, this.state.layout.dayButtons.height);
+
     // Calculating calendar limits
     const yBegin =
+      UNSAFE_AREA_HEIGHT +
       HEADER_HEIGHT +
       this.state.layout.dayButtons.height +
       TIME_ACTIVITY_INNER_PADDING;
@@ -190,9 +220,10 @@ class AdminPanel extends React.Component {
       TIME_ACTIVITY_INNER_PADDING +
       this.state.layout.timeText.width;
 
-    const xEnd = xBegin + this.state.layout.calendar.width;
-
-    // console.debug(yBegin, yEnd, xBegin, xEnd, x, y);
+    const xEnd =
+      SCREEN_PADDING +
+      this.state.layout.calendar.width -
+      TIME_ACTIVITY_INNER_PADDING;
 
     const divisions = 13;
 
@@ -225,20 +256,13 @@ class AdminPanel extends React.Component {
   }
 
   placeActivity([x, y]) {
-    console.log(
-      'Drag activity finished',
-      x,
-      y,
-      this.state.timeBlockIdx,
-      this.state.segmentIdx,
-    );
     // Set activity
 
     const newState = _.cloneDeep(this.state);
 
     newState.activities.push({
-      title: 'Morning Routine',
-      duration: 30,
+      title: this.state.draggedCard.title,
+      duration: this.state.draggedCard.duration,
       timeBlockIdx: this.state.timeBlockIdx,
       segmentIdx: this.state.segmentIdx,
     });
@@ -246,6 +270,7 @@ class AdminPanel extends React.Component {
     newState.timeBlockIdx = -1;
     newState.segmentIdx = -1;
     newState.timeBlockSpan = 0;
+    // newState.showPanCard = false;
 
     this.setState(newState);
   }
@@ -256,12 +281,50 @@ class AdminPanel extends React.Component {
     this.setState(newState);
   }
 
-  togglePanCard() {
+  activatePanActivityCard([absX, absY, x, y]) {
+    // Y position of the click needs to be measured from the scroll View's (0, 0)
+    const absOffsetY = absY - HEADER_HEIGHT - UNSAFE_AREA_HEIGHT;
+
+    // Calculate abs position of click relative to scrollY
+    const scrollViewX = absX;
+    const scrollViewY = this.state.activityListOffsetY + absOffsetY;
+
+    // Convert ScrollViewY to card indexes
+    const cardClickedIdx = Math.floor(
+      scrollViewY / (ACTIVITY_CARD_CONTENT + ACTIVITY_CARD_MARGIN_BOTTOM),
+    );
+
+    // Top of the card needs to be at the index's top of the actual screen
+    const topPosition = absY - y;
+    const leftPosition = absX - x;
+
     if (!this.state.showPanCard) {
       this.setState({
         showPanCard: true,
+        draggedCard: {
+          title: this.state.activityListItems[cardClickedIdx].title,
+          duration: this.state.activityListItems[cardClickedIdx].duration,
+          top: topPosition,
+          left: leftPosition,
+        },
       });
     }
+  }
+
+  resetPanActivityCard() {
+    this.setState({
+      showPanCard: false,
+      draggedCard: {
+        title: '',
+        duration: 0,
+        top: 0,
+        left: 0,
+      },
+    });
+  }
+
+  handleActivityListScroll(e) {
+    this.setState({activityListOffsetY: e.nativeEvent.contentOffset.y});
   }
 
   render() {
@@ -279,17 +342,20 @@ class AdminPanel extends React.Component {
       <SafeAreaView style={styles.container}>
         <Animated.Code>
           {() => [
+            // cond(
+            //   eq(this.gestureState, State.BEGAN),
+            //   call([this.absoluteX, this.absoluteY], this.calculateTimeBlock),
+            // ),
             cond(
-              eq(this.panGestureState, State.BEGAN),
-              set(this.isDragging, 1),
+              eq(this.gestureState, State.ACTIVE),
+              call([this.absoluteX, this.absoluteY], this.calculateTimeBlock),
             ),
-            cond(
-              eq(this.panGestureState, State.ACTIVE),
-              call([this.x, this.y], this.calculateTimeBlock),
-            ),
-            cond(eq(this.panGestureState, State.END), [
-              set(this.isDragging, 0),
-              call([this.x, this.y], this.placeActivity),
+            cond(eq(this.gestureState, State.END), [
+              set(this.gestureState, -1),
+              set(this.translationX, 0),
+              set(this.translationY, 0),
+              call([], this.placeActivity),
+              call([], this.resetPanActivityCard),
             ]),
           ]}
         </Animated.Code>
@@ -297,8 +363,10 @@ class AdminPanel extends React.Component {
           {() =>
             block([
               cond(eq(this.longPressGestureState, State.ACTIVE), [
-                call([], this.togglePanCard),
-                debug('state', this.longPressGestureState),
+                call(
+                  [this.absoluteX, this.absoluteY, this.x, this.y],
+                  this.activatePanActivityCard,
+                ),
               ]),
             ])
           }
@@ -358,6 +426,9 @@ class AdminPanel extends React.Component {
                 <ActivityList
                   onPanGestureEvent={this.onPanGestureEvent}
                   onLongPressGestureEvent={this.onLongPressGestureEvent}
+                  handleScroll={this.handleActivityListScroll}
+                  activityListItems={this.state.activityListItems}
+                  reportLayout={this.reportLayout}
                 />
               </View>
             </View>
@@ -366,13 +437,28 @@ class AdminPanel extends React.Component {
         {this.state.showPanCard && (
           <Animated.View
             style={{
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 3,
+              },
+              shadowOpacity: 0.27,
+              shadowRadius: 4.65,
+
+              elevation: 6,
               position: 'absolute',
+              width: this.state.layout.scrollView.width,
+              top: this.state.draggedCard.top,
+              left: this.state.draggedCard.left,
               transform: [
                 {translateX: this.translationX},
                 {translateY: this.translationY},
               ],
             }}>
-            <AdminActivityCard title={'Morning Routine'} duration={30} />
+            <AdminActivityCard
+              title={this.state.draggedCard.title}
+              duration={this.state.draggedCard.duration}
+            />
           </Animated.View>
         )}
       </SafeAreaView>
