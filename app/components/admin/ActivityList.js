@@ -21,10 +21,13 @@ export default class ActivityList extends React.Component {
   constructor(props) {
     super(props);
 
+    this.refreshActivityList = this.refreshActivityList.bind(this);
+
     this.longPressNodes = new Map();
     this.panNodes = new Map();
 
     let activityListItems = realm.objects(ActivitySchemaKey);
+    activityListItems.addListener(this.refreshActivityList);
 
     // Generating refs for simultaneous gesture handling
     activityListItems.forEach(x => {
@@ -35,6 +38,17 @@ export default class ActivityList extends React.Component {
     this.state = {
       activityListItems,
     };
+  }
+
+  refreshActivityList(collection, changes) {
+    if (changes.insertions.length > 0) {
+      const addedActivity = collection[changes.insertions[0]];
+
+      this.longPressNodes.set(addedActivity.id, React.createRef());
+      this.panNodes.set(addedActivity.id, React.createRef());
+
+      this.forceUpdate();
+    }
   }
 
   render() {
@@ -63,7 +77,12 @@ export default class ActivityList extends React.Component {
                   activeOffsetY={[-50, 50]}
                   activeOffsetX={[-5, 5]}>
                   <Animated.View>
-                    <AdminActivityCard title={x.title} duration={x.duration} />
+                    <AdminActivityCard
+                      title={x.title}
+                      duration={x.duration}
+                      picturePath={x.picturePath}
+                      label={x.label}
+                    />
                   </Animated.View>
                 </PanGestureHandler>
               </Animated.View>

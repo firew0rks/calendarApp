@@ -12,5 +12,6 @@ ActivitySchema.schema = {
     picturePath: 'string?',
     majorEvent: 'bool',
     reminders: 'string?',
+    subactivities: 'string?[]',
   },
 };

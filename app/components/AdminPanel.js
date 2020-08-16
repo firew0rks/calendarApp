@@ -136,6 +136,7 @@ class AdminPanel extends React.Component {
     this.activatePanActivityCard = this.activatePanActivityCard.bind(this);
     this.handleActivityListScroll = this.handleActivityListScroll.bind(this);
     this.resetPanActivityCard = this.resetPanActivityCard.bind(this);
+    this.refreshActivityList = this.refreshActivityList.bind(this);
 
     this.gestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
@@ -176,6 +177,7 @@ class AdminPanel extends React.Component {
 
     // FIXME: Load activities twice (again in ActivityAdminCard.js). Should be passed down.
     let activityListItems = realm.objects(ActivitySchemaKey);
+    activityListItems.addListener(this.refreshActivityList);
 
     this.state = {
       layout: {},
@@ -195,6 +197,12 @@ class AdminPanel extends React.Component {
     };
   }
 
+  refreshActivityList(collection) {
+    this.setState({
+      activityListItems: collection,
+    });
+  }
+
   calculateTimeBlock([x, y]) {
     if (this.state.showPanCard === false) {
       return;
@@ -204,8 +212,6 @@ class AdminPanel extends React.Component {
 
     const timeAreaHeight =
       height - HEADER_HEIGHT - DAY_BUTTON_HEIGHT - 2 * SCREEN_PADDING;
-
-    // console.log('height', timeAreaHeight, this.state.layout.dayButtons.height);
 
     // Calculating calendar limits
     const yBegin =
@@ -239,7 +245,7 @@ class AdminPanel extends React.Component {
       const timeBlockIdx = Math.floor(segment / 2);
       const segmentIdx = Math.floor(segment % 2);
 
-      console.debug(segment, timeBlockIdx, segmentIdx);
+      // console.log(segment, timeBlockIdx, segmentIdx);
 
       this.setState({
         ...this.state,
@@ -304,6 +310,8 @@ class AdminPanel extends React.Component {
         draggedCard: {
           title: this.state.activityListItems[cardClickedIdx].title,
           duration: this.state.activityListItems[cardClickedIdx].duration,
+          picturePath: this.state.activityListItems[cardClickedIdx].picturePath,
+          label: this.state.activityListItems[cardClickedIdx].label,
           top: topPosition,
           left: leftPosition,
         },
@@ -458,6 +466,8 @@ class AdminPanel extends React.Component {
             <AdminActivityCard
               title={this.state.draggedCard.title}
               duration={this.state.draggedCard.duration}
+              label={this.state.draggedCard.label}
+              picturePath={this.state.draggedCard.picturePath}
             />
           </Animated.View>
         )}

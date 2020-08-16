@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Image} from 'react-native';
 import {Icon} from 'native-base';
+import {LABELS} from '../components/admin/NewActivityModal';
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: 'rgb(255, 119, 109)',
+    // backgroundColor: 'rgb(255, 119, 109)',
     borderRadius: 8,
     height: 60,
     padding: 8,
@@ -19,12 +20,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  imagePlaceholder: {
-    height: 44,
-    width: 44,
-    backgroundColor: 'magenta',
-    borderRadius: 8,
-  },
+  cardImage: {width: 44, height: 44, borderRadius: 8},
   ellipsisIcon: {
     color: 'rgb(255, 255, 255)',
     fontSize: 20,
@@ -89,9 +85,16 @@ class AdminActivityCard extends React.Component {
 
   render() {
     return (
-      <View style={styles.cardContainer}>
+      <View
+        style={[
+          styles.cardContainer,
+          {backgroundColor: LABELS[this.props.label].color},
+        ]}>
         <View style={styles.wrapper}>
-          <View style={styles.imagePlaceholder} />
+          <Image
+            source={{uri: this.props.picturePath}}
+            style={styles.cardImage}
+          />
           <View style={styles.cardTextWrapper}>
             <Text style={styles.cardTitle}>{this.props.title}</Text>
             <Text style={styles.cardDuration}>{this.props.duration} mins</Text>
@@ -123,9 +126,11 @@ export default AdminActivityCard;
 AdminActivityCard.propTypes = {
   title: PropTypes.string,
   duration: PropTypes.number,
+  picturePath: PropTypes.string,
 };
 
 AdminActivityCard.defaultProps = {
   title: 'Morning Routine',
   duration: 30,
+  // picturePath: '',
 };
