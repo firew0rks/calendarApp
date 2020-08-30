@@ -71,3 +71,20 @@ Uses React-native-vector-icon library with native-base icon component to load.
 ## Bugs
 
 - App crashes when there are no dates left on the calendar
+
+## Troubleshooting
+
+```txt
+line 2: node: command not found
+Command /bin/sh failed with exit code 127
+```
+
+When building on device, RealmJS requires a node to be set on PATH. If node is installed via nvm with no native node installation then the error shown above will be thown when trying to build to a device. To fix this issue, symlink your nvm node path with the path RealmJS is trying to look for.
+
+To find current node path:
+
+`which node`
+
+To link nvm version of node to local node
+
+`sudo link $(which node) /usr/local/bin/node`

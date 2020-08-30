@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
+import {labels} from '../constants';
 
 const ACTIVITIES = [
   {
@@ -27,19 +28,19 @@ const ACTIVITIES2 = [
 
 // Key increments by 2 because each Timeblock has 2 segments in them.
 const TIME_BLOCKS = [
-  {key: 0, time: '8', a: 'am'},
-  {key: 1, time: '9', a: 'am'},
-  {key: 2, time: '10', a: 'am'},
-  {key: 3, time: '11', a: 'am'},
-  {key: 4, time: '12', a: 'pm'},
-  {key: 5, time: '1', a: 'pm'},
-  {key: 6, time: '2', a: 'pm'},
-  {key: 7, time: '3', a: 'pm'},
-  {key: 8, time: '4', a: 'pm'},
-  {key: 9, time: '5', a: 'pm'},
-  {key: 10, time: '6', a: 'pm'},
-  {key: 11, time: '7', a: 'pm'},
-  {key: 12, time: '8', a: 'pm'},
+  {key: 0, time: '800', timeLabel: '8', a: 'am'},
+  {key: 1, time: '900', timeLabel: '9', a: 'am'},
+  {key: 2, time: '1000', timeLabel: '10', a: 'am'},
+  {key: 3, time: '1100', timeLabel: '11', a: 'am'},
+  {key: 4, time: '1200', timeLabel: '12', a: 'pm'},
+  {key: 5, time: '1300', timeLabel: '1', a: 'pm'},
+  {key: 6, time: '1400', timeLabel: '2', a: 'pm'},
+  {key: 7, time: '1500', timeLabel: '3', a: 'pm'},
+  {key: 8, time: '1600', timeLabel: '4', a: 'pm'},
+  {key: 9, time: '1700', timeLabel: '5', a: 'pm'},
+  {key: 10, time: '1800', timeLabel: '6', a: 'pm'},
+  {key: 11, time: '1900', timeLabel: '7', a: 'pm'},
+  {key: 12, time: '2000', timeLabel: '8', a: 'pm'},
 ];
 
 const styles = StyleSheet.create({
@@ -158,19 +159,29 @@ function DayButton(props) {
 }
 
 function TimeBlock(props) {
-  const {height, time, activities, highlighted, reportLayout, a} = props;
+  const {
+    height,
+    time,
+    activities,
+    highlighted,
+    draggedCard,
+    reportLayout,
+    a,
+  } = props;
   // console.log('highlighted', highlighted);
 
   // Height is calculated by subtracting the margins and dividing by segments in a block.
   const heightPerSegment = (props.height - 2 - 2) / 2;
 
   // Segment height is the height of the activity block, calculated from duration.
-  const segments = 30 / 30; // TODO: Change to duration of the dragged card.
+  const segments = draggedCard.duration / 30; // TODO: Change to duration of the dragged card.
   const segmentHeight = heightPerSegment * segments + 2 * (segments - 1);
 
   let highlightedStyle = {
     height: segmentHeight,
-    borderColor: 'hotpink',
+    borderColor: labels[draggedCard.label]
+      ? labels[draggedCard.label].color
+      : 'white', // TODO: Change here for colour of label
     borderWidth: 2,
     borderStyle: 'dashed',
     position: 'absolute',
@@ -206,14 +217,15 @@ function TimeBlock(props) {
             left: 0,
             right: 0,
             height: segmentHeight,
+            backgroundColor: labels[activity.label].opaqueColor,
           };
 
           let startTime;
           if (activity.segmentIdx === 1) {
             activityWrapperStyle.top = heightPerSegment + 2;
-            startTime = `${time}:30${a}`;
+            startTime = `${time}:30 ${a}`;
           } else {
-            startTime = `${time}${a}`;
+            startTime = `${time} ${a}`;
           }
 
           // FIXME: This needs to be absolute to be able to place items in 30 mins segments.
@@ -233,6 +245,7 @@ function AdminCalendar(props) {
   const {
     calendarHeight,
     heightPerDivision,
+    draggedCard,
     timeBlockIdx,
     segmentIdx,
     reportLayout,
@@ -267,8 +280,9 @@ function AdminCalendar(props) {
           return (
             <TimeBlock
               key={x.key}
+              draggedCard={draggedCard}
               highlighted={timeBlockIdx === x.key ? segmentIdx : null}
-              time={x.time}
+              time={x.timeLabel}
               a={x.a}
               activities={activities.filter(y => y.timeBlockIdx === x.key)}
               height={heightPerDivision}

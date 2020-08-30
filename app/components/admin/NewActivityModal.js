@@ -18,6 +18,7 @@ import ActivitySchema, {ActivitySchemaKey} from '../../database/ActivitySchema';
 import realm from '../../database/realm';
 import {v4 as uuidv4} from 'uuid';
 import ImagePicker from 'react-native-image-picker';
+import {labels} from '../../constants';
 
 const {
   Clock,
@@ -40,14 +41,6 @@ const DURATIONS = [
   {duration: 180, buttonLabel: '3 hrs'},
   {duration: -1, buttonLabel: 'Custom'},
   {duration: 720, buttonLabel: 'All Day'},
-];
-
-export const LABELS = [
-  {label: 0, color: 'rgb(130, 63, 255)'},
-  {label: 1, color: 'rgb(222, 85, 162)'},
-  {label: 2, color: 'rgb(78, 211, 153)'},
-  {label: 3, color: 'rgb(249, 172, 88)'},
-  {label: 4, color: 'rgb(255, 119, 109)'},
 ];
 
 const styles = StyleSheet.create({
@@ -351,7 +344,7 @@ export default class NewActivityModal extends React.Component {
               <View style={styles.rowSpaceBetween}>
                 <Text style={styles.labelText}>Label</Text>
                 <View style={styles.labelCircles}>
-                  {LABELS.map((x, i) => {
+                  {labels.map((x, i) => {
                     const circleStyle = {
                       ...styles.labelOuterCircle,
                       backgroundColor: x.color,

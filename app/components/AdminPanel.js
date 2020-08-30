@@ -191,6 +191,8 @@ class AdminPanel extends React.Component {
       draggedCard: {
         title: '',
         duration: '',
+        label: -1,
+        picturePath: '',
         top: 0,
         left: 0,
       },
@@ -245,7 +247,13 @@ class AdminPanel extends React.Component {
       const timeBlockIdx = Math.floor(segment / 2);
       const segmentIdx = Math.floor(segment % 2);
 
-      // console.log(segment, timeBlockIdx, segmentIdx);
+      // Don't rerender screen if nothing has changed.
+      if (
+        timeBlockIdx === this.state.timeBlockIdx &&
+        segmentIdx === this.state.segmentIdx
+      ) {
+        return;
+      }
 
       this.setState({
         ...this.state,
@@ -269,6 +277,8 @@ class AdminPanel extends React.Component {
     newState.activities.push({
       title: this.state.draggedCard.title,
       duration: this.state.draggedCard.duration,
+      label: this.state.draggedCard.label,
+      picturePath: this.state.draggedCard.picturePath,
       timeBlockIdx: this.state.timeBlockIdx,
       segmentIdx: this.state.segmentIdx,
     });
@@ -325,6 +335,8 @@ class AdminPanel extends React.Component {
       draggedCard: {
         title: '',
         duration: 0,
+        label: -1,
+        picturePath: '',
         top: 0,
         left: 0,
       },
@@ -414,6 +426,7 @@ class AdminPanel extends React.Component {
                 <AdminCalendar
                   calendarHeight={calendarDisplayHeight}
                   heightPerDivision={heightPerDivision}
+                  draggedCard={this.state.draggedCard}
                   timeBlockIdx={this.state.timeBlockIdx}
                   segmentIdx={this.state.segmentIdx}
                   reportLayout={this.reportLayout}

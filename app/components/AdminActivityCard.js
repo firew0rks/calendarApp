@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {View, Text, StyleSheet, Image} from 'react-native';
 import {Icon} from 'native-base';
-import {LABELS} from '../components/admin/NewActivityModal';
+import {labels} from '../constants';
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -88,7 +88,7 @@ class AdminActivityCard extends React.Component {
       <View
         style={[
           styles.cardContainer,
-          {backgroundColor: LABELS[this.props.label].color},
+          {backgroundColor: labels[this.props.label].color},
         ]}>
         <View style={styles.wrapper}>
           <Image
