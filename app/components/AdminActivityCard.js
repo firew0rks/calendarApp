@@ -91,10 +91,14 @@ class AdminActivityCard extends React.Component {
           {backgroundColor: labels[this.props.label].color},
         ]}>
         <View style={styles.wrapper}>
-          <Image
-            source={{uri: this.props.picturePath}}
-            style={styles.cardImage}
-          />
+          {this.props.picturePath !== '' ? (
+            <Image
+              source={{uri: this.props.picturePath}}
+              style={styles.cardImage}
+            />
+          ) : (
+            <View style={styles.cardImage} />
+          )}
           <View style={styles.cardTextWrapper}>
             <Text style={styles.cardTitle}>{this.props.title}</Text>
             <Text style={styles.cardDuration}>{this.props.duration} mins</Text>

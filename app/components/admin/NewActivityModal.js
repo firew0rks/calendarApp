@@ -19,6 +19,7 @@ import realm from '../../database/realm';
 import {v4 as uuidv4} from 'uuid';
 import ImagePicker from 'react-native-image-picker';
 import {labels} from '../../constants';
+import {randomString} from '../../helper/random';
 
 const {
   Clock,
@@ -179,6 +180,19 @@ const styles = StyleSheet.create({
   },
 });
 
+const defaultState = {
+  title: '',
+  label: 0,
+  picturePath: '',
+  durationSelected: 30,
+  majorEvent: false,
+  reminders: '',
+  showReminders: false,
+  subactivities: [],
+  focusIndex: -3, // -3 means nothing is focused.
+  errorMessage: '',
+};
+
 function Divider() {
   return <View style={styles.divider} />;
 }
@@ -191,24 +205,19 @@ export default class NewActivityModal extends React.Component {
 
     this.panY = new Value(Dimensions.get('screen').height);
 
-    this.state = {
-      title: '',
-      label: 0,
-      picturePath: '',
-      durationSelected: 30,
-      majorEvent: false,
-      reminders: '',
-      showReminders: false,
-      subactivities: [],
-      focusIndex: -3, // -3 means nothing is focused.
-    };
+    this.state = {...defaultState};
+  }
+
+  closeModal() {
+    this.setState({...defaultState});
+    this.props.setModalVisible(false);
   }
 
   handleSave() {
     try {
       realm.write(() => {
         realm.create(ActivitySchemaKey, {
-          id: uuidv4(),
+          id: randomString(),
           label: this.state.label,
           duration: this.state.durationSelected,
           title: this.state.title,
@@ -217,10 +226,14 @@ export default class NewActivityModal extends React.Component {
           subactivities: this.state.subactivities,
           reminders: this.state.reminders,
         });
-        this.props.setModalVisible(false);
+
+        this.closeModal();
       });
     } catch (err) {
-      console.log(err);
+      console.warn(err);
+      this.setState({
+        errorMessage: err,
+      });
     }
   }
 
@@ -278,16 +291,13 @@ export default class NewActivityModal extends React.Component {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={this.props.modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-        }}>
+        visible={this.props.modalVisible}>
         <View style={styles.overlay}>
           <View style={styles.container}>
             <View style={styles.modalHeader}>
               <TouchableHighlight
                 activeOpacity={0.6}
-                onPress={() => this.props.setModalVisible(false)}>
+                onPress={() => this.closeModal()}>
                 <Text style={styles.cancelText}>Cancel</Text>
               </TouchableHighlight>
             </View>
@@ -463,6 +473,9 @@ export default class NewActivityModal extends React.Component {
               })}
             </View>
             <Divider />
+            {this.state.errorMessage !== '' && (
+              <Text>{this.state.errorMessage}</Text>
+            )}
             <View style={[styles.formSpacing, {alignItems: 'flex-end'}]}>
               <Button
                 style={{width: 120, backgroundColor: 'rgb(0, 99, 255)'}}

@@ -29,23 +29,24 @@ const AppContainer = createAppContainer(RootStack);
 
 export default function App() {
   // Disables the warning messages in the app
-  console.disableYellowBox = true;
+  // console.disableYellowBox = true;
 
   const [schedule, setSchedule] = useState({});
 
   useEffect(() => {
     getPath();
-    // When app first launches, load in the file data.
-    loadScheduleData().then(data => {
-      transformScheduleData(data).then(transformedData => {
-        setSchedule(transformedData);
-      });
-    });
+    // TODO: When app first launches, load schedule from db.
+    // loadScheduleData().then(data => {
+    //   transformScheduleData(data).then(transformedData => {
+    //     setSchedule(transformedData);
+    //   });
+    // });
   }, []);
 
   return (
     <>
-      {!isEmpty(schedule) && <AppContainer screenProps={{schedule}} />}
+      <AppContainer screenProps={{schedule}} />
+      {/* {!isEmpty(schedule) && <AppContainer screenProps={{schedule}} />} */}
       {/* TODO: Error saying to input schedule file */}
     </>
   );

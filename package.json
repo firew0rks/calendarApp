@@ -12,6 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "crypto-random-string": "^3.2.0",
     "install": "^0.13.0",
     "moment": "^2.24.0",
     "native-base": "^2.13.8",

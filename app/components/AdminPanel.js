@@ -138,7 +138,7 @@ class AdminPanel extends React.Component {
     this.resetPanActivityCard = this.resetPanActivityCard.bind(this);
     this.refreshActivityList = this.refreshActivityList.bind(this);
 
-    this.gestureState = new Animated.Value(-1);
+    this.panGestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
     this.translationY = new Animated.Value(0);
     this.absoluteX = new Animated.Value(0);
@@ -156,7 +156,7 @@ class AdminPanel extends React.Component {
           // absoluteY: this.absoluteY,
           // x: this.x,
           // y: this.y,
-          state: this.gestureState,
+          state: this.panGestureState,
         },
       },
     ]);
@@ -200,6 +200,7 @@ class AdminPanel extends React.Component {
   }
 
   refreshActivityList(collection) {
+    console.debug('setState, refreshActivityList');
     this.setState({
       activityListItems: collection,
     });
@@ -255,6 +256,8 @@ class AdminPanel extends React.Component {
         return;
       }
 
+      console.debug('setState, calculateTimeBlock');
+
       this.setState({
         ...this.state,
         timeBlockIdx,
@@ -288,16 +291,23 @@ class AdminPanel extends React.Component {
     newState.timeBlockSpan = 0;
     // newState.showPanCard = false;
 
+    console.debug('setState, placeActivity');
     this.setState(newState);
   }
 
   reportLayout(key, layout) {
     const newState = JSON.parse(JSON.stringify(this.state));
     newState.layout[key] = layout;
+    console.debug('setState, reportLayout');
     this.setState(newState);
   }
 
   activatePanActivityCard([absX, absY, x, y]) {
+    // Don't need to run this function if the card is already active.
+    if (this.state.showPanCard) {
+      return;
+    }
+
     // Y position of the click needs to be measured from the scroll View's (0, 0)
     const absOffsetY = absY - HEADER_HEIGHT - UNSAFE_AREA_HEIGHT;
 
@@ -315,7 +325,9 @@ class AdminPanel extends React.Component {
     const leftPosition = absX - x;
 
     if (!this.state.showPanCard) {
+      console.debug('setState, activatePanActivityCard');
       this.setState({
+        ...this.state,
         showPanCard: true,
         draggedCard: {
           title: this.state.activityListItems[cardClickedIdx].title,
@@ -330,6 +342,7 @@ class AdminPanel extends React.Component {
   }
 
   resetPanActivityCard() {
+    console.debug('setState, resetPanActivityCard');
     this.setState({
       showPanCard: false,
       draggedCard: {
@@ -344,6 +357,7 @@ class AdminPanel extends React.Component {
   }
 
   handleActivityListScroll(e) {
+    console.debug('setState, handleActivityListScroll');
     this.setState({activityListOffsetY: e.nativeEvent.contentOffset.y});
   }
 
@@ -358,38 +372,35 @@ class AdminPanel extends React.Component {
     const heightPerDivision =
       (calendarDisplayHeight - timePadding * 2) / divisions;
 
+    console.debug('render, AdminPanel');
+
     return (
       <SafeAreaView style={styles.container}>
         <Animated.Code>
           {() => [
-            // cond(
-            //   eq(this.gestureState, State.BEGAN),
-            //   call([this.absoluteX, this.absoluteY], this.calculateTimeBlock),
-            // ),
             cond(
-              eq(this.gestureState, State.ACTIVE),
+              eq(this.panGestureState, State.ACTIVE),
               call([this.absoluteX, this.absoluteY], this.calculateTimeBlock),
             ),
-            cond(eq(this.gestureState, State.END), [
-              set(this.gestureState, -1),
+            cond(eq(this.panGestureState, State.END), [
+              set(this.panGestureState, -1),
               set(this.translationX, 0),
               set(this.translationY, 0),
               call([], this.placeActivity),
               call([], this.resetPanActivityCard),
             ]),
+            cond(eq(this.longPressGestureState, State.ACTIVE), [
+              call(
+                [this.absoluteX, this.absoluteY, this.x, this.y],
+                this.activatePanActivityCard,
+              ),
+            ]),
+            // Hide card if someone just clicks and not drags
+            cond(
+              eq(this.longPressGestureState, State.END),
+              call([], this.resetPanActivityCard),
+            ),
           ]}
-        </Animated.Code>
-        <Animated.Code>
-          {() =>
-            block([
-              cond(eq(this.longPressGestureState, State.ACTIVE), [
-                call(
-                  [this.absoluteX, this.absoluteY, this.x, this.y],
-                  this.activatePanActivityCard,
-                ),
-              ]),
-            ])
-          }
         </Animated.Code>
         <View style={styles.wrapper}>
           {/* Calendar */}
