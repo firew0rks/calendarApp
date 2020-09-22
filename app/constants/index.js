@@ -41,3 +41,20 @@ export const timeBlocks = [
   {key: 11, time: 1900, timeLabel: '7', a: 'pm'},
   {key: 12, time: 2000, timeLabel: '8', a: 'pm'},
 ];
+
+export const dayMapping = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+export const monthMapping = [
+  'January',
+  'Febuary',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];

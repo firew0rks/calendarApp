@@ -16,6 +16,9 @@ import ActivityList from './admin/ActivityList';
 import ActivityHeader from './admin/ActivityHeader';
 import ActivitySchema, {ActivitySchemaKey} from '../database/ActivitySchema';
 import realm from '../database/realm';
+import {monthMapping} from '../constants';
+import Realm from 'realm';
+import CalendarSchema, {CalendarSchemaKey} from '../database/CalendarSchema';
 
 const {set, add, block, cond, eq, call, debug} = Animated;
 
@@ -179,6 +182,14 @@ class AdminPanel extends React.Component {
     let activityListItems = realm.objects(ActivitySchemaKey);
     activityListItems.addListener(this.refreshActivityList);
 
+    // Load today's date
+    let today = new Date();
+    // this.dayOfTheWeek = today.getDay();
+    // this.dateOfTheWeek = today.getDate();
+    this.month = today.getMonth();
+
+    // console.log(dayOfTheWeek, dateOfTheWeek, month);
+
     this.state = {
       layout: {},
       timeBlockIdx: -1,
@@ -277,19 +288,26 @@ class AdminPanel extends React.Component {
 
     const newState = _.cloneDeep(this.state);
 
-    newState.activities.push({
+    const newCalendarActivity = {
       title: this.state.draggedCard.title,
       duration: this.state.draggedCard.duration,
       label: this.state.draggedCard.label,
       picturePath: this.state.draggedCard.picturePath,
       timeBlockIdx: this.state.timeBlockIdx,
       segmentIdx: this.state.segmentIdx,
-    });
+    };
+
+    newState.activities.push(newCalendarActivity);
 
     newState.timeBlockIdx = -1;
     newState.segmentIdx = -1;
     newState.timeBlockSpan = 0;
-    // newState.showPanCard = false;
+
+    Realm.open({schema: [CalendarSchema]}).then(r => {
+      r.write(() => {
+        r.create(CalendarSchemaKey, newCalendarActivity);
+      });
+    });
 
     console.debug('setState, placeActivity');
     this.setState(newState);
@@ -416,7 +434,9 @@ class AdminPanel extends React.Component {
                   <Text style={styles.backButtonText}>Back</Text>
                 </Button>
                 <View style={styles.monthTitle}>
-                  <Text style={styles.monthTitleText}>August</Text>
+                  <Text style={styles.monthTitleText}>
+                    {monthMapping[this.month]}
+                  </Text>
                   <Icon
                     type="AntDesign"
                     name="caretdown"

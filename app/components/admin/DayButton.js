@@ -1,24 +1,28 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
+import {TouchableNativeFeedback} from 'react-native-gesture-handler';
 
 export default function DayButton(props) {
   return (
-    <View
-      style={
-        props.selected
-          ? dayButtonStyles.dayButtonWrapperSelected
-          : dayButtonStyles.dayButtonWrapper
-      }>
-      <Text
+    <TouchableNativeFeedback
+      onPress={() => props.handleDayChange(props.dayOfTheWeek)}>
+      <View
         style={
           props.selected
-            ? dayButtonStyles.dayOfTheWeekTextSelected
-            : dayButtonStyles.dayOfTheWeekText
+            ? dayButtonStyles.dayButtonWrapperSelected
+            : dayButtonStyles.dayButtonWrapper
         }>
-        {props.dayOfTheWeek}
-      </Text>
-      <Text style={dayButtonStyles.dayText}>{props.day}</Text>
-    </View>
+        <Text
+          style={
+            props.selected
+              ? dayButtonStyles.dayOfTheWeekTextSelected
+              : dayButtonStyles.dayOfTheWeekText
+          }>
+          {props.dayOfTheWeek}
+        </Text>
+        <Text style={dayButtonStyles.dayText}>{props.date}</Text>
+      </View>
+    </TouchableNativeFeedback>
   );
 }
 
