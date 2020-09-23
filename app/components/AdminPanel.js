@@ -19,6 +19,7 @@ import realm from '../database/realm';
 import {monthMapping} from '../constants';
 import Realm from 'realm';
 import CalendarSchema, {CalendarSchemaKey} from '../database/CalendarSchema';
+import moment from 'moment';
 
 const {set, add, block, cond, eq, call, debug} = Animated;
 
@@ -140,6 +141,7 @@ class AdminPanel extends React.Component {
     this.handleActivityListScroll = this.handleActivityListScroll.bind(this);
     this.resetPanActivityCard = this.resetPanActivityCard.bind(this);
     this.refreshActivityList = this.refreshActivityList.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
 
     this.panGestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
@@ -182,14 +184,6 @@ class AdminPanel extends React.Component {
     let activityListItems = realm.objects(ActivitySchemaKey);
     activityListItems.addListener(this.refreshActivityList);
 
-    // Load today's date
-    let today = new Date();
-    // this.dayOfTheWeek = today.getDay();
-    // this.dateOfTheWeek = today.getDate();
-    this.month = today.getMonth();
-
-    // console.log(dayOfTheWeek, dateOfTheWeek, month);
-
     this.state = {
       layout: {},
       timeBlockIdx: -1,
@@ -207,6 +201,7 @@ class AdminPanel extends React.Component {
         top: 0,
         left: 0,
       },
+      dateViewing: moment(),
     };
   }
 
@@ -379,6 +374,12 @@ class AdminPanel extends React.Component {
     this.setState({activityListOffsetY: e.nativeEvent.contentOffset.y});
   }
 
+  handleDateChange(date) {
+    this.setState({
+      dateViewing: date,
+    });
+  }
+
   render() {
     const {height} = Dimensions.get('window');
 
@@ -435,7 +436,7 @@ class AdminPanel extends React.Component {
                 </Button>
                 <View style={styles.monthTitle}>
                   <Text style={styles.monthTitleText}>
-                    {monthMapping[this.month]}
+                    {monthMapping[moment(this.state.dateViewing).month()]}
                   </Text>
                   <Icon
                     type="AntDesign"
@@ -462,6 +463,8 @@ class AdminPanel extends React.Component {
                   segmentIdx={this.state.segmentIdx}
                   reportLayout={this.reportLayout}
                   activities={this.state.activities}
+                  dateViewing={this.state.dateViewing}
+                  handleDateChange={this.handleDateChange}
                 />
               </View>
             </View>

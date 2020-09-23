@@ -1,8 +1,14 @@
-import React, {useState, useCallback} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useState, useCallback, useEffect} from 'react';
+import {View, StyleSheet, Alert} from 'react-native';
 import TimeBlock from './admin/TimeBlock';
 import DayButton from './admin/DayButton';
 import {timeBlocks, dayMapping} from '../constants';
+import moment from 'moment';
+import {
+  FlingGestureHandler,
+  State,
+  Directions,
+} from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,19 +38,12 @@ function AdminCalendar(props) {
     segmentIdx,
     reportLayout,
     activities,
+    dateViewing,
+    handleDateChange,
   } = props;
 
-  const today = new Date();
-  const dayOfTheWeek = today.getDay();
-  const dateOfTheWeek = today.getDate();
-
-  const [selectedDate, setSelectedDate] = useState(dateOfTheWeek);
-  const [selectedDay, setSelectedDay] = useState(dayOfTheWeek);
-
-  const handleDayChange = useCallback(dayString => {
-    const idx = dayMapping.findIndex(x => x === dayString);
-    setSelectedDay(idx);
-  }, []);
+  const dayOfTheWeek = moment(dateViewing).day();
+  const date = moment(dateViewing);
 
   return (
     <View
@@ -55,65 +54,99 @@ function AdminCalendar(props) {
         onLayout={e => reportLayout('dayButtons', e.nativeEvent.layout)}>
         <DayButton
           dayOfTheWeek="Sun"
-          date={dateOfTheWeek - dayOfTheWeek}
-          selected={selectedDay === 0}
-          handleDayChange={handleDayChange}
+          date={date.clone().startOf('week')}
+          selected={dayOfTheWeek === 0}
+          handleDateChange={handleDateChange}
         />
         <DayButton
           dayOfTheWeek="Mon"
-          date={dateOfTheWeek - dayOfTheWeek + 1}
-          selected={selectedDay === 1}
-          handleDayChange={handleDayChange}
+          date={date
+            .clone()
+            .startOf('week')
+            .add(1, 'days')}
+          selected={dayOfTheWeek === 1}
+          handleDateChange={handleDateChange}
         />
         <DayButton
           dayOfTheWeek="Tue"
-          date={dateOfTheWeek - dayOfTheWeek + 2}
-          selected={selectedDay === 2}
-          handleDayChange={handleDayChange}
+          date={date
+            .clone()
+            .startOf('week')
+            .add(2, 'days')}
+          selected={dayOfTheWeek === 2}
+          handleDateChange={handleDateChange}
         />
         <DayButton
           dayOfTheWeek="Wed"
-          date={dateOfTheWeek - dayOfTheWeek + 3}
-          selected={selectedDay === 3}
-          handleDayChange={handleDayChange}
+          date={date
+            .clone()
+            .startOf('week')
+            .add(3, 'days')}
+          selected={dayOfTheWeek === 3}
+          handleDateChange={handleDateChange}
         />
         <DayButton
           dayOfTheWeek="Thu"
-          date={dateOfTheWeek - dayOfTheWeek + 4}
-          selected={selectedDay === 4}
-          handleDayChange={handleDayChange}
+          date={date
+            .clone()
+            .startOf('week')
+            .add(4, 'days')}
+          selected={dayOfTheWeek === 4}
+          handleDateChange={handleDateChange}
         />
         <DayButton
           dayOfTheWeek="Fri"
-          date={dateOfTheWeek - dayOfTheWeek + 5}
-          selected={selectedDay === 5}
-          handleDayChange={handleDayChange}
+          date={date
+            .clone()
+            .startOf('week')
+            .add(5, 'days')}
+          selected={dayOfTheWeek === 5}
+          handleDateChange={handleDateChange}
         />
         <DayButton
           dayOfTheWeek="Sat"
-          date={dateOfTheWeek - dayOfTheWeek + 6}
-          selected={selectedDay === 6}
-          handleDayChange={handleDayChange}
+          date={date
+            .clone()
+            .startOf('week')
+            .add(6, 'days')}
+          selected={dayOfTheWeek === 6}
+          handleDateChange={handleDateChange}
         />
       </View>
-      <View style={[styles.timeWrapper, {height: calendarHeight}]}>
-        {timeBlocks.map(x => {
-          return (
-            <TimeBlock
-              key={x.key}
-              timeBlockIdx={x.key}
-              draggedCard={draggedCard}
-              guiderTimeBlockIdx={timeBlockIdx}
-              guiderSegmentIdx={segmentIdx}
-              time={x.timeLabel}
-              a={x.a}
-              activities={activities}
-              height={heightPerDivision}
-              reportLayout={reportLayout}
-            />
-          );
-        })}
-      </View>
+      <FlingGestureHandler
+        direction={Directions.LEFT}
+        onHandlerStateChange={({nativeEvent}) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            handleDateChange(date.clone().add(1, 'week'));
+          }
+        }}>
+        <FlingGestureHandler
+          direction={Directions.RIGHT}
+          onHandlerStateChange={({nativeEvent}) => {
+            if (nativeEvent.state === State.ACTIVE) {
+              handleDateChange(date.clone().subtract(1, 'week'));
+            }
+          }}>
+          <View style={[styles.timeWrapper, {height: calendarHeight}]}>
+            {timeBlocks.map(x => {
+              return (
+                <TimeBlock
+                  key={x.key}
+                  timeBlockIdx={x.key}
+                  draggedCard={draggedCard}
+                  guiderTimeBlockIdx={timeBlockIdx}
+                  guiderSegmentIdx={segmentIdx}
+                  time={x.timeLabel}
+                  a={x.a}
+                  activities={activities}
+                  height={heightPerDivision}
+                  reportLayout={reportLayout}
+                />
+              );
+            })}
+          </View>
+        </FlingGestureHandler>
+      </FlingGestureHandler>
     </View>
   );
 }

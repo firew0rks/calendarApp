@@ -1,11 +1,13 @@
 import React from 'react';
+import moment from 'moment';
 import {View, StyleSheet, Text} from 'react-native';
 import {TouchableNativeFeedback} from 'react-native-gesture-handler';
 
 export default function DayButton(props) {
+  const d = moment(props.date);
+
   return (
-    <TouchableNativeFeedback
-      onPress={() => props.handleDayChange(props.dayOfTheWeek)}>
+    <TouchableNativeFeedback onPress={() => props.handleDateChange(d)}>
       <View
         style={
           props.selected
@@ -20,7 +22,7 @@ export default function DayButton(props) {
           }>
           {props.dayOfTheWeek}
         </Text>
-        <Text style={dayButtonStyles.dayText}>{props.date}</Text>
+        <Text style={dayButtonStyles.dayText}>{d.date()}</Text>
       </View>
     </TouchableNativeFeedback>
   );
