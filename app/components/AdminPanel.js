@@ -10,7 +10,11 @@ import {Button, Text, Icon} from 'native-base';
 import AdminActivityCard from './AdminActivityCard';
 import AdminCalendar from './AdminCalendar';
 import Animated from 'react-native-reanimated';
-import {PanGestureHandler, State} from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  State,
+  TouchableNativeFeedback,
+} from 'react-native-gesture-handler';
 import _ from 'lodash';
 import ActivityList from './admin/ActivityList';
 import ActivityHeader from './admin/ActivityHeader';
@@ -20,6 +24,7 @@ import {monthMapping} from '../constants';
 import Realm from 'realm';
 import CalendarSchema, {CalendarSchemaKey} from '../database/CalendarSchema';
 import moment from 'moment';
+import CalendarMenu from './admin/CalendarMenu';
 
 const {set, add, block, cond, eq, call, debug} = Animated;
 
@@ -56,6 +61,7 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 76,
+    zIndex: 2,
   },
   calendarHeader: {
     height: '100%',
@@ -119,6 +125,7 @@ const styles = StyleSheet.create({
   body: {
     display: 'flex',
     flexDirection: 'row',
+    zIndex: 1,
   },
   calendarBody: {
     height: '100%',
@@ -202,6 +209,7 @@ class AdminPanel extends React.Component {
         left: 0,
       },
       dateViewing: moment(),
+      showCalendar: false,
     };
   }
 
@@ -375,9 +383,15 @@ class AdminPanel extends React.Component {
   }
 
   handleDateChange(date) {
+    console.log('setting date', date);
     this.setState({
       dateViewing: date,
+      showCalendar: false,
     });
+  }
+
+  toggleCalendarDropdown(showCalendar) {
+    this.setState({showCalendar: showCalendar});
   }
 
   render() {
@@ -438,11 +452,22 @@ class AdminPanel extends React.Component {
                   <Text style={styles.monthTitleText}>
                     {monthMapping[moment(this.state.dateViewing).month()]}
                   </Text>
-                  <Icon
-                    type="AntDesign"
-                    name="caretdown"
-                    style={styles.monthTitleIcon}
-                  />
+                  <TouchableNativeFeedback
+                    onPress={() =>
+                      this.toggleCalendarDropdown(!this.state.showCalendar)
+                    }>
+                    <Icon
+                      type="AntDesign"
+                      name="caretdown"
+                      style={styles.monthTitleIcon}
+                    />
+                  </TouchableNativeFeedback>
+                  {this.state.showCalendar && (
+                    <CalendarMenu
+                      dateViewing={this.state.dateViewing}
+                      handleDateChange={this.handleDateChange}
+                    />
+                  )}
                 </View>
                 <Button style={styles.settingsButton}>
                   <Icon

@@ -5,7 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "ipad": "react-native run-ios --simulator 'iPad Air (3rd generation)'",
+    "ipad": "react-native run-ios --simulator 'iPad Air (4th generation)'",
     "device": "react-native run-ios --device 'Liquid’s iPad'",
     "start": "react-native start --reset-cache",
     "test": "jest",
