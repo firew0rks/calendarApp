@@ -66,8 +66,17 @@ export default function TimeBlock(props) {
     x => x.timeBlockIdx === timeBlockIdx,
   );
 
+  // console.log(
+  //   activities,
+  //   draggedCard,
+  //   timeBlockIdx,
+  //   guiderSegmentIdx,
+  //   guiderTimeBlockIdx,
+  // );
+
   let highlightedStyle;
   if (showHighlight) {
+    // console.log('inShowHighlight', showHighlight, draggedCard);
     // Segment height is the height of the activity block, calculated from duration.
     const segments = draggedCard.duration / 30;
     const segmentHeight = heightPerSegment * segments + 2 * (segments - 1);

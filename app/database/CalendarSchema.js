@@ -1,12 +1,14 @@
+import Realm from 'realm';
+
 export const CalendarSchemaKey = 'Calendar';
 
-export default class CalendarSchema {}
+export default class CalendarSchema extends Realm.Object {}
 
 CalendarSchema.schema = {
   name: CalendarSchemaKey,
   properties: {
-    startDate: 'date',
-    endDate: 'date',
+    startDatetime: 'date',
+    endDatetime: 'date',
     title: 'string',
     label: 'int',
     picturePath: 'string',

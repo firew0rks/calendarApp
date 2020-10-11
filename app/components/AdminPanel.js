@@ -20,7 +20,7 @@ import ActivityList from './admin/ActivityList';
 import ActivityHeader from './admin/ActivityHeader';
 import ActivitySchema, {ActivitySchemaKey} from '../database/ActivitySchema';
 import realm from '../database/realm';
-import {monthMapping} from '../constants';
+import {monthMapping, timeBlocks} from '../constants';
 import Realm from 'realm';
 import CalendarSchema, {CalendarSchemaKey} from '../database/CalendarSchema';
 import moment from 'moment';
@@ -191,6 +191,20 @@ class AdminPanel extends React.Component {
     let activityListItems = realm.objects(ActivitySchemaKey);
     activityListItems.addListener(this.refreshActivityList);
 
+    const events = realm.objects(CalendarSchemaKey).filtered(
+      'startDatetime >= $0 && startDatetime < $1',
+      moment()
+        .startOf('day')
+        .toDate(),
+      moment()
+        .endOf('day')
+        .toDate(),
+    );
+    // activities1.addListener(this.refreshActivities);
+    this.events = events;
+
+    console.log('placed activities', events, moment().toDate());
+
     this.state = {
       layout: {},
       timeBlockIdx: -1,
@@ -210,11 +224,17 @@ class AdminPanel extends React.Component {
       },
       dateViewing: moment(),
       showCalendar: false,
+      events: events,
     };
   }
 
   refreshActivityList(collection) {
-    console.debug('setState, refreshActivityList');
+    this.setState({
+      activityListItems: collection,
+    });
+  }
+
+  refreshActivities(collection) {
     this.setState({
       activityListItems: collection,
     });
@@ -306,20 +326,43 @@ class AdminPanel extends React.Component {
     newState.segmentIdx = -1;
     newState.timeBlockSpan = 0;
 
-    Realm.open({schema: [CalendarSchema]}).then(r => {
-      r.write(() => {
-        r.create(CalendarSchemaKey, newCalendarActivity);
-      });
+    console.log(this.state.timeBlockIdx, this.state.segmentIdx);
+
+    // Date viewing + timeBlockIdx + segmentIdx = startDate/endDate
+    // Convert timeblock and segmentblock to hours and minutes
+    // Make sure dateViewing is only "date"
+    const hour = timeBlocks[this.state.timeBlockIdx].time;
+    const minutes = this.state.segmentIdx * 30;
+
+    const startDatetime = moment(this.state.dateViewing)
+      .clone()
+      .startOf('day')
+      .hour(hour)
+      .minutes(minutes);
+    const endDatetime = startDatetime
+      .clone()
+      .add(this.state.draggedCard.duration, 'minutes');
+
+    const activityToSave = {
+      title: this.state.draggedCard.title,
+      label: this.state.draggedCard.label,
+      picturePath: this.state.draggedCard.picturePath,
+      startDatetime: startDatetime.toDate(),
+      endDatetime: endDatetime.toDate(),
+    };
+
+    console.log('activityToSave', activityToSave);
+
+    realm.write(() => {
+      realm.create(CalendarSchemaKey, activityToSave);
     });
 
-    console.debug('setState, placeActivity');
     this.setState(newState);
   }
 
   reportLayout(key, layout) {
     const newState = JSON.parse(JSON.stringify(this.state));
     newState.layout[key] = layout;
-    console.debug('setState, reportLayout');
     this.setState(newState);
   }
 
@@ -346,7 +389,6 @@ class AdminPanel extends React.Component {
     const leftPosition = absX - x;
 
     if (!this.state.showPanCard) {
-      console.debug('setState, activatePanActivityCard');
       this.setState({
         ...this.state,
         showPanCard: true,
@@ -363,7 +405,6 @@ class AdminPanel extends React.Component {
   }
 
   resetPanActivityCard() {
-    console.debug('setState, resetPanActivityCard');
     this.setState({
       showPanCard: false,
       draggedCard: {
@@ -378,12 +419,10 @@ class AdminPanel extends React.Component {
   }
 
   handleActivityListScroll(e) {
-    console.debug('setState, handleActivityListScroll');
     this.setState({activityListOffsetY: e.nativeEvent.contentOffset.y});
   }
 
   handleDateChange(date) {
-    console.log('setting date', date);
     this.setState({
       dateViewing: date,
       showCalendar: false,
@@ -404,8 +443,6 @@ class AdminPanel extends React.Component {
     const timePadding = 8;
     const heightPerDivision =
       (calendarDisplayHeight - timePadding * 2) / divisions;
-
-    console.debug('render, AdminPanel');
 
     return (
       <SafeAreaView style={styles.container}>
@@ -490,6 +527,7 @@ class AdminPanel extends React.Component {
                   activities={this.state.activities}
                   dateViewing={this.state.dateViewing}
                   handleDateChange={this.handleDateChange}
+                  events={this.state.events}
                 />
               </View>
             </View>

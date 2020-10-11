@@ -131,6 +131,7 @@ AdminActivityCard.propTypes = {
   title: PropTypes.string,
   duration: PropTypes.number,
   picturePath: PropTypes.string,
+  label: PropTypes.number,
 };
 
 AdminActivityCard.defaultProps = {

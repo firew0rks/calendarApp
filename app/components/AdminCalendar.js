@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useMemo} from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
 import TimeBlock from './admin/TimeBlock';
 import DayButton from './admin/DayButton';
@@ -29,6 +29,51 @@ const styles = StyleSheet.create({
   },
 });
 
+/** Converts start/endDatetime to timeBlockIdx, segmentblockIdx and duration
+ *
+ * activities coming into this reduce function is already filtered
+ * to the specific viewed day. This function does not check for same
+ * dates but only compares hours.
+ *
+ * @param {*} activities
+ * @return {timeBlockedActivities[]}
+ */
+function separateToTimeBlocks(activities) {
+  let acc = new Array(12);
+  console.log(activities, activities.length);
+  for (var i = 0; i < activities.length; i++) {
+    console.log('heree');
+    const curr = activities[i];
+    const startDatetime = moment(curr.startDatetime);
+    const endDatetime = moment(curr.endDatetime);
+    const duration = endDatetime.diff(startDatetime, 'minutes', true);
+
+    const startHour = moment(curr.startDatetime).hour();
+    const startMinute = moment(curr.startDatetime).minutes();
+
+    // Dividing by 100 to get 24h time
+    const timeBlockIdxObj = timeBlocks.find(x => x.time === startHour);
+    const timeBlockIdx = timeBlockIdxObj.key;
+    const segmentIdx = startMinute === 30 ? 1 : 0;
+
+    const act = {};
+    act.title = curr.title;
+    act.timeBlockIdx = timeBlockIdx;
+    act.segmentIdx = segmentIdx;
+    act.duration = duration;
+
+    if (acc[timeBlockIdx] === undefined) {
+      console.log('creating array for ', timeBlockIdx);
+      acc[timeBlockIdx] = [];
+    }
+
+    console.log('pushing into', timeBlockIdx, act);
+    acc[timeBlockIdx].push(act);
+  }
+
+  return acc;
+}
+
 function AdminCalendar(props) {
   const {
     calendarHeight,
@@ -40,10 +85,18 @@ function AdminCalendar(props) {
     activities,
     dateViewing,
     handleDateChange,
+    events,
   } = props;
 
   const dayOfTheWeek = moment(dateViewing).day();
   const date = moment(dateViewing);
+
+  // const timeBlockedActivities = useCallback(() => {}, [activities]);
+  const timeBlockedActivities = useMemo(() => separateToTimeBlocks(events), [
+    events,
+  ]);
+
+  console.log('tba', timeBlockedActivities);
 
   return (
     <View

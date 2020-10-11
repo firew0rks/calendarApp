@@ -27,19 +27,19 @@ export const labels = [
 ];
 
 export const timeBlocks = [
-  {key: 0, time: 800, timeLabel: '8', a: 'am'},
-  {key: 1, time: 900, timeLabel: '9', a: 'am'},
-  {key: 2, time: 1000, timeLabel: '10', a: 'am'},
-  {key: 3, time: 1100, timeLabel: '11', a: 'am'},
-  {key: 4, time: 1200, timeLabel: '12', a: 'pm'},
-  {key: 5, time: 1300, timeLabel: '1', a: 'pm'},
-  {key: 6, time: 1400, timeLabel: '2', a: 'pm'},
-  {key: 7, time: 1500, timeLabel: '3', a: 'pm'},
-  {key: 8, time: 1600, timeLabel: '4', a: 'pm'},
-  {key: 9, time: 1700, timeLabel: '5', a: 'pm'},
-  {key: 10, time: 1800, timeLabel: '6', a: 'pm'},
-  {key: 11, time: 1900, timeLabel: '7', a: 'pm'},
-  {key: 12, time: 2000, timeLabel: '8', a: 'pm'},
+  {key: 0, time: 8, timeLabel: '8', a: 'am'},
+  {key: 1, time: 9, timeLabel: '9', a: 'am'},
+  {key: 2, time: 10, timeLabel: '10', a: 'am'},
+  {key: 3, time: 11, timeLabel: '11', a: 'am'},
+  {key: 4, time: 12, timeLabel: '12', a: 'pm'},
+  {key: 5, time: 13, timeLabel: '1', a: 'pm'},
+  {key: 6, time: 14, timeLabel: '2', a: 'pm'},
+  {key: 7, time: 15, timeLabel: '3', a: 'pm'},
+  {key: 8, time: 16, timeLabel: '4', a: 'pm'},
+  {key: 9, time: 17, timeLabel: '5', a: 'pm'},
+  {key: 10, time: 18, timeLabel: '6', a: 'pm'},
+  {key: 11, time: 19, timeLabel: '7', a: 'pm'},
+  {key: 12, time: 20, timeLabel: '8', a: 'pm'},
 ];
 
 export const dayMapping = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
