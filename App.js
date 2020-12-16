@@ -7,6 +7,7 @@ import {
 import DayActivity from './app/components/DayActivity';
 import NowActivity from './app/components/NowActivity';
 import AdminPanel from './app/components/AdminPanel';
+import AdminPanel2 from './app/components/AdminPanel2';
 import isEmpty from 'lodash/isEmpty';
 
 // React Nav
@@ -18,6 +19,7 @@ const RootStack = createStackNavigator(
     Now: NowActivity,
     Day: DayActivity,
     Admin: AdminPanel,
+    Admin2: AdminPanel2,
   },
   {
     initialRouteName: 'Admin',
@@ -31,11 +33,11 @@ export default function App() {
   // Disables the warning messages in the app
   // console.disableYellowBox = true;
 
-  const [schedule, setSchedule] = useState({});
+  const [schedule, setSchedule] = useState({'hello': 'world'});
 
   useEffect(() => {
-    getPath();
-    // TODO: When app first launches, load schedule from db.
+    // getPath();
+    // // When app first launches, load in the file data.
     // loadScheduleData().then(data => {
     //   transformScheduleData(data).then(transformedData => {
     //     setSchedule(transformedData);

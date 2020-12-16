@@ -9,7 +9,7 @@ import {
 } from 'react-native-gesture-handler';
 import _ from 'lodash';
 import ActivitySchema, {ActivitySchemaKey} from '../../database/ActivitySchema';
-import realm from '../../database/realm';
+// import realm from '../../database/realm';
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -26,17 +26,17 @@ export default class ActivityList extends React.Component {
     this.longPressNodes = new Map();
     this.panNodes = new Map();
 
-    let activityListItems = realm.objects(ActivitySchemaKey);
-    activityListItems.addListener(this.refreshActivityList);
+    // let activityListItems = realm.objects(ActivitySchemaKey);
+    // activityListItems.addListener(this.refreshActivityList);
 
-    // Generating refs for simultaneous gesture handling
-    activityListItems.forEach(x => {
-      this.longPressNodes.set(x.id, React.createRef());
-      this.panNodes.set(x.id, React.createRef());
-    });
+    // // Generating refs for simultaneous gesture handling
+    // activityListItems.forEach(x => {
+    //   this.longPressNodes.set(x.id, React.createRef());
+    //   this.panNodes.set(x.id, React.createRef());
+    // });
 
     this.state = {
-      activityListItems,
+      activityListItems: [],
     };
   }
 

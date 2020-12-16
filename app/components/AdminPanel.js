@@ -18,13 +18,14 @@ import {
 import _ from 'lodash';
 import ActivityList from './admin/ActivityList';
 import ActivityHeader from './admin/ActivityHeader';
-import ActivitySchema, {ActivitySchemaKey} from '../database/ActivitySchema';
-import realm from '../database/realm';
+// import ActivitySchema, {ActivitySchemaKey} from '../database/ActivitySchema';
+// import realm from '../database/realm';
 import {monthMapping, timeBlocks} from '../constants';
-import Realm from 'realm';
+// import Realm from 'realm';
 import CalendarSchema, {CalendarSchemaKey} from '../database/CalendarSchema';
 import moment from 'moment';
 import CalendarMenu from './admin/CalendarMenu';
+import DatabaseHelper from '../components/sqlite';
 
 const {set, add, block, cond, eq, call, debug} = Animated;
 
@@ -188,22 +189,22 @@ class AdminPanel extends React.Component {
     ]);
 
     // FIXME: Load activities twice (again in ActivityAdminCard.js). Should be passed down.
-    let activityListItems = realm.objects(ActivitySchemaKey);
-    activityListItems.addListener(this.refreshActivityList);
+    // let activityListItems = realm.objects(ActivitySchemaKey);
+    // activityListItems.addListener(this.refreshActivityList);
 
-    const events = realm.objects(CalendarSchemaKey).filtered(
-      'startDatetime >= $0 && startDatetime < $1',
-      moment()
-        .startOf('day')
-        .toDate(),
-      moment()
-        .endOf('day')
-        .toDate(),
-    );
-    // activities1.addListener(this.refreshActivities);
-    this.events = events;
+    // const events = realm.objects(CalendarSchemaKey).filtered(
+    //   'startDatetime >= $0 && startDatetime < $1',
+    //   moment()
+    //     .startOf('day')
+    //     .toDate(),
+    //   moment()
+    //     .endOf('day')
+    //     .toDate(),
+    // );
+    // // activities1.addListener(this.refreshActivities);
+    // this.events = events;
 
-    console.log('placed activities', events, moment().toDate());
+    // console.log('placed activities', events, moment().toDate());
 
     this.state = {
       layout: {},
@@ -213,7 +214,7 @@ class AdminPanel extends React.Component {
       activities: [],
       showPanCard: false,
       activityListOffsetY: 0,
-      activityListItems: activityListItems,
+      activityListItems: [],
       draggedCard: {
         title: '',
         duration: '',
@@ -224,8 +225,27 @@ class AdminPanel extends React.Component {
       },
       dateViewing: moment(),
       showCalendar: false,
-      events: events,
+      events: [],
     };
+  }
+
+  UNSAFE_componentWillMount() {
+    this.getActivityList();
+  }
+
+  async getActivityList() {
+    try {
+      const activityList = await DatabaseHelper.getActivityList();
+
+      console.log(`### ${activityList}`);
+  
+      this.setState({
+        activityListItems: activityList,
+      });
+    } catch (err) {
+      console.log('err', err);
+    }
+    
   }
 
   refreshActivityList(collection) {
@@ -353,9 +373,9 @@ class AdminPanel extends React.Component {
 
     console.log('activityToSave', activityToSave);
 
-    realm.write(() => {
-      realm.create(CalendarSchemaKey, activityToSave);
-    });
+    // realm.write(() => {
+    //   realm.create(CalendarSchemaKey, activityToSave);
+    // });
 
     this.setState(newState);
   }

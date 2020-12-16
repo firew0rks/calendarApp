@@ -1,8 +1,7 @@
-import Realm from 'realm';
-import ActivitySchema from './ActivitySchema';
-import CalendarSchema from './CalendarSchema';
+// import Realm from 'realm';
+// import ActivitySchema from './ActivitySchema';
 
-export default new Realm({
-  schema: [ActivitySchema, CalendarSchema],
-  deleteRealmIfMigrationNeeded: true,
-});
+// export default new Realm({
+//   schema: [ActivitySchema],
+//   deleteRealmIfMigrationNeeded: true,
+// });

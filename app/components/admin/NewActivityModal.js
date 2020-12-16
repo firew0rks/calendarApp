@@ -13,13 +13,11 @@ import {
 } from 'react-native';
 import Animated, {Easing} from 'react-native-reanimated';
 import {Button, Icon, Switch, Input} from 'native-base';
-// import Realm from 'realm';
-import ActivitySchema, {ActivitySchemaKey} from '../../database/ActivitySchema';
-import realm from '../../database/realm';
 import {v4 as uuidv4} from 'uuid';
 import ImagePicker from 'react-native-image-picker';
 import {labels} from '../../constants';
 import {randomString} from '../../helper/random';
+import DatabaseHelper from '../sqlite';
 
 const {
   Clock,
@@ -213,22 +211,37 @@ export default class NewActivityModal extends React.Component {
     this.props.setModalVisible(false);
   }
 
-  handleSave() {
-    try {
-      realm.write(() => {
-        realm.create(ActivitySchemaKey, {
-          id: randomString(),
-          label: this.state.label,
-          duration: this.state.durationSelected,
-          title: this.state.title,
-          majorEvent: this.state.majorEvent,
-          picturePath: this.state.picturePath,
-          subactivities: this.state.subactivities,
-          reminders: this.state.reminders,
-        });
+  async handleSave() {
+    // try {
+    //   realm.write(() => {
+        // realm.create(ActivitySchemaKey, {
+        //   id: uuidv4(),
+        //   label: this.state.label,
+        //   duration: this.state.durationSelected,
+        //   title: this.state.title,
+        //   majorEvent: this.state.majorEvent,
+        //   picturePath: this.state.picturePath,
+        //   subactivities: this.state.subactivities,
+        //   reminders: this.state.reminders,
+        // });
+        // this.props.setModalVisible(false);
+    //   });
+    // } catch (err) {
+    //   console.log(err);
+    // }
 
-        this.closeModal();
+    try {
+      await DatabaseHelper.createActivity({
+        id: uuidv4(),
+        label: this.state.label,
+        duration: this.state.durationSelected,
+        title: this.state.title,
+        majorEvent: this.state.majorEvent,
+        picturePath: this.state.picturePath,
+        subactivities: this.state.subactivities,
+        reminders: this.state.reminders,
       });
+      this.props.setModalVisible(false);
     } catch (err) {
       console.warn(err);
       this.setState({
