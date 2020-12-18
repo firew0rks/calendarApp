@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
  */
 function separateToTimeBlocks(activities) {
   let acc = new Array(12);
-  console.log(activities, activities.length);
+  // console.log(activities, activities.length);
   for (var i = 0; i < activities.length; i++) {
     console.log('heree');
     const curr = activities[i];
@@ -85,18 +85,12 @@ function AdminCalendar(props) {
     activities,
     dateViewing,
     handleDateChange,
-    events,
   } = props;
 
   const dayOfTheWeek = moment(dateViewing).day();
   const date = moment(dateViewing);
 
-  // const timeBlockedActivities = useCallback(() => {}, [activities]);
-  const timeBlockedActivities = useMemo(() => separateToTimeBlocks(events), [
-    events,
-  ]);
-
-  console.log('tba', timeBlockedActivities);
+  console.log('Running admin cal');
 
   return (
     <View
@@ -204,4 +198,4 @@ function AdminCalendar(props) {
   );
 }
 
-export default AdminCalendar;
+export default React.memo(AdminCalendar);

@@ -26,8 +26,10 @@ import CalendarSchema, {CalendarSchemaKey} from '../database/CalendarSchema';
 import moment from 'moment';
 import CalendarMenu from './admin/CalendarMenu';
 import DatabaseHelper from '../components/sqlite';
+import {isCardPlaceable} from '../helper/isCardPlaceable';
+// import DatabaseHelper from '../components/sqlite/index.callback';
 
-const {set, add, block, cond, eq, call, debug} = Animated;
+const {set, add, block, cond, eq, call, debug, and, lessOrEq} = Animated;
 
 const UNSAFE_AREA_HEIGHT = 24;
 const HEADER_HEIGHT = 76;
@@ -150,12 +152,15 @@ class AdminPanel extends React.Component {
     this.resetPanActivityCard = this.resetPanActivityCard.bind(this);
     this.refreshActivityList = this.refreshActivityList.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
+    this.setModalVisible = this.setModalVisible.bind(this);
 
     this.panGestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
     this.translationY = new Animated.Value(0);
     this.absoluteX = new Animated.Value(0);
     this.absoluteY = new Animated.Value(0);
+    this.velocityX = new Animated.Value(0);
+    this.velocityY = new Animated.Value(0);
     this.x = new Animated.Value(0);
     this.y = new Animated.Value(0);
 
@@ -165,6 +170,8 @@ class AdminPanel extends React.Component {
         nativeEvent: {
           translationX: this.translationX,
           translationY: this.translationY,
+          velocityX: this.velocityX,
+          velocityY: this.velocityY,
           // absoluteX: this.absoluteX,
           // absoluteY: this.absoluteY,
           // x: this.x,
@@ -225,27 +232,23 @@ class AdminPanel extends React.Component {
       },
       dateViewing: moment(),
       showCalendar: false,
-      events: [],
+      modalVisible: false,
     };
-  }
 
-  UNSAFE_componentWillMount() {
     this.getActivityList();
   }
 
   async getActivityList() {
     try {
+      console.log('Calling getActivityList');
       const activityList = await DatabaseHelper.getActivityList();
 
-      console.log(`### ${activityList}`);
-  
       this.setState({
         activityListItems: activityList,
       });
     } catch (err) {
       console.log('err', err);
     }
-    
   }
 
   refreshActivityList(collection) {
@@ -264,6 +267,7 @@ class AdminPanel extends React.Component {
     if (this.state.showPanCard === false) {
       return;
     }
+    console.time('calculateTimeBlock');
 
     const {height} = Dimensions.get('window');
 
@@ -302,6 +306,8 @@ class AdminPanel extends React.Component {
       const timeBlockIdx = Math.floor(segment / 2);
       const segmentIdx = Math.floor(segment % 2);
 
+      console.timeEnd('calculateTimeBlock');
+
       // Don't rerender screen if nothing has changed.
       if (
         timeBlockIdx === this.state.timeBlockIdx &&
@@ -310,7 +316,7 @@ class AdminPanel extends React.Component {
         return;
       }
 
-      console.debug('setState, calculateTimeBlock');
+      // console.debug('setState, calculateTimeBlock');
 
       this.setState({
         ...this.state,
@@ -331,51 +337,57 @@ class AdminPanel extends React.Component {
 
     const newState = _.cloneDeep(this.state);
 
-    const newCalendarActivity = {
-      title: this.state.draggedCard.title,
-      duration: this.state.draggedCard.duration,
-      label: this.state.draggedCard.label,
-      picturePath: this.state.draggedCard.picturePath,
-      timeBlockIdx: this.state.timeBlockIdx,
-      segmentIdx: this.state.segmentIdx,
-    };
-
-    newState.activities.push(newCalendarActivity);
-
     newState.timeBlockIdx = -1;
     newState.segmentIdx = -1;
     newState.timeBlockSpan = 0;
 
-    console.log(this.state.timeBlockIdx, this.state.segmentIdx);
+    const cardPlaceable = isCardPlaceable(
+      newState.activities,
+      this.state.draggedCard.duration,
+      this.state.segmentIdx,
+      this.state.timeBlockIdx,
+    );
 
-    // Date viewing + timeBlockIdx + segmentIdx = startDate/endDate
-    // Convert timeblock and segmentblock to hours and minutes
-    // Make sure dateViewing is only "date"
-    const hour = timeBlocks[this.state.timeBlockIdx].time;
-    const minutes = this.state.segmentIdx * 30;
+    // Card is not placeable if there is already something occupying that timeslot.
+    if (cardPlaceable) {
+      newState.activities.push({
+        title: this.state.draggedCard.title,
+        duration: this.state.draggedCard.duration,
+        label: this.state.draggedCard.label,
+        picturePath: this.state.draggedCard.picturePath,
+        timeBlockIdx: this.state.timeBlockIdx,
+        segmentIdx: this.state.segmentIdx,
+      });
 
-    const startDatetime = moment(this.state.dateViewing)
-      .clone()
-      .startOf('day')
-      .hour(hour)
-      .minutes(minutes);
-    const endDatetime = startDatetime
-      .clone()
-      .add(this.state.draggedCard.duration, 'minutes');
+      // Date viewing + timeBlockIdx + segmentIdx = startDate/endDate
+      // Convert timeblock and segmentblock to hours and minutes
+      // Make sure dateViewing is only "date"
+      const hour = timeBlocks[this.state.timeBlockIdx].time;
+      const minutes = this.state.segmentIdx * 30;
 
-    const activityToSave = {
-      title: this.state.draggedCard.title,
-      label: this.state.draggedCard.label,
-      picturePath: this.state.draggedCard.picturePath,
-      startDatetime: startDatetime.toDate(),
-      endDatetime: endDatetime.toDate(),
-    };
+      const startDatetime = moment(this.state.dateViewing)
+        .clone()
+        .startOf('day')
+        .hour(hour)
+        .minutes(minutes);
+      const endDatetime = startDatetime
+        .clone()
+        .add(this.state.draggedCard.duration, 'minutes');
 
-    console.log('activityToSave', activityToSave);
+      const activityToSave = {
+        title: this.state.draggedCard.title,
+        label: this.state.draggedCard.label,
+        picturePath: this.state.draggedCard.picturePath,
+        startDatetime: startDatetime.toDate(),
+        endDatetime: endDatetime.toDate(),
+      };
 
-    // realm.write(() => {
-    //   realm.create(CalendarSchemaKey, activityToSave);
-    // });
+      console.log('activityToSave', activityToSave);
+
+      // realm.write(() => {
+      //   realm.create(CalendarSchemaKey, activityToSave);
+      // });
+    }
 
     this.setState(newState);
   }
@@ -453,6 +465,11 @@ class AdminPanel extends React.Component {
     this.setState({showCalendar: showCalendar});
   }
 
+  setModalVisible(value) {
+    this.setState({modalVisible: value});
+    this.getActivityList();
+  }
+
   render() {
     const {height} = Dimensions.get('window');
 
@@ -469,7 +486,11 @@ class AdminPanel extends React.Component {
         <Animated.Code>
           {() => [
             cond(
-              eq(this.panGestureState, State.ACTIVE),
+              and(
+                eq(this.panGestureState, State.ACTIVE),
+                // lessOrEq(this.velocityX, 1),
+                // lessOrEq(this.velocityY, 1),
+              ),
               call([this.absoluteX, this.absoluteY], this.calculateTimeBlock),
             ),
             cond(eq(this.panGestureState, State.END), [
@@ -547,7 +568,6 @@ class AdminPanel extends React.Component {
                   activities={this.state.activities}
                   dateViewing={this.state.dateViewing}
                   handleDateChange={this.handleDateChange}
-                  events={this.state.events}
                 />
               </View>
             </View>
@@ -556,7 +576,10 @@ class AdminPanel extends React.Component {
           <View style={styles.activitesPanel}>
             <View style={styles.header}>
               <View style={styles.activitiesHeader}>
-                <ActivityHeader />
+                <ActivityHeader
+                  modalVisible={this.state.modalVisible}
+                  setModalVisible={this.setModalVisible}
+                />
               </View>
             </View>
             <View style={styles.body}>

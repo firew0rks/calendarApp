@@ -232,18 +232,18 @@ export default class NewActivityModal extends React.Component {
 
     try {
       await DatabaseHelper.createActivity({
-        id: uuidv4(),
+        id: randomString(),
         label: this.state.label,
         duration: this.state.durationSelected,
         title: this.state.title,
         majorEvent: this.state.majorEvent,
         picturePath: this.state.picturePath,
-        subactivities: this.state.subactivities,
+        subactivities: JSON.stringify(this.state.subactivities),
         reminders: this.state.reminders,
       });
       this.props.setModalVisible(false);
     } catch (err) {
-      console.warn(err);
+      console.log('Error occured creating Activity', err);
       this.setState({
         errorMessage: err,
       });

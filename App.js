@@ -36,7 +36,7 @@ export default function App() {
   const [schedule, setSchedule] = useState({'hello': 'world'});
 
   useEffect(() => {
-    // getPath();
+    getPath();
     // // When app first launches, load in the file data.
     // loadScheduleData().then(data => {
     //   transformScheduleData(data).then(transformedData => {

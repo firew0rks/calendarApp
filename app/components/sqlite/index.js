@@ -9,9 +9,19 @@ class DatabaseHelper {
   database_size = 200000;
 
   constructor() {
-    if (!this.db) {
-      this.openDatabase();
+    this.openDatabase().then(db => {
+      // db.close();
+    });
+  }
+
+  _transformToArray(results) {
+    let resultsArray = [];
+
+    for (var i = 0; i < results.rows.length; i++) {
+      resultsArray.push(results.rows.item(i));
     }
+
+    return resultsArray;
   }
 
   openDatabase() {
@@ -24,14 +34,17 @@ class DatabaseHelper {
         this._openDatabaseSuccess,
         this._openDatabaseError,
       )
-        .then(async db => {
-          await this.initDatabase(db);
-          this.db = db;
-          resolve(db);
+        .then(async DB => {
+          await this.initDatabase(DB);
+          resolve(DB);
         })
         .catch(err => reject(err));
     });
   }
+
+  // openDatabase() {
+  //   return SQLite.openDatabase({name: this.database_name});
+  // }
 
   closeDatabase() {
     if (this.db) {
@@ -56,19 +69,19 @@ class DatabaseHelper {
     }
   }
 
-  async initDatabase(db) {
+  async initDatabase(DB) {
     try {
-      await db.transaction(tx => {
+      await DB.transaction(tx => {
         tx.executeSql(
           'CREATE TABLE IF NOT EXISTS ActivityList ( ' +
-            'id INTEGER PRIMARY KEY NOT NULL, ' +
+            'id VARCHAR PRIMARY KEY NOT NULL, ' +
             'label INTEGER NOT NULL, ' +
             'duration INTEGER NOT NULL, ' +
             'title VARCHAR NOT NULL, ' +
             'picturePath VARCHAR, ' +
             'majorEvent BOOLEAN NOT NULL, ' +
             'reminders VARCHAR, ' +
-            'subactivites VARCHAR );',
+            'subactivities VARCHAR );',
         );
       });
 
@@ -88,7 +101,7 @@ class DatabaseHelper {
     //       'picturePath VARCHAR, ' +
     //       'majorEvent BOOLEAN NOT NULL, ' +
     //       'reminders VARCHAR, ' +
-    //       'subactivites VARCHAR );',
+    //       'subactivities VARCHAR );',
     //   );
 
     //   // TODO Create CalendarActivityList
@@ -104,44 +117,104 @@ class DatabaseHelper {
     //   });
   }
 
+  // getActivityList() {
+  //   return new Promise(async (resolve, reject) => {
+  //     if (!db) {
+  //       console.log('getActivityList, db not opened so opening');
+  //       await this.openDatabase();
+  //     }
+
+  //     console.log('Executing get', db);
+  //     db.executeSql('SELECT * FROM ActivityList;')
+  //       .then(([results]) => {
+  //         console.log('##tx', results);
+  //         resolve(this._transformToArray(results));
+  //       })
+  //       .catch(err => reject(err));
+  //   });
+  // }
+
   getActivityList() {
     return new Promise((resolve, reject) => {
-      if (this.db) {
-        this.db
+      SQLite.openDatabase({name: this.database_name}).then(instance => {
+        instance
           .executeSql('SELECT * FROM ActivityList;')
-          .then((_, results) => resolve(results))
+          .then(([results]) => {
+            console.log(results);
+            const resultArray = this._transformToArray(results);
+            resolve(resultArray);
+          })
+          .catch(err => {
+            reject(err);
+          })
           .catch(err => reject(err));
-      } else {
-        return reject('!!!Database not opened');
-      }
+      });
     });
   }
 
-  async createActivity(activity) {
-    try {
-      if (this.db) {
-        this.db.executeSql(
-          'INSERT INTO ActivityList ( ' +
-            'id, label, duration, title, picturePath, majorEvent, reminders, subactivities )' +
-            'VALUES ( ?,?,?,?,?,?,?,? ) ;',
-          [
-            activity.id,
-            activity.label,
-            activity.duration,
-            activity.title,
-            activity.picturePath,
-            activity.majorEvent,
-            activity.reminders,
-            activity.subactivities,
-          ],
-        );
-      } else {
-        throw new Error('No active database connection');
-      }
-    } catch (err) {
-      throw new Error(err);
-    }
+  createActivity(activity) {
+    return new Promise((resolve, reject) => {
+      SQLite.openDatabase({name: this.database_name})
+        .then(instance => {
+          console.log('Opened database');
+          console.log(activity);
+          instance
+            .transaction(tx => {
+              tx.executeSql(
+                'INSERT INTO ActivityList (id, label, duration, title, picturePath, majorEvent, reminders, subactivities ) VALUES ( ?,?,?,?,?,?,?,? ) ;',
+                [
+                  activity.id,
+                  activity.label,
+                  activity.duration,
+                  activity.title,
+                  activity.picturePath,
+                  activity.majorEvent,
+                  activity.reminders,
+                  activity.subactivities,
+                ],
+              );
+            })
+            .then(([results]) => {
+              resolve(results);
+            })
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
+    });
   }
+
+  // async createActivity(activity) {
+  //   try {
+  //     if (db) {
+  //       console.log('inserting into db', db, activity);
+  //       await db
+  //         .executeSql(
+  //           'INSERT INTO ActivityList ( ' +
+  //             'id, label, duration, title, picturePath, majorEvent, reminders, subactivities )' +
+  //             'VALUES ( ?,?,?,?,?,?,?,? ) ;',
+  //           [
+  //             activity.id,
+  //             activity.label,
+  //             activity.duration,
+  //             activity.title,
+  //             activity.picturePath,
+  //             activity.majorEvent,
+  //             activity.reminders,
+  //             activity.subactivities,
+  //           ],
+  //         )
+  //         .then(result => {
+  //           console.log('finished');
+  //           return DatabaseHelper._transformToArray(result);
+  //         })
+  //         .catch(err => console.log('createActivityError', err));
+  //     } else {
+  //       throw new Error('No active database connection');
+  //     }
+  //   } catch (err) {
+  //     throw new Error(err);
+  //   }
+  // }
 }
 
 export default new DatabaseHelper();

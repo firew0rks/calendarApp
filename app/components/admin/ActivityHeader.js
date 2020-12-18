@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {StyleSheet} from 'react-native';
 import {Button, Text, Icon} from 'native-base';
 import NewActivityModal from './NewActivityModal';
@@ -16,34 +17,25 @@ const styles = StyleSheet.create({
 });
 
 export default class ActivityHeader extends React.Component {
-  state = {
-    modalVisible: false,
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.setModalVisible = this.setModalVisible.bind(this);
-  }
-
-  setModalVisible(value) {
-    this.setState({modalVisible: value});
-  }
-
   render() {
     return (
       <>
         <Text style={styles.activitiesTitle}>Activities</Text>
         <Button
           style={styles.newActivityButton}
-          onPress={() => this.setModalVisible(true)}>
+          onPress={() => this.props.setModalVisible(true)}>
           <Icon type="Entypo" name="plus" />
         </Button>
         <NewActivityModal
-          modalVisible={this.state.modalVisible}
-          setModalVisible={this.setModalVisible}
+          modalVisible={this.props.modalVisible}
+          setModalVisible={this.props.setModalVisible}
         />
       </>
     );
   }
 }
+
+ActivityHeader.propTypes = {
+  modalVisible: PropTypes.bool.isRequired,
+  setModalVisible: PropTypes.func.isRequired,
+};

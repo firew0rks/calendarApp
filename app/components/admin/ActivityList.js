@@ -21,7 +21,7 @@ export default class ActivityList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.refreshActivityList = this.refreshActivityList.bind(this);
+    // this.refreshActivityList = this.refreshActivityList.bind(this);
 
     this.longPressNodes = new Map();
     this.panNodes = new Map();
@@ -35,20 +35,49 @@ export default class ActivityList extends React.Component {
     //   this.panNodes.set(x.id, React.createRef());
     // });
 
-    this.state = {
-      activityListItems: [],
-    };
+    // this.state = {
+    //   activityListItems: [],
+    // };
   }
 
-  refreshActivityList(collection, changes) {
-    if (changes.insertions.length > 0) {
-      const addedActivity = collection[changes.insertions[0]];
+  // refreshActivityList(collection, changes) {
+  //   if (changes.insertions.length > 0) {
+  //     const addedActivity = collection[changes.insertions[0]];
 
-      this.longPressNodes.set(addedActivity.id, React.createRef());
-      this.panNodes.set(addedActivity.id, React.createRef());
+  //     this.longPressNodes.set(addedActivity.id, React.createRef());
+  //     this.panNodes.set(addedActivity.id, React.createRef());
 
-      this.forceUpdate();
+  //     this.forceUpdate();
+  //   }
+  // }
+
+  shouldComponentUpdate(nextProps) {
+    // Quick check to see whether they're the same.
+    if (
+      JSON.stringify(this.props.activityListItems) !==
+      JSON.stringify(nextProps.activityListItems)
+    ) {
+      // Figure out which entries are new.
+      const itemIds = this.props.activityListItems.map(x => x.id);
+      const newItems = nextProps.activityListItems.filter(
+        x => !itemIds.includes(x.id),
+      );
+
+      if (newItems.length > 0) {
+        this.refreshActivityList(newItems);
+      }
     }
+
+    return true;
+  }
+
+  refreshActivityList(newItems) {
+    newItems.forEach(item => {
+      this.longPressNodes.set(item.id, React.createRef());
+      this.panNodes.set(item.id, React.createRef());
+    });
+
+    console.log('refreshed', this.longPressNodes, this.panNodes);
   }
 
   render() {
@@ -60,7 +89,7 @@ export default class ActivityList extends React.Component {
         onLayout={e =>
           this.props.reportLayout('scrollView', e.nativeEvent.layout)
         }>
-        {this.state.activityListItems.map(x => {
+        {this.props.activityListItems.map(x => {
           return (
             <LongPressGestureHandler
               key={x.id}
@@ -99,4 +128,5 @@ ActivityList.propTypes = {
   onLongPressGestureEvent: PropTypes.object.isRequired,
   handleScroll: PropTypes.func.isRequired,
   reportLayout: PropTypes.func.isRequired,
+  activityListItems: PropTypes.array.isRequired,
 };
