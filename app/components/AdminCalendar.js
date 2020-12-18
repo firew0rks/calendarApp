@@ -38,37 +38,55 @@ const styles = StyleSheet.create({
  * @param {*} activities
  * @return {timeBlockedActivities[]}
  */
+// function separateToTimeBlocks(activities) {
+//   let acc = new Array(12);
+//   // console.log(activities, activities.length);
+//   for (var i = 0; i < activities.length; i++) {
+//     console.log('heree');
+//     const curr = activities[i];
+//     console.log(curr);
+//     const startDatetime = moment(curr.startDatetime);
+//     const endDatetime = moment(curr.endDatetime);
+//     const duration = endDatetime.diff(startDatetime, 'minutes', true);
+
+//     const startHour = moment(curr.startDatetime).hour();
+//     const startMinute = moment(curr.startDatetime).minutes();
+
+//     // Dividing by 100 to get 24h time
+//     const timeBlockIdxObj = timeBlocks.find(x => x.time === startHour);
+//     const timeBlockIdx = timeBlockIdxObj.key;
+//     const segmentIdx = startMinute === 30 ? 1 : 0;
+
+//     // Extract the necessary fields
+//     const act = {};
+//     act.title = curr.title;
+//     act.label = curr.label;
+//     act.timeBlockIdx = timeBlockIdx;
+//     act.segmentIdx = segmentIdx;
+//     act.duration = duration;
+
+//     if (acc[timeBlockIdx] === undefined) {
+//       console.log('creating array for ', timeBlockIdx);
+//       acc[timeBlockIdx] = [];
+//     }
+
+//     console.log('pushing into', timeBlockIdx, act);
+//     acc[timeBlockIdx].push(act);
+//   }
+
+//   return acc;
+// }
+
 function separateToTimeBlocks(activities) {
   let acc = new Array(12);
-  // console.log(activities, activities.length);
   for (var i = 0; i < activities.length; i++) {
-    console.log('heree');
     const curr = activities[i];
-    const startDatetime = moment(curr.startDatetime);
-    const endDatetime = moment(curr.endDatetime);
-    const duration = endDatetime.diff(startDatetime, 'minutes', true);
 
-    const startHour = moment(curr.startDatetime).hour();
-    const startMinute = moment(curr.startDatetime).minutes();
-
-    // Dividing by 100 to get 24h time
-    const timeBlockIdxObj = timeBlocks.find(x => x.time === startHour);
-    const timeBlockIdx = timeBlockIdxObj.key;
-    const segmentIdx = startMinute === 30 ? 1 : 0;
-
-    const act = {};
-    act.title = curr.title;
-    act.timeBlockIdx = timeBlockIdx;
-    act.segmentIdx = segmentIdx;
-    act.duration = duration;
-
-    if (acc[timeBlockIdx] === undefined) {
-      console.log('creating array for ', timeBlockIdx);
-      acc[timeBlockIdx] = [];
+    if (acc[curr.timeBlockIdx] === undefined) {
+      acc[curr.timeBlockIdx] = [];
     }
 
-    console.log('pushing into', timeBlockIdx, act);
-    acc[timeBlockIdx].push(act);
+    acc[curr.timeBlockIdx].push(curr);
   }
 
   return acc;
@@ -79,18 +97,21 @@ function AdminCalendar(props) {
     calendarHeight,
     heightPerDivision,
     draggedCard,
-    timeBlockIdx,
-    segmentIdx,
+    guiderTimeBlockIdx,
+    guiderSegmentIdx,
     reportLayout,
     activities,
     dateViewing,
     handleDateChange,
+    isActivityPlaceable,
   } = props;
 
   const dayOfTheWeek = moment(dateViewing).day();
   const date = moment(dateViewing);
 
-  console.log('Running admin cal');
+  let separatedActivities = useMemo(() => separateToTimeBlocks(activities), [
+    activities,
+  ]);
 
   return (
     <View
@@ -181,13 +202,16 @@ function AdminCalendar(props) {
                   key={x.key}
                   timeBlockIdx={x.key}
                   draggedCard={draggedCard}
-                  guiderTimeBlockIdx={timeBlockIdx}
-                  guiderSegmentIdx={segmentIdx}
+                  guiderTimeBlockIdx={guiderTimeBlockIdx}
+                  guiderSegmentIdx={guiderSegmentIdx}
                   time={x.timeLabel}
                   a={x.a}
-                  activities={activities}
+                  activities={separatedActivities[x.key]}
                   height={heightPerDivision}
                   reportLayout={reportLayout}
+                  showHighlight={
+                    isActivityPlaceable && guiderTimeBlockIdx === x.key
+                  }
                 />
               );
             })}

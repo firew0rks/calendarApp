@@ -233,6 +233,7 @@ class AdminPanel extends React.Component {
       dateViewing: moment(),
       showCalendar: false,
       modalVisible: false,
+      isActivityPlaceable: false,
     };
 
     this.getActivityList();
@@ -267,7 +268,7 @@ class AdminPanel extends React.Component {
     if (this.state.showPanCard === false) {
       return;
     }
-    console.time('calculateTimeBlock');
+    // console.time('calculateTimeBlock');
 
     const {height} = Dimensions.get('window');
 
@@ -306,7 +307,7 @@ class AdminPanel extends React.Component {
       const timeBlockIdx = Math.floor(segment / 2);
       const segmentIdx = Math.floor(segment % 2);
 
-      console.timeEnd('calculateTimeBlock');
+      // console.timeEnd('calculateTimeBlock');
 
       // Don't rerender screen if nothing has changed.
       if (
@@ -316,12 +317,20 @@ class AdminPanel extends React.Component {
         return;
       }
 
+      const isActivityPlaceable = isCardPlaceable(
+        this.state.activities,
+        this.state.draggedCard.duration,
+        segmentIdx,
+        timeBlockIdx,
+      );
+
       // console.debug('setState, calculateTimeBlock');
 
       this.setState({
         ...this.state,
         timeBlockIdx,
         segmentIdx,
+        isActivityPlaceable,
       });
     } else {
       this.setState({
@@ -562,12 +571,13 @@ class AdminPanel extends React.Component {
                   calendarHeight={calendarDisplayHeight}
                   heightPerDivision={heightPerDivision}
                   draggedCard={this.state.draggedCard}
-                  timeBlockIdx={this.state.timeBlockIdx}
-                  segmentIdx={this.state.segmentIdx}
+                  guiderTimeBlockIdx={this.state.timeBlockIdx}
+                  guiderSegmentIdx={this.state.segmentIdx}
                   reportLayout={this.reportLayout}
                   activities={this.state.activities}
                   dateViewing={this.state.dateViewing}
                   handleDateChange={this.handleDateChange}
+                  isActivityPlaceable={this.state.isActivityPlaceable}
                 />
               </View>
             </View>

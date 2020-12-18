@@ -72,26 +72,27 @@ function TimeBlock(props) {
     timeBlockIdx,
     guiderTimeBlockIdx,
     guiderSegmentIdx,
+    showHighlight,
   } = props;
 
   // Height is calculated by subtracting the margins and dividing by segments in a block.
   const heightPerSegment = (props.height - 2 - 2) / 2;
 
-  // Filter placed activities to TimeBlock instance only
-  const filteredActivities = activities.filter(
-    x => x.timeBlockIdx === timeBlockIdx,
-  );
+  // // Filter placed activities to TimeBlock instance only
+  // const filteredActivities = activities.filter(
+  //   x => x.timeBlockIdx === timeBlockIdx,
+  // );
 
-  let showHighlight = false;
+  // let showHighlight = false;
 
-  if (guiderTimeBlockIdx !== -1 && timeBlockIdx === guiderTimeBlockIdx) {
-    showHighlight = isCardPlaceable(
-      activities,
-      draggedCard.duration,
-      guiderSegmentIdx,
-      guiderTimeBlockIdx,
-    );
-  }
+  // if (guiderTimeBlockIdx !== -1 && timeBlockIdx === guiderTimeBlockIdx) {
+  //   showHighlight = isCardPlaceable(
+  //     activities,
+  //     draggedCard.duration,
+  //     guiderSegmentIdx,
+  //     guiderTimeBlockIdx,
+  //   );
+  // }
 
   let highlightedStyle;
   if (showHighlight) {
@@ -121,33 +122,34 @@ function TimeBlock(props) {
       </Text>
       <View style={timeBlockStyles.activitiesWrapper}>
         <PlacementGuider show={showHighlight} style={highlightedStyle} />
-        {filteredActivities.map((activity, i) => {
-          const segments = activity.duration / 30;
-          const segmentHeight =
-            heightPerSegment * segments + 2 * (segments - 1);
+        {activities &&
+          activities.map((activity, i) => {
+            const segments = activity.duration / 30;
+            const segmentHeight =
+              heightPerSegment * segments + 2 * (segments - 1);
 
-          let activityWrapperStyle = {
-            height: segmentHeight,
-            backgroundColor: labels[activity.label].opaqueColor,
-          };
+            let activityWrapperStyle = {
+              height: segmentHeight,
+              backgroundColor: labels[activity.label].opaqueColor,
+            };
 
-          let startTime;
-          if (activity.segmentIdx === 1) {
-            activityWrapperStyle.top = heightPerSegment + 2;
-            startTime = `${time}:30 ${a}`;
-          } else {
-            startTime = `${time} ${a}`;
-          }
+            let startTime;
+            if (activity.segmentIdx === 1) {
+              activityWrapperStyle.top = heightPerSegment + 2;
+              startTime = `${time}:30 ${a}`;
+            } else {
+              startTime = `${time} ${a}`;
+            }
 
-          return (
-            <View
-              key={i}
-              style={[timeBlockStyles.activityWrapper, activityWrapperStyle]}>
-              <Text style={timeBlockStyles.titleText}>{activity.title}</Text>
-              <Text style={timeBlockStyles.startTimeText}>{startTime}</Text>
-            </View>
-          );
-        })}
+            return (
+              <View
+                key={i}
+                style={[timeBlockStyles.activityWrapper, activityWrapperStyle]}>
+                <Text style={timeBlockStyles.titleText}>{activity.title}</Text>
+                <Text style={timeBlockStyles.startTimeText}>{startTime}</Text>
+              </View>
+            );
+          })}
       </View>
     </View>
   );
