@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import moment from 'moment';
 import {View, StyleSheet, Text} from 'react-native';
 import {labels, timeBlocks} from '../../constants';
 import {isCardPlaceable} from '../../helper/isCardPlaceable';
+import {TapGestureHandler} from 'react-native-gesture-handler';
+import CardTooltip from '../CardTooltip';
 
 const timeBlockStyles = StyleSheet.create({
   container: {
@@ -75,6 +77,8 @@ function TimeBlock(props) {
     showHighlight,
   } = props;
 
+  const [showTooltip, setShowTooltip] = useState(false);
+
   // Height is calculated by subtracting the margins and dividing by segments in a block.
   const heightPerSegment = (props.height - 2 - 2) / 2;
 
@@ -96,6 +100,7 @@ function TimeBlock(props) {
 
   let highlightedStyle;
   if (showHighlight) {
+    console.log('draggedCard', draggedCard);
     // console.log('inShowHighlight', showHighlight, draggedCard);
     // Segment height is the height of the activity block, calculated from duration.
     const segments = draggedCard.duration / 30;
@@ -111,16 +116,31 @@ function TimeBlock(props) {
     };
   }
 
-  // console.log(`Running timeblock ${timeBlockIdx}`);
+  const toggleTooltip = ev => {
+    console.log('heree', ev.nativeEvent);
+    if (ev.nativeEvent.oldState === 4 && ev.nativeEvent.state === 5) {
+      setShowTooltip(!showTooltip);
+    }
+  };
+
+  const handlePressEdit = () => {
+    console.log('Handle Edit, TODO');
+  };
+
+  const handlePressDelete = () => {
+    console.log('Handle Delete, TODO');
+  };
 
   return (
-    <View style={[timeBlockStyles.container, {height: height}]}>
+    <View
+      style={[timeBlockStyles.container, {height: height}]}
+      pointerEvents="box-none">
       <Text
         style={timeBlockStyles.timeText}
         onLayout={e => reportLayout('timeText', e.nativeEvent.layout)}>
         {`${time} ${a}`}
       </Text>
-      <View style={timeBlockStyles.activitiesWrapper}>
+      <View style={timeBlockStyles.activitiesWrapper} pointerEvents="box-none">
         <PlacementGuider show={showHighlight} style={highlightedStyle} />
         {activities &&
           activities.map((activity, i) => {
@@ -142,12 +162,27 @@ function TimeBlock(props) {
             }
 
             return (
-              <View
-                key={i}
-                style={[timeBlockStyles.activityWrapper, activityWrapperStyle]}>
-                <Text style={timeBlockStyles.titleText}>{activity.title}</Text>
-                <Text style={timeBlockStyles.startTimeText}>{startTime}</Text>
-              </View>
+              <TapGestureHandler
+                onHandlerStateChange={toggleTooltip}
+                key={startTime}>
+                <View
+                  key={i}
+                  style={[
+                    timeBlockStyles.activityWrapper,
+                    activityWrapperStyle,
+                  ]}>
+                  <Text style={timeBlockStyles.titleText}>
+                    {activity.title}
+                  </Text>
+                  <Text style={timeBlockStyles.startTimeText}>{startTime}</Text>
+                  {showTooltip && (
+                    <CardTooltip
+                      handlePressEdit={handlePressEdit}
+                      handlePressDelete={handlePressDelete}
+                    />
+                  )}
+                </View>
+              </TapGestureHandler>
             );
           })}
       </View>
@@ -155,18 +190,18 @@ function TimeBlock(props) {
   );
 }
 
-// Return true if you don't want it to run.
-function conditionalRenderCheck(prevProps, nextProps) {
-  // console.log(`running timeblock ${nextProps.timeBlockIdx}`);
-  // console.log(nextProps.guiderTimeBlockIdx === -1, nextProps.timeBlockIdx !== nextProps.guiderTimeBlockIdx)
-  if (
-    nextProps.guiderTimeBlockIdx === -1 ||
-    nextProps.timeBlockIdx !== nextProps.guiderTimeBlockIdx
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-}
+// // Return true if you don't want it to run.
+// function conditionalRenderCheck(prevProps, nextProps) {
+//   // console.log(`running timeblock ${nextProps.timeBlockIdx}`);
+//   // console.log(nextProps.guiderTimeBlockIdx === -1, nextProps.timeBlockIdx !== nextProps.guiderTimeBlockIdx)
+//   if (
+//     nextProps.guiderTimeBlockIdx === -1 ||
+//     nextProps.timeBlockIdx !== nextProps.guiderTimeBlockIdx
+//   ) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
 
 export default React.memo(TimeBlock);

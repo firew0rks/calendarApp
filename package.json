@@ -9,7 +9,8 @@
     "device": "react-native run-ios --device 'Liquid’s iPad'",
     "start": "react-native start --reset-cache",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "devtools": "react-devtools"
   },
   "dependencies": {
     "crypto-random-string": "^3.2.0",

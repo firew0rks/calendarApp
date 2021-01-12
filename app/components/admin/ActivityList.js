@@ -1,11 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {ScrollView, StyleSheet, Button} from 'react-native';
+import {
+  StyleSheet,
+  Button,
+  Pressable,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import AdminActivityCard from '../AdminActivityCard';
 import Animated from 'react-native-reanimated';
 import {
   PanGestureHandler,
   LongPressGestureHandler,
+  TapGestureHandler,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import _ from 'lodash';
 import ActivitySchema, {ActivitySchemaKey} from '../../database/ActivitySchema';
@@ -18,38 +26,17 @@ const styles = StyleSheet.create({
 });
 
 export default class ActivityList extends React.Component {
+  state = {
+    showTooltip: [],
+  };
+
   constructor(props) {
     super(props);
-
-    // this.refreshActivityList = this.refreshActivityList.bind(this);
-
     this.longPressNodes = new Map();
     this.panNodes = new Map();
-
-    // let activityListItems = realm.objects(ActivitySchemaKey);
-    // activityListItems.addListener(this.refreshActivityList);
-
-    // // Generating refs for simultaneous gesture handling
-    // activityListItems.forEach(x => {
-    //   this.longPressNodes.set(x.id, React.createRef());
-    //   this.panNodes.set(x.id, React.createRef());
-    // });
-
-    // this.state = {
-    //   activityListItems: [],
-    // };
+    this.toggleTooltip = this.toggleTooltip.bind(this);
+    this.hideTooltip = this.hideTooltip.bind(this);
   }
-
-  // refreshActivityList(collection, changes) {
-  //   if (changes.insertions.length > 0) {
-  //     const addedActivity = collection[changes.insertions[0]];
-
-  //     this.longPressNodes.set(addedActivity.id, React.createRef());
-  //     this.panNodes.set(addedActivity.id, React.createRef());
-
-  //     this.forceUpdate();
-  //   }
-  // }
 
   shouldComponentUpdate(nextProps) {
     // Quick check to see whether they're the same.
@@ -80,45 +67,76 @@ export default class ActivityList extends React.Component {
     console.log('refreshed', this.longPressNodes, this.panNodes);
   }
 
+  toggleTooltip(index) {
+    const a = this.state.showTooltip.slice(0);
+
+    if (a[index] === undefined || a[index] === false) {
+      a[index] = true;
+    } else if (a[index] === true) {
+      a[index] = false;
+    }
+
+    this.setState({
+      showTooltip: a,
+    });
+  }
+
+  hideTooltip(ev) {
+    console.log('heree', ev.nativeEvent, this.state.showTooltip.length);
+    if (ev.nativeEvent.oldState === 4 && ev.nativeEvent.state === 5) {
+      this.setState({
+        showTooltip: [],
+      });
+    }
+  }
+
   render() {
     return (
-      <ScrollView
-        scrollEventThrottle={16}
-        style={styles.scrollView}
-        onScroll={this.props.handleScroll}
-        onLayout={e =>
-          this.props.reportLayout('scrollView', e.nativeEvent.layout)
-        }>
-        {this.props.activityListItems.map(x => {
-          return (
-            <LongPressGestureHandler
-              key={x.id}
-              ref={this.longPressNodes.get(x.id)}
-              simultaneousHandlers={this.panNodes.get(x.id)}
-              onGestureEvent={this.props.onLongPressGestureEvent}
-              onHandlerStateChange={this.props.onLongPressGestureEvent}>
-              <Animated.View>
-                <PanGestureHandler
-                  ref={this.panNodes.get(x.id)}
-                  simultaneousHandlers={this.longPressNodes.get(x.id)}
-                  onGestureEvent={this.props.onPanGestureEvent}
-                  onHandlerStateChange={this.props.onPanGestureEvent}
-                  activeOffsetY={[-50, 50]}
-                  activeOffsetX={[-5, 5]}>
+      <View style={{height: 700}}>
+        <TapGestureHandler
+          onHandlerStateChange={this.hideTooltip}
+          enabled={this.state.showTooltip.length > 0}>
+          <ScrollView
+            scrollEventThrottle={16}
+            style={styles.scrollView}
+            onScroll={this.props.handleScroll}
+            onLayout={e =>
+              this.props.reportLayout('scrollView', e.nativeEvent.layout)
+            }>
+            {this.props.activityListItems.map((x, i) => {
+              return (
+                <LongPressGestureHandler
+                  key={x.id}
+                  ref={this.longPressNodes.get(x.id)}
+                  simultaneousHandlers={this.panNodes.get(x.id)}
+                  onGestureEvent={this.props.onLongPressGestureEvent}
+                  onHandlerStateChange={this.props.onLongPressGestureEvent}>
                   <Animated.View>
-                    <AdminActivityCard
-                      title={x.title}
-                      duration={x.duration}
-                      picturePath={x.picturePath}
-                      label={x.label}
-                    />
+                    <PanGestureHandler
+                      ref={this.panNodes.get(x.id)}
+                      simultaneousHandlers={this.longPressNodes.get(x.id)}
+                      onGestureEvent={this.props.onPanGestureEvent}
+                      onHandlerStateChange={this.props.onPanGestureEvent}
+                      activeOffsetY={[-50, 50]}
+                      activeOffsetX={[-5, 5]}>
+                      <Animated.View>
+                        <AdminActivityCard
+                          title={x.title}
+                          duration={x.duration}
+                          picturePath={x.picturePath}
+                          label={x.label}
+                          showTooltip={this.state.showTooltip[i]}
+                          toggleTooltip={() => this.toggleTooltip(i)}
+                        />
+                      </Animated.View>
+                    </PanGestureHandler>
                   </Animated.View>
-                </PanGestureHandler>
-              </Animated.View>
-            </LongPressGestureHandler>
-          );
-        })}
-      </ScrollView>
+                </LongPressGestureHandler>
+              );
+            })}
+          </ScrollView>
+        </TapGestureHandler>
+      </View>
     );
   }
 }

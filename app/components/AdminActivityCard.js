@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, Pressable} from 'react-native';
 import {Icon} from 'native-base';
 import {labels} from '../constants';
+import CardTooltip from './CardTooltip';
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -14,6 +15,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 4,
+    zIndex: 1,
   },
   wrapper: {
     display: 'flex',
@@ -39,50 +41,9 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: 'rgb(255, 255, 255)',
   },
-  tooltipContainer: {
-    position: 'absolute',
-    flexDirection: 'row',
-    zIndex: 1,
-    bottom: '140%',
-    right: -5,
-    // marginLeft: -60,
-    backgroundColor: 'white',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderColor: 'rgba(0, 0, 0, 0.08)',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-
-    elevation: 3,
-  },
-  tooltipEditIcon: {
-    color: 'rgb(0, 99, 255)',
-    fontSize: 24,
-    marginRight: 24,
-  },
-  tooltipDeleteIcon: {
-    color: 'rgb(255, 0, 0)',
-    fontSize: 24,
-  },
 });
 
 class AdminActivityCard extends React.Component {
-  state = {
-    showTooltip: false,
-  };
-
-  toggleTooltip() {
-    this.setState({showTooltip: !this.state.showTooltip});
-  }
-
   render() {
     return (
       <View
@@ -104,21 +65,12 @@ class AdminActivityCard extends React.Component {
             <Text style={styles.cardDuration}>{this.props.duration} mins</Text>
           </View>
         </View>
-        {this.state.showTooltip && (
-          <View style={styles.tooltipContainer}>
-            <Icon type="Feather" name="edit" style={styles.tooltipEditIcon} />
-            <Icon
-              type="AntDesign"
-              name="delete"
-              style={styles.tooltipDeleteIcon}
-            />
-          </View>
-        )}
+        {this.props.showTooltip && <CardTooltip />}
         <Icon
           type="FontAwesome5"
           name="ellipsis-v"
           style={styles.ellipsisIcon}
-          onPress={() => this.toggleTooltip()}
+          onPress={() => this.props.toggleTooltip()}
         />
       </View>
     );
@@ -132,6 +84,8 @@ AdminActivityCard.propTypes = {
   duration: PropTypes.number,
   picturePath: PropTypes.string,
   label: PropTypes.number,
+  showTooltip: PropTypes.bool,
+  toggleTooltip: PropTypes.func,
 };
 
 AdminActivityCard.defaultProps = {

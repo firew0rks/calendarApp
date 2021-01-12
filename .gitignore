@@ -60,3 +60,5 @@ buck-out/
 
 # VSCode
 .vscode/
+
+.notes.md

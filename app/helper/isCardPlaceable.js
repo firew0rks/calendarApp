@@ -14,7 +14,7 @@ export function isCardPlaceable(
   guiderSegmentIdx,
   guiderTimeBlockIdx,
 ) {
-  // Calculate start/end times on where the card is going to be placed.
+  // Calculate start/end times on where the dragged activity is going to be placed.
   const now = moment();
   const daStartHour = timeBlocks[guiderTimeBlockIdx].time;
   const daStartMinutes = guiderSegmentIdx ? 30 : 0;
@@ -38,8 +38,8 @@ export function isCardPlaceable(
     const curEndTime = curStartTime.clone().add(cur.duration, 'minutes');
 
     if (
-      daStartTime.format('hh:mm') < curEndTime.format('hh:mm') &&
-      curStartTime.format('hh:mm') < daEndTime.format('hh:mm')
+      daStartTime.format('HH:mm') < curEndTime.format('HH:mm') &&
+      curStartTime.format('HH:mm') < daEndTime.format('HH:mm')
     ) {
       return true;
     } else {

@@ -213,6 +213,8 @@ class AdminPanel extends React.Component {
 
     // console.log('placed activities', events, moment().toDate());
 
+    const dateViewing = moment().format('YYYY-MM-DD');
+
     this.state = {
       layout: {},
       timeBlockIdx: -1,
@@ -230,13 +232,14 @@ class AdminPanel extends React.Component {
         top: 0,
         left: 0,
       },
-      dateViewing: moment(),
+      dateViewing: dateViewing,
       showCalendar: false,
       modalVisible: false,
       isActivityPlaceable: false,
     };
 
     this.getActivityList();
+    this.getCalendarActivities(dateViewing);
   }
 
   async getActivityList() {
@@ -246,6 +249,22 @@ class AdminPanel extends React.Component {
 
       this.setState({
         activityListItems: activityList,
+      });
+    } catch (err) {
+      console.log('err', err);
+    }
+  }
+
+  async getCalendarActivities(date) {
+    try {
+      console.log('Calling getCalendarActivities');
+      const calendarActivities = await DatabaseHelper.getCalendarActivities(
+        date,
+      );
+
+      console.log('calendarActivites111', calendarActivities);
+      this.setState({
+        activities: calendarActivities,
       });
     } catch (err) {
       console.log('err', err);
@@ -341,7 +360,7 @@ class AdminPanel extends React.Component {
     }
   }
 
-  placeActivity([x, y]) {
+  async placeActivity([x, y]) {
     // Set activity
 
     const newState = _.cloneDeep(this.state);
@@ -368,37 +387,21 @@ class AdminPanel extends React.Component {
         segmentIdx: this.state.segmentIdx,
       });
 
-      // Date viewing + timeBlockIdx + segmentIdx = startDate/endDate
-      // Convert timeblock and segmentblock to hours and minutes
-      // Make sure dateViewing is only "date"
-      const hour = timeBlocks[this.state.timeBlockIdx].time;
-      const minutes = this.state.segmentIdx * 30;
-
-      const startDatetime = moment(this.state.dateViewing)
-        .clone()
-        .startOf('day')
-        .hour(hour)
-        .minutes(minutes);
-      const endDatetime = startDatetime
-        .clone()
-        .add(this.state.draggedCard.duration, 'minutes');
-
       const activityToSave = {
         title: this.state.draggedCard.title,
+        duration: this.state.draggedCard.duration,
         label: this.state.draggedCard.label,
         picturePath: this.state.draggedCard.picturePath,
-        startDatetime: startDatetime.toDate(),
-        endDatetime: endDatetime.toDate(),
+        timeBlockIdx: this.state.timeBlockIdx,
+        segmentIdx: this.state.segmentIdx,
+        date: this.state.dateViewing,
       };
 
-      console.log('activityToSave', activityToSave);
-
-      // realm.write(() => {
-      //   realm.create(CalendarSchemaKey, activityToSave);
-      // });
+      await DatabaseHelper.createCalendarActivity(activityToSave);
     }
 
     this.setState(newState);
+    this.resetPanActivityCard();
   }
 
   reportLayout(key, layout) {
@@ -456,6 +459,7 @@ class AdminPanel extends React.Component {
         top: 0,
         left: 0,
       },
+      timeBlockIdx: -1,
     });
   }
 
@@ -507,7 +511,7 @@ class AdminPanel extends React.Component {
               set(this.translationX, 0),
               set(this.translationY, 0),
               call([], this.placeActivity),
-              call([], this.resetPanActivityCard),
+              // call([], this.resetPanActivityCard),
             ]),
             cond(eq(this.longPressGestureState, State.ACTIVE), [
               call(

@@ -83,6 +83,17 @@ class DatabaseHelper {
             'reminders VARCHAR, ' +
             'subactivities VARCHAR );',
         );
+
+        tx.executeSql(
+          'CREATE TABLE IF NOT EXISTS CalendarActivity ( ' +
+            'title VARCHAR NOT NULL, ' +
+            'duration INTEGER NOT NULL, ' +
+            'label INTEGER NOT NULL, ' +
+            'picturePath VARCHAR, ' +
+            'timeBlockIdx INTEGER NOT NULL, ' +
+            'segmentIdx INTEGER NOT NULL, ' +
+            'date DATE NOT NULL );',
+        );
       });
 
       console.log('Initialised DB');
@@ -152,6 +163,9 @@ class DatabaseHelper {
     });
   }
 
+  /** Creates new activity on the activity list
+   * @param {*} activity new activity
+   */
   createActivity(activity) {
     return new Promise((resolve, reject) => {
       SQLite.openDatabase({name: this.database_name})
@@ -183,38 +197,49 @@ class DatabaseHelper {
     });
   }
 
-  // async createActivity(activity) {
-  //   try {
-  //     if (db) {
-  //       console.log('inserting into db', db, activity);
-  //       await db
-  //         .executeSql(
-  //           'INSERT INTO ActivityList ( ' +
-  //             'id, label, duration, title, picturePath, majorEvent, reminders, subactivities )' +
-  //             'VALUES ( ?,?,?,?,?,?,?,? ) ;',
-  //           [
-  //             activity.id,
-  //             activity.label,
-  //             activity.duration,
-  //             activity.title,
-  //             activity.picturePath,
-  //             activity.majorEvent,
-  //             activity.reminders,
-  //             activity.subactivities,
-  //           ],
-  //         )
-  //         .then(result => {
-  //           console.log('finished');
-  //           return DatabaseHelper._transformToArray(result);
-  //         })
-  //         .catch(err => console.log('createActivityError', err));
-  //     } else {
-  //       throw new Error('No active database connection');
-  //     }
-  //   } catch (err) {
-  //     throw new Error(err);
-  //   }
-  // }
+  /** Creates an event on the calendar
+   * @param {*} activity placed activity
+   */
+  createCalendarActivity(activity) {
+    return new Promise((resolve, reject) => {
+      SQLite.openDatabase({name: this.database_name}).then(instance => {
+        instance
+          .transaction(tx => {
+            tx.executeSql(
+              'INSERT INTO CalendarActivity (title, duration, label, picturePath, timeBlockIdx, segmentIdx, date) VALUES (?,?,?,?,?,?,?);',
+              [
+                activity.title,
+                activity.duration,
+                activity.label,
+                activity.picturePath,
+                activity.timeBlockIdx,
+                activity.segmentIdx,
+                activity.date,
+              ],
+            )
+              .then(([results]) => {
+                resolve(results);
+              })
+              .catch(err => reject(err));
+          })
+          .catch(err => reject(err));
+      });
+    });
+  }
+
+  getCalendarActivities(date) {
+    return new Promise((resolve, reject) => {
+      SQLite.openDatabase({name: this.database_name})
+        .then(instance => {
+          instance
+            .executeSql('SELECT * FROM CalendarActivity WHERE date = ?', [date])
+            .then(([results]) => {
+              resolve(this._transformToArray(results));
+            });
+        })
+        .catch(err => reject(err));
+    });
+  }
 }
 
 export default new DatabaseHelper();
