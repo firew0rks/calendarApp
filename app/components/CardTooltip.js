@@ -41,10 +41,10 @@ const styles = StyleSheet.create({
 export default function CardTooltip(props) {
   return (
     <View style={styles.tooltipContainer}>
-      <Pressable onPress={props.handlePressDelete}>
+      <Pressable onPress={props.handlePressEdit}>
         <Icon type="Feather" name="edit" style={styles.tooltipEditIcon} />
       </Pressable>
-      <Pressable onPress={props.handlePressEdit}>
+      <Pressable onPress={props.handlePressDelete}>
         <Icon type="AntDesign" name="delete" style={styles.tooltipDeleteIcon} />
       </Pressable>
     </View>

@@ -1,35 +1,21 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import {View, StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 import {Button, Text, Icon} from 'native-base';
 import AdminActivityCard from './AdminActivityCard';
 import AdminCalendar from './AdminCalendar';
 import Animated from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  State,
-  TouchableNativeFeedback,
-} from 'react-native-gesture-handler';
+import {State, TouchableNativeFeedback} from 'react-native-gesture-handler';
 import _ from 'lodash';
 import ActivityList from './admin/ActivityList';
 import ActivityHeader from './admin/ActivityHeader';
-// import ActivitySchema, {ActivitySchemaKey} from '../database/ActivitySchema';
-// import realm from '../database/realm';
-import {monthMapping, timeBlocks} from '../constants';
-// import Realm from 'realm';
-import CalendarSchema, {CalendarSchemaKey} from '../database/CalendarSchema';
+import {monthMapping} from '../constants';
 import moment from 'moment';
 import CalendarMenu from './admin/CalendarMenu';
 import DatabaseHelper from '../components/sqlite';
 import {isCardPlaceable} from '../helper/isCardPlaceable';
-// import DatabaseHelper from '../components/sqlite/index.callback';
+import {randomString} from '../helper/random';
 
-const {set, add, block, cond, eq, call, debug, and, lessOrEq} = Animated;
+const {set, cond, eq, call, and} = Animated;
 
 const UNSAFE_AREA_HEIGHT = 24;
 const HEADER_HEIGHT = 76;
@@ -38,7 +24,6 @@ const SCREEN_PADDING = 24;
 const TIME_ACTIVITY_INNER_PADDING = 16;
 
 const ACTIVITY_CARD_CONTENT = 60;
-const ACTIVITY_CARD_PADDING = 8;
 const ACTIVITY_CARD_MARGIN_BOTTOM = 4;
 
 const styles = StyleSheet.create({
@@ -150,9 +135,17 @@ class AdminPanel extends React.Component {
     this.activatePanActivityCard = this.activatePanActivityCard.bind(this);
     this.handleActivityListScroll = this.handleActivityListScroll.bind(this);
     this.resetPanActivityCard = this.resetPanActivityCard.bind(this);
-    this.refreshActivityList = this.refreshActivityList.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.setModalVisible = this.setModalVisible.bind(this);
+    this.handlePressDeleteActivity = this.handlePressDeleteActivity.bind(this);
+    this.handlePressEditActivity = this.handlePressEditActivity.bind(this);
+    this.getCalendarActivities = this.getCalendarActivities.bind(this);
+    this.handlePressDeleteCalendarActivity = this.handlePressDeleteCalendarActivity.bind(
+      this,
+    );
+    this.handlePressEditCalendarActivity = this.handlePressEditCalendarActivity.bind(
+      this,
+    );
 
     this.panGestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
@@ -213,7 +206,8 @@ class AdminPanel extends React.Component {
 
     // console.log('placed activities', events, moment().toDate());
 
-    const dateViewing = moment().format('YYYY-MM-DD');
+    const dateViewing = moment();
+    console.log('type', typeof dateViewing, dateViewing);
 
     this.state = {
       layout: {},
@@ -239,7 +233,7 @@ class AdminPanel extends React.Component {
     };
 
     this.getActivityList();
-    this.getCalendarActivities(dateViewing);
+    this.getCalendarActivities(dateViewing.clone().format('YYYY-MM-DD'));
   }
 
   async getActivityList() {
@@ -255,6 +249,9 @@ class AdminPanel extends React.Component {
     }
   }
 
+  /**
+   * @param {*} date Format must be in the form 'YYYY-MM-DD'
+   */
   async getCalendarActivities(date) {
     try {
       console.log('Calling getCalendarActivities');
@@ -269,18 +266,6 @@ class AdminPanel extends React.Component {
     } catch (err) {
       console.log('err', err);
     }
-  }
-
-  refreshActivityList(collection) {
-    this.setState({
-      activityListItems: collection,
-    });
-  }
-
-  refreshActivities(collection) {
-    this.setState({
-      activityListItems: collection,
-    });
   }
 
   calculateTimeBlock([x, y]) {
@@ -360,7 +345,7 @@ class AdminPanel extends React.Component {
     }
   }
 
-  async placeActivity([x, y]) {
+  async placeActivity([]) {
     // Set activity
 
     const newState = _.cloneDeep(this.state);
@@ -378,29 +363,23 @@ class AdminPanel extends React.Component {
 
     // Card is not placeable if there is already something occupying that timeslot.
     if (cardPlaceable) {
-      newState.activities.push({
+      const activityToPlace = {
+        id: randomString(),
         title: this.state.draggedCard.title,
         duration: this.state.draggedCard.duration,
         label: this.state.draggedCard.label,
         picturePath: this.state.draggedCard.picturePath,
         timeBlockIdx: this.state.timeBlockIdx,
         segmentIdx: this.state.segmentIdx,
-      });
-
-      const activityToSave = {
-        title: this.state.draggedCard.title,
-        duration: this.state.draggedCard.duration,
-        label: this.state.draggedCard.label,
-        picturePath: this.state.draggedCard.picturePath,
-        timeBlockIdx: this.state.timeBlockIdx,
-        segmentIdx: this.state.segmentIdx,
-        date: this.state.dateViewing,
+        date: moment(this.state.dateViewing).format('YYYY-MM-DD'),
       };
 
-      await DatabaseHelper.createCalendarActivity(activityToSave);
+      newState.activities.push(activityToPlace);
+      this.setState(newState);
+
+      await DatabaseHelper.createCalendarActivity(activityToPlace);
     }
 
-    this.setState(newState);
     this.resetPanActivityCard();
   }
 
@@ -420,7 +399,6 @@ class AdminPanel extends React.Component {
     const absOffsetY = absY - HEADER_HEIGHT - UNSAFE_AREA_HEIGHT;
 
     // Calculate abs position of click relative to scrollY
-    const scrollViewX = absX;
     const scrollViewY = this.state.activityListOffsetY + absOffsetY;
 
     // Convert ScrollViewY to card indexes
@@ -468,6 +446,9 @@ class AdminPanel extends React.Component {
   }
 
   handleDateChange(date) {
+    console.log('date', date);
+    // Date needs to be in the format of 'YYYY-MM-DD'
+    this.getCalendarActivities(date.clone().format('YYYY-MM-DD'));
     this.setState({
       dateViewing: date,
       showCalendar: false,
@@ -481,6 +462,24 @@ class AdminPanel extends React.Component {
   setModalVisible(value) {
     this.setState({modalVisible: value});
     this.getActivityList();
+  }
+
+  async handlePressDeleteActivity(activityListItemId) {
+    await DatabaseHelper.deleteActivityListItem(activityListItemId);
+    await this.getActivityList();
+  }
+
+  handlePressEditActivity() {
+    console.log('todo');
+  }
+
+  async handlePressDeleteCalendarActivity(activityId) {
+    await DatabaseHelper.deleteCalendarActivity(activityId);
+    await this.getCalendarActivities();
+  }
+
+  handlePressEditCalendarActivity() {
+    console.log('todo');
   }
 
   render() {
@@ -582,6 +581,8 @@ class AdminPanel extends React.Component {
                   dateViewing={this.state.dateViewing}
                   handleDateChange={this.handleDateChange}
                   isActivityPlaceable={this.state.isActivityPlaceable}
+                  handlePressDelete={this.handlePressDeleteCalendarActivity}
+                  handlePressEdit={this.handlePressEditCalendarActivity}
                 />
               </View>
             </View>
@@ -604,6 +605,8 @@ class AdminPanel extends React.Component {
                   handleScroll={this.handleActivityListScroll}
                   activityListItems={this.state.activityListItems}
                   reportLayout={this.reportLayout}
+                  handlePressDelete={this.handlePressDeleteActivity}
+                  // handlePressEdit={this.handlePressEditActivity}
                 />
               </View>
             </View>

@@ -18,6 +18,7 @@ import {
 import _ from 'lodash';
 import ActivitySchema, {ActivitySchemaKey} from '../../database/ActivitySchema';
 // import realm from '../../database/realm';
+import DatabaseHelper from '../sqlite';
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -127,6 +128,10 @@ export default class ActivityList extends React.Component {
                           label={x.label}
                           showTooltip={this.state.showTooltip[i]}
                           toggleTooltip={() => this.toggleTooltip(i)}
+                          handlePressEdit={this.props.handlePressEdit}
+                          handlePressDelete={() => {
+                            this.props.handlePressDelete(x.id);
+                          }}
                         />
                       </Animated.View>
                     </PanGestureHandler>
@@ -147,4 +152,6 @@ ActivityList.propTypes = {
   handleScroll: PropTypes.func.isRequired,
   reportLayout: PropTypes.func.isRequired,
   activityListItems: PropTypes.array.isRequired,
+  handlePressDelete: PropTypes.func.isRequired,
+  handlePressEdit: PropTypes.func.isRequired,
 };

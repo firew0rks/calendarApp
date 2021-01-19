@@ -86,6 +86,7 @@ class DatabaseHelper {
 
         tx.executeSql(
           'CREATE TABLE IF NOT EXISTS CalendarActivity ( ' +
+            'id VARCHAR PRIMARY KEY NOT NULL, ' +
             'title VARCHAR NOT NULL, ' +
             'duration INTEGER NOT NULL, ' +
             'label INTEGER NOT NULL, ' +
@@ -206,8 +207,9 @@ class DatabaseHelper {
         instance
           .transaction(tx => {
             tx.executeSql(
-              'INSERT INTO CalendarActivity (title, duration, label, picturePath, timeBlockIdx, segmentIdx, date) VALUES (?,?,?,?,?,?,?);',
+              'INSERT INTO CalendarActivity (id, title, duration, label, picturePath, timeBlockIdx, segmentIdx, date) VALUES (?,?,?,?,?,?,?,?);',
               [
+                activity.id,
                 activity.title,
                 activity.duration,
                 activity.label,
@@ -236,6 +238,36 @@ class DatabaseHelper {
             .then(([results]) => {
               resolve(this._transformToArray(results));
             });
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  deleteCalendarActivity(activityId) {
+    return new Promise((resolve, reject) => {
+      SQLite.openDatabase({name: this.database_name})
+        .then(instance => {
+          instance
+            .executeSql('DELETE FROM CalendarActivity WHERE id = ?', [
+              activityId,
+            ])
+            .then(() => resolve())
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  deleteActivityListItem(activityListId) {
+    return new Promise((resolve, reject) => {
+      SQLite.openDatabase({name: this.database_name})
+        .then(instance => {
+          instance
+            .executeSql('DELETE FROM ActivityList WHERE id = ?', [
+              activityListId,
+            ])
+            .then(() => resolve())
+            .catch(err => reject(err));
         })
         .catch(err => reject(err));
     });

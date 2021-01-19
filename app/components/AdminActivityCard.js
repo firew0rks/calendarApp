@@ -65,7 +65,12 @@ class AdminActivityCard extends React.Component {
             <Text style={styles.cardDuration}>{this.props.duration} mins</Text>
           </View>
         </View>
-        {this.props.showTooltip && <CardTooltip />}
+        {this.props.showTooltip && (
+          <CardTooltip
+            handlePressEdit={this.props.handlePressEdit}
+            handlePressDelete={this.props.handlePressDelete}
+          />
+        )}
         <Icon
           type="FontAwesome5"
           name="ellipsis-v"
@@ -86,6 +91,8 @@ AdminActivityCard.propTypes = {
   label: PropTypes.number,
   showTooltip: PropTypes.bool,
   toggleTooltip: PropTypes.func,
+  handlePressDelete: PropTypes.func,
+  handlePressEdit: PropTypes.func,
 };
 
 AdminActivityCard.defaultProps = {

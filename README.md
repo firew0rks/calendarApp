@@ -88,3 +88,12 @@ To find current node path:
 To link nvm version of node to local node
 
 `sudo link $(which node) /usr/local/bin/node`
+
+## TODO:
+
+- Calendar performance issues
+- Calendar Activity card movement
+- Activity list activity edit
+- Load activties on main view
+- Switch between main and admin view
+- BUG: Images not loading

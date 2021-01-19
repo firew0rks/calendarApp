@@ -104,6 +104,8 @@ function AdminCalendar(props) {
     dateViewing,
     handleDateChange,
     isActivityPlaceable,
+    handlePressDelete,
+    handlePressEdit,
   } = props;
 
   const dayOfTheWeek = moment(dateViewing).day();
@@ -212,6 +214,8 @@ function AdminCalendar(props) {
                   showHighlight={
                     isActivityPlaceable && guiderTimeBlockIdx === x.key
                   }
+                  handlePressDelete={handlePressDelete}
+                  handlePressEdit={handlePressEdit}
                 />
               );
             })}

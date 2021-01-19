@@ -5,6 +5,7 @@ import {labels, timeBlocks} from '../../constants';
 import {isCardPlaceable} from '../../helper/isCardPlaceable';
 import {TapGestureHandler} from 'react-native-gesture-handler';
 import CardTooltip from '../CardTooltip';
+import DatabaseHelper from '../sqlite';
 
 const timeBlockStyles = StyleSheet.create({
   container: {
@@ -123,14 +124,6 @@ function TimeBlock(props) {
     }
   };
 
-  const handlePressEdit = () => {
-    console.log('Handle Edit, TODO');
-  };
-
-  const handlePressDelete = () => {
-    console.log('Handle Delete, TODO');
-  };
-
   return (
     <View
       style={[timeBlockStyles.container, {height: height}]}
@@ -177,8 +170,10 @@ function TimeBlock(props) {
                   <Text style={timeBlockStyles.startTimeText}>{startTime}</Text>
                   {showTooltip && (
                     <CardTooltip
-                      handlePressEdit={handlePressEdit}
-                      handlePressDelete={handlePressDelete}
+                      handlePressEdit={() => props.handlePressEdit(activity.id)}
+                      handlePressDelete={() =>
+                        props.handlePressDelete(activity.id)
+                      }
                     />
                   )}
                 </View>
