@@ -146,6 +146,7 @@ class AdminPanel extends React.Component {
     this.handlePressEditCalendarActivity = this.handlePressEditCalendarActivity.bind(
       this,
     );
+    this.goBack = this.goBack.bind(this);
 
     this.panGestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
@@ -482,6 +483,11 @@ class AdminPanel extends React.Component {
     console.log('todo');
   }
 
+  goBack() {
+    console.log(this.props.navigation);
+    this.props.navigation.navigate('Now');
+  }
+
   render() {
     const {height} = Dimensions.get('window');
 
@@ -530,7 +536,7 @@ class AdminPanel extends React.Component {
           <View style={styles.calendarPanel}>
             <View style={styles.header}>
               <View style={styles.calendarHeader}>
-                <Button style={styles.backButton}>
+                <Button style={styles.backButton} onPress={this.goBack}>
                   <Icon
                     type="AntDesign"
                     name="arrowleft"

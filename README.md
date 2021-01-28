@@ -95,5 +95,5 @@ To link nvm version of node to local node
 - Calendar Activity card movement
 - Activity list activity edit
 - Load activties on main view
-- Switch between main and admin view
+- IN PROGRESS: Switch between main and admin view - up to withDbSchedule
 - BUG: Images not loading

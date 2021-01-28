@@ -3,7 +3,11 @@ import moment from 'moment';
 import {View, StyleSheet, Text} from 'react-native';
 import {labels, timeBlocks} from '../../constants';
 import {isCardPlaceable} from '../../helper/isCardPlaceable';
-import {TapGestureHandler} from 'react-native-gesture-handler';
+import {
+  LongPressGestureHandler,
+  PanGestureHandler,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import CardTooltip from '../CardTooltip';
 import DatabaseHelper from '../sqlite';
 
@@ -27,8 +31,9 @@ const timeBlockStyles = StyleSheet.create({
   },
   activityWrapper: {
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    // flexDirection: 'row',
+    // justifyContent: 'center',
+    alignContent: 'space-between',
     borderRadius: 8,
     padding: 8,
     marginBottom: 2,
@@ -83,22 +88,6 @@ function TimeBlock(props) {
   // Height is calculated by subtracting the margins and dividing by segments in a block.
   const heightPerSegment = (props.height - 2 - 2) / 2;
 
-  // // Filter placed activities to TimeBlock instance only
-  // const filteredActivities = activities.filter(
-  //   x => x.timeBlockIdx === timeBlockIdx,
-  // );
-
-  // let showHighlight = false;
-
-  // if (guiderTimeBlockIdx !== -1 && timeBlockIdx === guiderTimeBlockIdx) {
-  //   showHighlight = isCardPlaceable(
-  //     activities,
-  //     draggedCard.duration,
-  //     guiderSegmentIdx,
-  //     guiderTimeBlockIdx,
-  //   );
-  // }
-
   let highlightedStyle;
   if (showHighlight) {
     console.log('draggedCard', draggedCard);
@@ -122,6 +111,24 @@ function TimeBlock(props) {
     if (ev.nativeEvent.oldState === 4 && ev.nativeEvent.state === 5) {
       setShowTooltip(!showTooltip);
     }
+  };
+
+  const handleLongPress = () => {
+    console.log('long press handled!');
+  };
+
+  const handlePanGesture = () => {
+    console.log('handling pan gesture');
+    // Need to change activity's durations for it to be persistant
+    // CHange state + events in the database.
+
+    // Maybe it's better to pass state down rather than functions up.
+    // e.g. activities down and handleDeletes functions here
+    // Because then functions can be called here, any change in state can
+    // also happen here.
+
+    // As im dragging, once it approaches a threshold, then change activity card
+    // duration to increase or decrease - check if card is still placeable.
   };
 
   return (
@@ -164,18 +171,44 @@ function TimeBlock(props) {
                     timeBlockStyles.activityWrapper,
                     activityWrapperStyle,
                   ]}>
-                  <Text style={timeBlockStyles.titleText}>
-                    {activity.title}
-                  </Text>
-                  <Text style={timeBlockStyles.startTimeText}>{startTime}</Text>
-                  {showTooltip && (
-                    <CardTooltip
-                      handlePressEdit={() => props.handlePressEdit(activity.id)}
-                      handlePressDelete={() =>
-                        props.handlePressDelete(activity.id)
-                      }
-                    />
-                  )}
+                  <View
+                    style={{
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={timeBlockStyles.titleText}>
+                      {activity.title}
+                    </Text>
+                    <Text style={timeBlockStyles.startTimeText}>
+                      {startTime}
+                    </Text>
+                    {showTooltip && (
+                      <CardTooltip
+                        handlePressEdit={() =>
+                          props.handlePressEdit(activity.id)
+                        }
+                        handlePressDelete={() =>
+                          props.handlePressDelete(activity.id)
+                        }
+                      />
+                    )}
+                  </View>
+                  <LongPressGestureHandler onGestureEvent={handleLongPress}>
+                    <PanGestureHandler onGestureEvent={handlePanGesture}>
+                      <View style={{display: 'flex', alignItems: 'center'}}>
+                        <View
+                          style={{
+                            height: 6,
+                            width: 70,
+                            backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                            borderRadius: 4,
+                          }}
+                        />
+                      </View>
+                    </PanGestureHandler>
+                  </LongPressGestureHandler>
                 </View>
               </TapGestureHandler>
             );

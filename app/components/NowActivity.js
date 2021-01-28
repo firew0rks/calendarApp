@@ -7,6 +7,8 @@ import {getImage} from '../helper/fileLoader';
 import isEmpty from 'lodash/isEmpty';
 import MainLayout from '../wrappers/MainLayout';
 import withSchedule from '../wrappers/withSchedule';
+import dbService from '../components/sqlite';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   app: {
@@ -25,31 +27,33 @@ const styles = StyleSheet.create({
 });
 
 function NowActivity(props) {
-  const {navigation, schedule} = props;
-  const {scheduleToday, nowActivity, nextActivity, endOfSchedule} = schedule;
+  const {navigation} = props;
+  // const {scheduleToday, nowActivity, nextActivity, endOfSchedule} = schedule;
 
   const [nowImage, setNowImage] = useState('');
   const [nextImage, setNextImage] = useState('');
 
-  useEffect(() => {
-    // Load photos
-    if (!isUndefined(nowActivity)) {
-      getImage(nowActivity.toLowerCase()).then(contents =>
-        setNowImage(contents),
-      );
-    }
+  // useEffect(() => {
+  //   // Load photos
+  //   if (!isUndefined(nowActivity)) {
+  //     getImage(nowActivity.toLowerCase()).then(contents =>
+  //       setNowImage(contents),
+  //     );
+  //   }
 
-    if (!isUndefined(nextActivity)) {
-      getImage(nextActivity.toLowerCase()).then(contents =>
-        setNextImage(contents),
-      );
-    }
-  }, [nowActivity, nextActivity]);
+  //   if (!isUndefined(nextActivity)) {
+  //     getImage(nextActivity.toLowerCase()).then(contents =>
+  //       setNextImage(contents),
+  //     );
+  //   }
+  // }, [nowActivity, nextActivity]);
+
+
 
   return (
     <MainLayout {...navigation}>
       <ScrollView>
-        {!isEmpty(scheduleToday) && nowActivity !== undefined ? (
+        {/* {!isEmpty(scheduleToday) && nowActivity !== undefined ? (
           <Activity
             moments={'NOW'}
             textActivity={nowActivity}
@@ -68,7 +72,7 @@ function NowActivity(props) {
             textActivity={nextActivity}
             imagePath={nextImage}
           />
-        )}
+        )} */}
       </ScrollView>
     </MainLayout>
   );
