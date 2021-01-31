@@ -9,6 +9,7 @@ import MainLayout from '../wrappers/MainLayout';
 import withSchedule from '../wrappers/withSchedule';
 import dbService from '../components/sqlite';
 import moment from 'moment';
+import withDbSchedule from '../wrappers/withDbSchedule';
 
 const styles = StyleSheet.create({
   app: {
@@ -27,8 +28,8 @@ const styles = StyleSheet.create({
 });
 
 function NowActivity(props) {
-  const {navigation} = props;
-  // const {scheduleToday, nowActivity, nextActivity, endOfSchedule} = schedule;
+  const {navigation, schedule} = props;
+  const {todaysActivities, nowActivity, nextActivity} = schedule;
 
   const [nowImage, setNowImage] = useState('');
   const [nextImage, setNextImage] = useState('');
@@ -48,15 +49,23 @@ function NowActivity(props) {
   //   }
   // }, [nowActivity, nextActivity]);
 
+  useEffect(() => {
+    if (!isUndefined(nowActivity)) {
+      setNowImage(nowActivity.imagePath);
+    }
 
+    if (!isUndefined(nextActivity)) {
+      setNextImage(nextActivity.imagePath);
+    }
+  }, [nowActivity, nextActivity]);
 
   return (
     <MainLayout {...navigation}>
       <ScrollView>
-        {/* {!isEmpty(scheduleToday) && nowActivity !== undefined ? (
+        {!isEmpty(todaysActivities) && nowActivity !== undefined ? (
           <Activity
             moments={'NOW'}
-            textActivity={nowActivity}
+            textActivity={nowActivity.title}
             imagePath={nowImage}
           />
         ) : (
@@ -66,16 +75,16 @@ function NowActivity(props) {
           </Text>
         )}
 
-        {!endOfSchedule && nextActivity !== undefined && (
+        {nextActivity !== undefined && (
           <Activity
             moments={'NEXT'}
-            textActivity={nextActivity}
+            textActivity={nextActivity.title}
             imagePath={nextImage}
           />
-        )} */}
+        )}
       </ScrollView>
     </MainLayout>
   );
 }
 
-export default withSchedule(NowActivity);
+export default withDbSchedule(NowActivity);

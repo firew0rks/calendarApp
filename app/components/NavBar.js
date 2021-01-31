@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {View, StyleSheet} from 'react-native';
 import {Button, Text} from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Pressable } from 'react-native';
 
 const styles = StyleSheet.create({
   view: {
@@ -63,6 +64,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  adminLock: {
+    position: 'absolute',
+    right: 10,
+    top: 0,
+  },
+  lockIcon: {
+    color: '#cccccc',
+  },
 });
 
 export default function NavBar(props) {
@@ -78,6 +87,10 @@ export default function NavBar(props) {
         return replace('Now');
       }
     }
+  }
+
+  function switchToAdminView() {
+    replace('Admin');
   }
 
   return (
@@ -132,6 +145,11 @@ export default function NavBar(props) {
           </Text>
         </View>
       </Button>
+      <View style={styles.adminLock}>
+        <Pressable onPress={switchToAdminView}>
+          <Icon name="lock" style={styles.lockIcon} />
+        </Pressable>
+      </View>
     </View>
   );
 }

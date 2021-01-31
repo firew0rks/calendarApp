@@ -20,7 +20,7 @@ const RootStack = createStackNavigator(
     Admin: AdminPanel,
   },
   {
-    initialRouteName: 'Admin',
+    initialRouteName: 'Now',
     headerMode: 'none',
   },
 );
@@ -31,21 +31,14 @@ export default function App() {
   // Disables the warning messages in the app
   // console.disableYellowBox = true;
 
-  const [schedule, setSchedule] = useState({'hello': 'world'});
-
   useEffect(() => {
+    // Debugging purposes to get location of database.
     getPath();
-    // // When app first launches, load in the file data.
-    // loadScheduleData().then(data => {
-    //   transformScheduleData(data).then(transformedData => {
-    //     setSchedule(transformedData);
-    //   });
-    // });
   }, []);
 
   return (
     <>
-      <AppContainer screenProps={{schedule}} />
+      <AppContainer />
       {/* {!isEmpty(schedule) && <AppContainer screenProps={{schedule}} />} */}
       {/* TODO: Error saying to input schedule file */}
     </>

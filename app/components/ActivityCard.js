@@ -85,7 +85,7 @@ const Activity = props => {
           <Text style={styles.timeText}>{props.time} </Text>
           <Card
             containerStyle={cardContainerStyle}
-            image={{uri: `data:image/png;base64,${props.imagePath}`}}
+            image={{uri: props.imagePath}}
             imageStyle={cardImageStyle}>
             <View style={styles.textView}>
               <Text style={styles.activityText}>{props.textActivity}</Text>
