@@ -48,7 +48,7 @@ const DayCard = props => {
   const {cardText, status, showTrail, ...rest} = props;
   const [image, setImage] = useState('');
 
-  getImage(cardText.toLowerCase()).then(contents => setImage(contents));
+  // getImage(cardText.toLowerCase()).then(contents => setImage(contents));
 
   const calculateContainerColours = () => {
     switch (status) {

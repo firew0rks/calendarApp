@@ -1,8 +1,18 @@
 import moment from 'moment';
 
 export function findCurrentTaskIndex(scheduleForToday) {
-  const currentTime = moment().format('HHmm');
+  let currentTime = moment();
 
+  // Between 8PM and 8AM the next day, now = last activity, next = tomorrow's activity
+  if (currentTime.isAfter('20', 'hour')) {
+    console.log('after 8PM');
+    return scheduleForToday.length - 1;
+  } else if (currentTime.isBefore('8', 'hour')) {
+    console.log('before 8AM');
+    return scheduleForToday.length - 1;
+  }
+
+  currentTime.format('HHmm');
   const index = scheduleForToday.findIndex(x => {
     const start = Number(x.startTime);
     let end = Number(x.endTime);
