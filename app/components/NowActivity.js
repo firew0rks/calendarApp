@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   noSheduleText: {
+    marginTop: 16,
     fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -70,8 +71,7 @@ function NowActivity(props) {
           />
         ) : (
           <Text style={styles.noSheduleText}>
-            At the end of schedule, please upload new schedule CSV with the new
-            dates
+            At the end of schedule, please add more activities in
           </Text>
         )}
 

@@ -3,7 +3,7 @@ import {View, StyleSheet, Text, ScrollView, Dimensions} from 'react-native';
 import moment from 'moment';
 import DayCard from './DayCard';
 import MainLayout from '../wrappers/MainLayout';
-import withSchedule from '../wrappers/withSchedule';
+import withDbSchedule from '../wrappers/withDbSchedule';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,15 +47,15 @@ const styles = StyleSheet.create({
 
 function DayActivity(props) {
   const {navigation, schedule} = props;
-  const {scheduleToday, currentTaskIndex} = schedule;
+  const {todaysActivities, currentTaskIndex} = schedule;
 
   const multi = useRef(null);
 
   return (
     <MainLayout {...navigation}>
       <ScrollView style={styles.container}>
-        {scheduleToday &&
-          scheduleToday.map((e, i) => {
+        {todaysActivities &&
+          todaysActivities.map((e, i) => {
             const formattedTime = moment(e.startTime, 'hmm').format('h:mm a');
             const status =
               currentTaskIndex === i
@@ -65,7 +65,7 @@ function DayActivity(props) {
                 : 'inactive';
 
             // Don't show if there's no next item.
-            const showTrailForA1 = i !== scheduleToday.length - 1;
+            const showTrailForA1 = i !== todaysActivities.length - 1;
 
             return (
               <View style={status === 'now' && styles.dayActivityContainerNow}>
@@ -78,7 +78,7 @@ function DayActivity(props) {
                   <View style={styles.padding1} />
                   <View style={styles.cardContainer}>
                     <DayCard
-                      cardText={e.activity1}
+                      cardText={e.activity1.title}
                       status={status}
                       showTrail={showTrailForA1}
                     />
@@ -108,4 +108,4 @@ function DayActivity(props) {
   );
 }
 
-export default withSchedule(DayActivity);
+export default withDbSchedule(DayActivity);
