@@ -14,6 +14,7 @@ import CalendarMenu from './admin/CalendarMenu';
 import DatabaseHelper from '../components/sqlite';
 import {isCardPlaceable} from '../helper/isCardPlaceable';
 import {randomString} from '../helper/random';
+import NewActivityModal from './admin/NewActivityModal';
 
 const {set, cond, eq, call, and} = Animated;
 
@@ -147,6 +148,7 @@ class AdminPanel extends React.Component {
       this,
     );
     this.goBack = this.goBack.bind(this);
+    this.getActivityList = this.getActivityList.bind(this);
 
     this.panGestureState = new Animated.Value(-1);
     this.translationX = new Animated.Value(0);
@@ -189,24 +191,6 @@ class AdminPanel extends React.Component {
       },
     ]);
 
-    // FIXME: Load activities twice (again in ActivityAdminCard.js). Should be passed down.
-    // let activityListItems = realm.objects(ActivitySchemaKey);
-    // activityListItems.addListener(this.refreshActivityList);
-
-    // const events = realm.objects(CalendarSchemaKey).filtered(
-    //   'startDatetime >= $0 && startDatetime < $1',
-    //   moment()
-    //     .startOf('day')
-    //     .toDate(),
-    //   moment()
-    //     .endOf('day')
-    //     .toDate(),
-    // );
-    // // activities1.addListener(this.refreshActivities);
-    // this.events = events;
-
-    // console.log('placed activities', events, moment().toDate());
-
     const dateViewing = moment();
     console.log('type', typeof dateViewing, dateViewing);
 
@@ -231,6 +215,7 @@ class AdminPanel extends React.Component {
       showCalendar: false,
       modalVisible: false,
       isActivityPlaceable: false,
+      editActivity: undefined,
     };
 
     this.getActivityList();
@@ -461,8 +446,13 @@ class AdminPanel extends React.Component {
   }
 
   setModalVisible(value) {
-    this.setState({modalVisible: value});
-    this.getActivityList();
+    let newState = {modalVisible: value};
+
+    if (!value) {
+      newState.editActivity = undefined;
+    }
+
+    this.setState(newState);
   }
 
   async handlePressDeleteActivity(activityListItemId) {
@@ -470,8 +460,25 @@ class AdminPanel extends React.Component {
     await this.getActivityList();
   }
 
-  handlePressEditActivity() {
-    console.log('todo');
+  handlePressEditActivity(activityId) {
+    let activityToEdit = this.state.activityListItems.filter(
+      x => x.id === activityId,
+    );
+
+    console.log('activityEdit', activityToEdit);
+
+    if (activityToEdit.length > 0) {
+      activityToEdit = activityToEdit[0];
+      // Saves the array into the database as a string, convert to array.
+      if (typeof activityToEdit.subactivities === 'string') {
+        activityToEdit.subactivities = JSON.parse(activityToEdit.subactivities);
+      }
+
+      this.setState({
+        editActivity: activityToEdit,
+        modalVisible: true,
+      });
+    }
   }
 
   async handlePressDeleteCalendarActivity(activityId) {
@@ -612,7 +619,7 @@ class AdminPanel extends React.Component {
                   activityListItems={this.state.activityListItems}
                   reportLayout={this.reportLayout}
                   handlePressDelete={this.handlePressDeleteActivity}
-                  // handlePressEdit={this.handlePressEditActivity}
+                  handlePressEdit={this.handlePressEditActivity}
                 />
               </View>
             </View>
@@ -647,6 +654,13 @@ class AdminPanel extends React.Component {
             />
           </Animated.View>
         )}
+        <NewActivityModal
+          key={this.state.editActivity ? this.state.editActivity.id : 0}
+          modalVisible={this.state.modalVisible}
+          setModalVisible={this.setModalVisible}
+          editActivity={this.state.editActivity}
+          onSaved={this.getActivityList}
+        />
       </SafeAreaView>
     );
   }

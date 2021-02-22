@@ -198,6 +198,39 @@ class DatabaseHelper {
     });
   }
 
+  /** Updates an activity on the activity list
+   *
+   * @param {*} activity placed activity
+   */
+  updateActivity(activity) {
+    return new Promise((resolve, reject) => {
+      SQLite.openDatabase({name: this.database_name})
+        .then(instance => {
+          instance
+            .transaction(tx => {
+              tx.executeSql(
+                'UPDATE ActivityList SET label=?,duration=?,title=?,majorEvent=?,picturePath=?,subactivities=?,reminders=? WHERE id=?',
+                [
+                  activity.label,
+                  activity.duration,
+                  activity.title,
+                  activity.majorEvent,
+                  activity.picturePath,
+                  activity.subactivities,
+                  activity.reminders,
+                  activity.id,
+                ],
+              );
+            })
+            .then(([results]) => {
+              resolve(results);
+            })
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
+    });
+  }
+
   /** Creates an event on the calendar
    * @param {*} activity placed activity
    */

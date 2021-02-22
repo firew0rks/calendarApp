@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet} from 'react-native';
 import {Button, Text, Icon} from 'native-base';
-import NewActivityModal from './NewActivityModal';
 
 const styles = StyleSheet.create({
   activitiesTitle: {
@@ -26,10 +25,6 @@ export default class ActivityHeader extends React.Component {
           onPress={() => this.props.setModalVisible(true)}>
           <Icon type="Entypo" name="plus" />
         </Button>
-        <NewActivityModal
-          modalVisible={this.props.modalVisible}
-          setModalVisible={this.props.setModalVisible}
-        />
       </>
     );
   }

@@ -13,11 +13,11 @@ import {
 } from 'react-native';
 import Animated, {Easing} from 'react-native-reanimated';
 import {Button, Icon, Switch, Input} from 'native-base';
-import {v4 as uuidv4} from 'uuid';
 import ImagePicker from 'react-native-image-picker';
 import {labels} from '../../constants';
 import {randomString} from '../../helper/random';
 import DatabaseHelper from '../sqlite';
+import isUndefined from 'lodash/isUndefined';
 
 const {
   Clock,
@@ -182,7 +182,7 @@ const defaultState = {
   title: '',
   label: 0,
   picturePath: '',
-  durationSelected: 30,
+  duration: 30,
   majorEvent: false,
   reminders: '',
   showReminders: false,
@@ -203,56 +203,65 @@ export default class NewActivityModal extends React.Component {
 
     this.panY = new Value(Dimensions.get('screen').height);
 
-    this.state = {...defaultState};
+    if (!isUndefined(this.props.editActivity)) {
+      console.log('Setting edit');
+      this.state = {
+        ...defaultState,
+        ...this.props.editActivity,
+        isEditActivity: true,
+      };
+    } else {
+      console.log('Setting new');
+      this.state = {
+        ...defaultState,
+        isEditActivity: false,
+      };
+    }
   }
 
   closeModal() {
-    this.setState({...defaultState});
     this.props.setModalVisible(false);
   }
 
   async handleSave() {
-    // try {
-    //   realm.write(() => {
-        // realm.create(ActivitySchemaKey, {
-        //   id: uuidv4(),
-        //   label: this.state.label,
-        //   duration: this.state.durationSelected,
-        //   title: this.state.title,
-        //   majorEvent: this.state.majorEvent,
-        //   picturePath: this.state.picturePath,
-        //   subactivities: this.state.subactivities,
-        //   reminders: this.state.reminders,
-        // });
-        // this.props.setModalVisible(false);
-    //   });
-    // } catch (err) {
-    //   console.log(err);
-    // }
-
     try {
-      await DatabaseHelper.createActivity({
-        id: randomString(),
-        label: this.state.label,
-        duration: this.state.durationSelected,
-        title: this.state.title,
-        majorEvent: this.state.majorEvent,
-        picturePath: this.state.picturePath,
-        subactivities: JSON.stringify(this.state.subactivities),
-        reminders: this.state.reminders,
-      });
-      this.props.setModalVisible(false);
+      if (this.state.isEditActivity) {
+        await DatabaseHelper.updateActivity({
+          id: this.state.id,
+          label: this.state.label,
+          duration: this.state.duration,
+          title: this.state.title,
+          majorEvent: this.state.majorEvent,
+          picturePath: this.state.picturePath,
+          subactivities: JSON.stringify(this.state.subactivities),
+          reminders: this.state.reminders,
+        });
+      } else {
+        await DatabaseHelper.createActivity({
+          id: randomString(),
+          label: this.state.label,
+          duration: this.state.duration,
+          title: this.state.title,
+          majorEvent: this.state.majorEvent,
+          picturePath: this.state.picturePath,
+          subactivities: JSON.stringify(this.state.subactivities),
+          reminders: this.state.reminders,
+        });
+      }
     } catch (err) {
       console.log('Error occured creating Activity', err);
       this.setState({
         errorMessage: err,
       });
     }
+
+    this.props.onSaved();
+    this.props.setModalVisible(false);
   }
 
-  handleDurationSelection(durationSelected) {
+  handleDurationSelection(duration) {
     this.setState({
-      durationSelected,
+      duration,
     });
   }
 
@@ -300,6 +309,7 @@ export default class NewActivityModal extends React.Component {
   }
 
   render() {
+    console.log(this.state.picturePath);
     return (
       <Modal
         animationType="slide"
@@ -338,7 +348,7 @@ export default class NewActivityModal extends React.Component {
               <Text style={styles.labelText}>Duration</Text>
               <View style={styles.durationSelectionContainer}>
                 {DURATIONS.map(x => {
-                  const selected = this.state.durationSelected === x.duration;
+                  const selected = this.state.duration === x.duration;
 
                   return (
                     <Button

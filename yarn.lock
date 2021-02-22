@@ -7366,7 +7366,7 @@
     "prop-types" "^15.6.2"
     "yargs" "^13.2.2"
 
-"react-native@>=0.14.0", "react-native@0.63.1":
+"react-native@^0.63.1", "react-native@>=0.14.0":
   "integrity" "sha512-7SYBgLSu9p6uKPZIUEcAPGUe8a07UGi/2TdCWqkIazH6/2B93yuvDULAzyDT2hhSJPxUAvb6tGowoWVnZQQVtw=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.63.1.tgz"
   "version" "0.63.1"

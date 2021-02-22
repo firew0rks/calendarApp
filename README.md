@@ -92,8 +92,13 @@ To link nvm version of node to local node
 ## TODO:
 
 - Calendar performance issues
-- Calendar Activity card movement
-- Activity list activity edit
-- Load activties on main view
-- IN PROGRESS: Switch between main and admin view - up to withDbSchedule
-- BUG: Images not loading
+- [IN PROGRESS] Calendar Activity card movement
+- [x] Activity list activity edit
+- [x] Load activties on main view
+- Load tomorrow's activities (main view)
+- Handle no time transitions (for main view)
+- [x] Switch between main and admin view - up to withDbSchedule
+- [x] BUG: Images not loading
+  - https://github.com/facebook/react-native/issues/29215
+  - Issue with 0.63.1 - Need to upgrade to 0.63.3+ to fix the issue. However, when upgrading to the higher versions, React Modal freezes when it tries to open.
+- Reset new activity card's text

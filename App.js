@@ -20,7 +20,7 @@ const RootStack = createStackNavigator(
     Admin: AdminPanel,
   },
   {
-    initialRouteName: 'Now',
+    initialRouteName: 'Admin',
     headerMode: 'none',
   },
 );

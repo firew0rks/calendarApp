@@ -51,11 +51,11 @@ function NowActivity(props) {
 
   useEffect(() => {
     if (!isUndefined(nowActivity)) {
-      setNowImage(nowActivity.imagePath);
+      setNowImage(nowActivity.picturePath);
     }
 
     if (!isUndefined(nextActivity)) {
-      setNextImage(nextActivity.imagePath);
+      setNextImage(nextActivity.picturePath);
     }
   }, [nowActivity, nextActivity]);
 

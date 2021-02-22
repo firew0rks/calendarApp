@@ -128,7 +128,9 @@ export default class ActivityList extends React.Component {
                           label={x.label}
                           showTooltip={this.state.showTooltip[i]}
                           toggleTooltip={() => this.toggleTooltip(i)}
-                          handlePressEdit={this.props.handlePressEdit}
+                          handlePressEdit={() =>
+                            this.props.handlePressEdit(x.id)
+                          }
                           handlePressDelete={() => {
                             this.props.handlePressDelete(x.id);
                           }}

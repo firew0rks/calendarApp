@@ -11,6 +11,7 @@
 		120F242131AE462FB659C478 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76740DEA15974A50A6035F44 /* FontAwesome.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		24BDDA3125E32F42000D9972 /* libReact-CoreModules.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 24BDDA3025E32F42000D9972 /* libReact-CoreModules.a */; };
 		24FD1AE8238A377400E63E3C /* appicon.png in Resources */ = {isa = PBXBuildFile; fileRef = 24FD1AE7238A377400E63E3C /* appicon.png */; };
 		2AE656172B364920B1691F70 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 46790CA5EDE84257A58E7061 /* EvilIcons.ttf */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -79,6 +80,7 @@
 		1F1905730507C7C716B3418C /* Pods-calendarAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-calendarAppTests.release.xcconfig"; path = "Target Support Files/Pods-calendarAppTests/Pods-calendarAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		20FE9544B01F4BC693CA3F61 /* Comfortaa-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Comfortaa-Regular.ttf"; path = "../assets/fonts/Comfortaa-Regular.ttf"; sourceTree = "<group>"; };
 		240226F8565C48EF8DDEC52B /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/native-base/Fonts/Feather.ttf"; sourceTree = "<group>"; };
+		24BDDA3025E32F42000D9972 /* libReact-CoreModules.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-CoreModules.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		24FD1AE7238A377400E63E3C /* appicon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = appicon.png; path = ../appicon.png; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* calendarApp-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "calendarApp-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* calendarApp-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "calendarApp-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,6 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24BDDA3125E32F42000D9972 /* libReact-CoreModules.a in Frameworks */,
 				5C74FF198BD78076135AEDC4 /* libPods-calendarApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -200,6 +203,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				24BDDA3025E32F42000D9972 /* libReact-CoreModules.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				AF3862245F453E5D0C90993E /* libPods-calendarApp.a */,
