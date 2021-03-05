@@ -7,8 +7,6 @@ import {
 import {Button, Text, Icon} from 'native-base';
 import moment from 'moment';
 
-const DAYS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-
 const styles = StyleSheet.create({
   settingsButton: {
     backgroundColor: 'rgb(231, 241, 255)',
@@ -46,6 +44,7 @@ function DayButton(props) {
   let dayStyle = dayButtonStyles.currentButton;
   let textStyle = dayButtonStyles.text;
 
+  // Styling other month's dates
   if (dateMoment.clone().month() !== moment(dateViewing).month()) {
     dayStyle = {
       ...dayStyle,
@@ -54,6 +53,22 @@ function DayButton(props) {
     textStyle = {
       ...textStyle,
       color: 'rgb(128, 128, 128)',
+    };
+  }
+
+  // Styling selected date
+  if (
+    dateMoment.clone().format('YY MM DD') ===
+    moment(dateViewing).format('YY MM DD')
+  ) {
+    dayStyle = {
+      ...dayStyle,
+      backgroundColor: 'rgb(0, 99, 255)',
+    };
+
+    textStyle = {
+      ...textStyle,
+      color: 'rgb(240, 240, 240)',
     };
   }
 
@@ -66,8 +81,8 @@ function DayButton(props) {
   );
 }
 
-export default function CalendarMenu(props) {
-  const {dateViewing, handleDateChange} = props;
+function CalendarMenu(props) {
+  const {dateViewing, handleDateChange, showCalendar} = props;
   const [dates, setDates] = useState([]);
 
   const windowWidth = Dimensions.get('window').width;
@@ -94,6 +109,10 @@ export default function CalendarMenu(props) {
 
     setDates(d);
   }, [dateViewing]);
+
+  if (!showCalendar) {
+    return null;
+  }
 
   return (
     <View
@@ -173,7 +192,7 @@ export default function CalendarMenu(props) {
           <Button
             style={[styles.settingsButton, {marginRight: 4}]}
             onPress={() =>
-              handleDateChange(moment(dateViewing).subtract(1, 'months'))
+              handleDateChange(moment(dateViewing).subtract(1, 'months'), true)
             }>
             <Icon
               type="AntDesign"
@@ -184,7 +203,7 @@ export default function CalendarMenu(props) {
           <Button
             style={styles.settingsButton}
             onPress={() =>
-              handleDateChange(moment(dateViewing).add(1, 'months'))
+              handleDateChange(moment(dateViewing).add(1, 'months'), true)
             }>
             <Icon
               type="AntDesign"
@@ -195,9 +214,10 @@ export default function CalendarMenu(props) {
         </View>
       </View>
       <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
-        {dates.map(x => {
+        {dates.map((x, i) => {
           return (
             <DayButton
+              key={i}
               dateMoment={x}
               dateViewing={dateViewing}
               handleDateChange={handleDateChange}
@@ -208,3 +228,5 @@ export default function CalendarMenu(props) {
     </View>
   );
 }
+
+export default CalendarMenu;

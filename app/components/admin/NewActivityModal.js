@@ -195,7 +195,7 @@ function Divider() {
   return <View style={styles.divider} />;
 }
 
-export default class NewActivityModal extends React.Component {
+class NewActivityModal extends React.Component {
   constructor(props) {
     super(props);
 
@@ -309,7 +309,6 @@ export default class NewActivityModal extends React.Component {
   }
 
   render() {
-    console.log(this.state.picturePath);
     return (
       <Modal
         animationType="slide"
@@ -526,3 +525,5 @@ NewActivityModal.propTypes = {
   modalVisible: PropTypes.bool.isRequired,
   setModalVisible: PropTypes.func.isRequired,
 };
+
+export default React.memo(NewActivityModal);

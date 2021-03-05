@@ -78,12 +78,6 @@ export default function withDbSchedule(WrappedComponent) {
         });
       });
 
-      // Convert to start and end time
-
-      // Check if those times exist in the data structure
-
-      // Create if it doesn't, otherwise add to it i.e. (activity 2)
-
       // Sort data structure from start to end time
       formattedActivities.sort((a, b) => {
         return Number(a.startTime) - Number(b.startTime);
@@ -94,6 +88,7 @@ export default function withDbSchedule(WrappedComponent) {
       // Use findCurrentTaskIndex to determine now and next tasks
 
       setTodaysActivites(formattedActivities);
+      setCurrentTaskIndex(findCurrentTaskIndex(formattedActivities));
     }, []);
 
     useEffect(() => {
@@ -118,7 +113,7 @@ export default function withDbSchedule(WrappedComponent) {
     }, 1000);
 
     useEffect(() => {
-      if (!isEmpty(todaysActivities)) {
+      if (!isEmpty(todaysActivities) && currentTaskIndex !== -1) {
         try {
           setNowActivity(todaysActivities[currentTaskIndex].activity1);
 
@@ -128,7 +123,7 @@ export default function withDbSchedule(WrappedComponent) {
             // TODO: Get tomorrow's activities
           }
         } catch (err) {
-          console.log('error', err);
+          console.log('error', err, currentTaskIndex, todaysActivities);
         }
       }
     }, [currentTaskIndex, todaysActivities]);

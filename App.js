@@ -33,6 +33,8 @@ export default function App() {
 
   useEffect(() => {
     // Debugging purposes to get location of database.
+
+    // TODO: Open database here, refetch if data for the day changes, otherwise always retain state.
     getPath();
   }, []);
 

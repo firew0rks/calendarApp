@@ -12,7 +12,6 @@ export function findCurrentTaskIndex(scheduleForToday) {
     return scheduleForToday.length - 1;
   }
 
-  currentTime.format('HHmm');
   const index = scheduleForToday.findIndex(x => {
     const start = Number(x.startTime);
     let end = Number(x.endTime);
@@ -21,7 +20,9 @@ export function findCurrentTaskIndex(scheduleForToday) {
       end = Infinity;
     }
 
-    return start <= currentTime && end > currentTime;
+    return (
+      start <= currentTime.format('HHmm') && end > currentTime.format('HHmm')
+    );
   });
 
   return index;

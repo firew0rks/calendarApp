@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import moment from 'moment';
 import {View, StyleSheet, Text} from 'react-native';
 import {labels, timeBlocks} from '../../constants';
@@ -83,14 +83,26 @@ function TimeBlock(props) {
     showHighlight,
   } = props;
 
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showTooltip, setShowTooltip] = useState([]);
+  const longPressRef = useRef();
+  const panRef = useRef();
+
+  useEffect(() => {
+    if (activities !== undefined) {
+      const result = activities.reduce((acc, curr) => {
+        acc[curr.id] = false;
+        return acc;
+      }, {});
+
+      setShowTooltip(result);
+    }
+  }, [activities]);
 
   // Height is calculated by subtracting the margins and dividing by segments in a block.
   const heightPerSegment = (props.height - 2 - 2) / 2;
 
   let highlightedStyle;
   if (showHighlight) {
-    console.log('draggedCard', draggedCard);
     // console.log('inShowHighlight', showHighlight, draggedCard);
     // Segment height is the height of the activity block, calculated from duration.
     const segments = draggedCard.duration / 30;
@@ -106,10 +118,11 @@ function TimeBlock(props) {
     };
   }
 
-  const toggleTooltip = ev => {
-    console.log('heree', ev.nativeEvent);
+  const toggleTooltip = (ev, act) => {
     if (ev.nativeEvent.oldState === 4 && ev.nativeEvent.state === 5) {
-      setShowTooltip(!showTooltip);
+      setShowTooltip(t => {
+        return {...t, [act.id]: !t[act.id]};
+      });
     }
   };
 
@@ -117,10 +130,11 @@ function TimeBlock(props) {
     console.log('long press handled!');
   };
 
-  const handlePanGesture = () => {
-    console.log('handling pan gesture');
+  const handlePanGesture = event => {
+    // All I care about is the translationY property - positive = down, negative = up
+    console.log('handling pan gesture', event.nativeEvent);
     // Need to change activity's durations for it to be persistant
-    // CHange state + events in the database.
+    // Change state + events in the database.
 
     // Maybe it's better to pass state down rather than functions up.
     // e.g. activities down and handleDeletes functions here
@@ -129,11 +143,21 @@ function TimeBlock(props) {
 
     // As im dragging, once it approaches a threshold, then change activity card
     // duration to increase or decrease - check if card is still placeable.
+
+    const heightPerSegment = (props.height - 2 - 2) / 2;
+
+    if (event.nativeEvent.translationY > heightPerSegment) {
+      console.log(
+        'next section',
+        heightPerSegment,
+        event.nativeEvent.translationY,
+      );
+    }
   };
 
   return (
     <View
-      style={[timeBlockStyles.container, {height: height}]}
+      style={[timeBlockStyles.container, {height: height, zIndex: 0 - time}]}
       pointerEvents="box-none">
       <Text
         style={timeBlockStyles.timeText}
@@ -163,7 +187,7 @@ function TimeBlock(props) {
 
             return (
               <TapGestureHandler
-                onHandlerStateChange={toggleTooltip}
+                onHandlerStateChange={ev => toggleTooltip(ev, activity)}
                 key={startTime}>
                 <View
                   key={i}
@@ -184,19 +208,26 @@ function TimeBlock(props) {
                     <Text style={timeBlockStyles.startTimeText}>
                       {startTime}
                     </Text>
-                    {showTooltip && (
+                    {showTooltip && showTooltip[activity.id] && (
                       <CardTooltip
-                        handlePressEdit={() =>
-                          props.handlePressEdit(activity.id)
-                        }
+                        // handlePressEdit={() =>
+                        //   props.handlePressEdit(activity.id)
+                        // }
                         handlePressDelete={() =>
                           props.handlePressDelete(activity.id)
                         }
                       />
                     )}
                   </View>
-                  <LongPressGestureHandler onGestureEvent={handleLongPress}>
-                    <PanGestureHandler onGestureEvent={handlePanGesture}>
+                  <LongPressGestureHandler
+                    ref={longPressRef}
+                    onGestureEvent={handleLongPress}
+                    simultaneousHandlers={panRef}>
+                    <PanGestureHandler
+                      ref={panRef}
+                      onHandlerStateChange={handlePanGesture}
+                      onGestureEvent={handlePanGesture}
+                      simultaneousHandlers={longPressRef}>
                       <View style={{display: 'flex', alignItems: 'center'}}>
                         <View
                           style={{
@@ -218,18 +249,42 @@ function TimeBlock(props) {
   );
 }
 
-// // Return true if you don't want it to run.
-// function conditionalRenderCheck(prevProps, nextProps) {
-//   // console.log(`running timeblock ${nextProps.timeBlockIdx}`);
-//   // console.log(nextProps.guiderTimeBlockIdx === -1, nextProps.timeBlockIdx !== nextProps.guiderTimeBlockIdx)
-//   if (
-//     nextProps.guiderTimeBlockIdx === -1 ||
-//     nextProps.timeBlockIdx !== nextProps.guiderTimeBlockIdx
-//   ) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
+// Return true if you don't want it to run.
+function areEqual(prevProps, nextProps) {
+  // Rerender if showHighlight is changed or activities list has changed
+  if (prevProps.showHighlight !== nextProps.showHighlight) {
+    return false;
+  }
 
-export default React.memo(TimeBlock);
+  if (prevProps.showHighlight && nextProps.showHighlight) {
+    if (prevProps.guiderSegmentIdx !== nextProps.guiderSegmentIdx) {
+      return false;
+    }
+  }
+
+  if (
+    prevProps.activities === undefined &&
+    nextProps.activities !== undefined
+  ) {
+    return false;
+  }
+
+  if (
+    nextProps.activities === undefined &&
+    prevProps.activities !== undefined
+  ) {
+    return false;
+  }
+
+  if (
+    prevProps.activities &&
+    nextProps.activities &&
+    prevProps.activities.length !== nextProps.activities.length
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+export default React.memo(TimeBlock, areEqual);

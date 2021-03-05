@@ -192,7 +192,6 @@ class AdminPanel extends React.Component {
     ]);
 
     const dateViewing = moment();
-    console.log('type', typeof dateViewing, dateViewing);
 
     this.state = {
       layout: {},
@@ -398,7 +397,6 @@ class AdminPanel extends React.Component {
 
     if (!this.state.showPanCard) {
       this.setState({
-        ...this.state,
         showPanCard: true,
         draggedCard: {
           title: this.state.activityListItems[cardClickedIdx].title,
@@ -431,13 +429,12 @@ class AdminPanel extends React.Component {
     this.setState({activityListOffsetY: e.nativeEvent.contentOffset.y});
   }
 
-  handleDateChange(date) {
-    console.log('date', date);
+  handleDateChange(date, showCalendar = false) {
     // Date needs to be in the format of 'YYYY-MM-DD'
     this.getCalendarActivities(date.clone().format('YYYY-MM-DD'));
     this.setState({
       dateViewing: date,
-      showCalendar: false,
+      showCalendar: showCalendar,
     });
   }
 
@@ -483,7 +480,9 @@ class AdminPanel extends React.Component {
 
   async handlePressDeleteCalendarActivity(activityId) {
     await DatabaseHelper.deleteCalendarActivity(activityId);
-    await this.getCalendarActivities();
+    await this.getCalendarActivities(
+      moment(this.state.dateViewing).format('YYYY-MM-DD'),
+    );
   }
 
   handlePressEditCalendarActivity() {
@@ -565,12 +564,11 @@ class AdminPanel extends React.Component {
                       style={styles.monthTitleIcon}
                     />
                   </TouchableNativeFeedback>
-                  {this.state.showCalendar && (
-                    <CalendarMenu
-                      dateViewing={this.state.dateViewing}
-                      handleDateChange={this.handleDateChange}
-                    />
-                  )}
+                  <CalendarMenu
+                    showCalendar={this.state.showCalendar}
+                    dateViewing={this.state.dateViewing}
+                    handleDateChange={this.handleDateChange}
+                  />
                 </View>
                 <Button style={styles.settingsButton}>
                   <Icon

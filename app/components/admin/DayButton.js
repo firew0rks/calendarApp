@@ -1,30 +1,44 @@
 import React from 'react';
 import moment from 'moment';
 import {View, StyleSheet, Text} from 'react-native';
-import {TouchableNativeFeedback} from 'react-native-gesture-handler';
+import {
+  LongPressGestureHandler,
+  TapGestureHandler,
+  TouchableNativeFeedback,
+  State,
+} from 'react-native-gesture-handler';
 
 export default function DayButton(props) {
   const d = moment(props.date);
 
   return (
-    <TouchableNativeFeedback onPress={() => props.handleDateChange(d)}>
-      <View
-        style={
-          props.selected
-            ? dayButtonStyles.dayButtonWrapperSelected
-            : dayButtonStyles.dayButtonWrapper
-        }>
-        <Text
+    <LongPressGestureHandler
+      onHandlerStateChange={({nativeEvent}) => {
+        if (nativeEvent.state === State.ACTIVE) {
+          props.handleDayLongClick();
+        }
+      }}>
+      {/* <TouchableNativeFeedback onPress={() => props.handleDateChange(d)}> */}
+      <TapGestureHandler>
+        <View
           style={
             props.selected
-              ? dayButtonStyles.dayOfTheWeekTextSelected
-              : dayButtonStyles.dayOfTheWeekText
+              ? dayButtonStyles.dayButtonWrapperSelected
+              : dayButtonStyles.dayButtonWrapper
           }>
-          {props.dayOfTheWeek}
-        </Text>
-        <Text style={dayButtonStyles.dayText}>{d.date()}</Text>
-      </View>
-    </TouchableNativeFeedback>
+          <Text
+            style={
+              props.selected
+                ? dayButtonStyles.dayOfTheWeekTextSelected
+                : dayButtonStyles.dayOfTheWeekText
+            }>
+            {props.dayOfTheWeek}
+          </Text>
+          <Text style={dayButtonStyles.dayText}>{d.date()}</Text>
+        </View>
+      </TapGestureHandler>
+      {/* </TouchableNativeFeedback> */}
+    </LongPressGestureHandler>
   );
 }
 

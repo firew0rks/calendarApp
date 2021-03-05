@@ -102,3 +102,5 @@ To link nvm version of node to local node
   - https://github.com/facebook/react-native/issues/29215
   - Issue with 0.63.1 - Need to upgrade to 0.63.3+ to fix the issue. However, when upgrading to the higher versions, React Modal freezes when it tries to open.
 - Reset new activity card's text
+- Redo SQLite to stop reopening connections?
+- Long click + hold to duplicate or delete entire day on admin calendar

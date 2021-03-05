@@ -45,10 +45,7 @@ const styles = StyleSheet.create({
 });
 
 const DayCard = props => {
-  const {cardText, status, showTrail, ...rest} = props;
-  const [image, setImage] = useState('');
-
-  // getImage(cardText.toLowerCase()).then(contents => setImage(contents));
+  const {cardText, status, showTrail, imagePath, ...rest} = props;
 
   const calculateContainerColours = () => {
     switch (status) {
@@ -88,7 +85,7 @@ const DayCard = props => {
         <Card
           {...rest}
           containerStyle={calculateContainerColours()}
-          image={{uri: `data:image/png;base64,${image}`}}
+          image={{uri: props.imagePath}}
           imageStyle={styles.cardImage}>
           <View style={styles.cardFooter}>
             <Text style={styles.activityText}>{cardText}</Text>

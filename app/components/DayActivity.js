@@ -81,6 +81,7 @@ function DayActivity(props) {
                       cardText={e.activity1.title}
                       status={status}
                       showTrail={showTrailForA1}
+                      imagePath={e.picturePath}
                     />
                   </View>
                   <View style={styles.orContainer}>
@@ -95,6 +96,7 @@ function DayActivity(props) {
                         ref={multi}
                         cardText={e.activity2}
                         showTrail={false}
+                        imagePath={e.picturePath}
                       />
                     )}
                   </View>
